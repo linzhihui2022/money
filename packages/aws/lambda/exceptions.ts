@@ -129,8 +129,33 @@ export class SqsEventError extends Error {
   }
 }
 
+export class TriggerError extends Error {
+  constructor(message: string) {
+    super(message);
+  }
+}
 export class EventBridgeError extends Error {
   constructor(message: string) {
+    super(message);
+  }
+}
+
+export class S3EventError<T> extends Error {
+  constructor(
+    message: string,
+    public filePath: string,
+    public details?: T,
+  ) {
+    super(message);
+  }
+}
+
+export class DynamoEventError<T> extends Error {
+  constructor(
+    message: string,
+    public sequenceNumber?: string,
+    public details?: T,
+  ) {
     super(message);
   }
 }

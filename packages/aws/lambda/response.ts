@@ -42,7 +42,6 @@ export function createErrorResponse<T>(
   headers: { [key: string]: string } = {},
 ) {
   const body: ErrorBody = { error: { message, statusCode, details } };
-  createResponse(statusCode, JSON.stringify(body), headers);
   return createResponse(statusCode, JSON.stringify(body), headers);
 }
 

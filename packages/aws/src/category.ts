@@ -1,5 +1,5 @@
 import { type APIGatewayProxyHandlerV2 } from "aws-lambda";
-import { gatewayMiddleware } from "./lambda/APIGateway.ts";
+import { gatewayMiddleware } from "../lambda/APIGateway.ts";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { Resource } from "sst";
 import {
@@ -12,16 +12,12 @@ import {
   type ScanCommandOutput,
   UpdateCommand,
 } from "@aws-sdk/lib-dynamodb";
-import { BadRequestError } from "./lambda/exceptions.ts";
+import { BadRequestError } from "../lambda/exceptions.ts";
 import { v4 } from "uuid";
 import { z } from "zod";
+import { type CategoryItem } from "types";
 
 const client = DynamoDBDocumentClient.from(new DynamoDBClient({}));
-interface CategoryItem {
-  id: string;
-  pid: string;
-  value: string;
-}
 
 export const list: APIGatewayProxyHandlerV2 = gatewayMiddleware(async () => {
   const Items: CategoryItem[] = [];
@@ -43,14 +39,21 @@ export const list: APIGatewayProxyHandlerV2 = gatewayMiddleware(async () => {
   return { Count, Items };
 });
 
-export const add: APIGatewayProxyHandlerV2 = gatewayMiddleware<{
-  body: {
-    pid?: string;
-    text: string;
-  };
-}>(async ({ parseEvent, validate }) => {
-  const { pid, text: value } = validate(
-    () => z.object({ pid: z.string().optional(), text: z.string().min(1) }),
+export const add: APIGatewayProxyHandlerV2 = gatewayMiddleware<
+  {
+    body: {
+      value: string;
+      pid?: string;
+    };
+  },
+  CategoryItem
+>(async ({ parseEvent, validate }) => {
+  const { pid, value } = validate(
+    () =>
+      z.object({
+        pid: z.string().optional().default(""),
+        value: z.string().min(1),
+      }),
     parseEvent(),
     "data invalid",
   );
@@ -61,23 +64,20 @@ export const add: APIGatewayProxyHandlerV2 = gatewayMiddleware<{
       Item: { pid, value, id },
     }),
   );
+  return { pid, value, id };
 });
 
 export const updateText: APIGatewayProxyHandlerV2 = gatewayMiddleware<{
-  body: { text: string };
+  body: { value: string };
   path: { id: string };
 }>(async ({ parseEvent, validate }) => {
-  const { id, text } = validate(
-    () => z.object({ id: z.string().uuid(), text: z.string().min(1) }),
-    parseEvent(),
-    "data invalid",
-  );
+  const { id, value } = validate(() => z.object({ id: z.string().uuid(), value: z.string().min(1) }), parseEvent(), "data invalid");
   await client.send(
     new UpdateCommand({
       TableName: Resource.categoryDB.name,
       Key: { id },
       UpdateExpression: "SET #value = :value",
-      ExpressionAttributeValues: { ":value": text },
+      ExpressionAttributeValues: { ":value": value },
       ExpressionAttributeNames: { "#value": "value" },
     }),
   );
@@ -87,11 +87,7 @@ export const updateParent: APIGatewayProxyHandlerV2 = gatewayMiddleware<{
   body: { pid: string };
   path: { id: string };
 }>(async ({ parseEvent, validate }) => {
-  const { id, pid } = validate(
-    () => z.object({ id: z.string().uuid(), pid: z.string().min(1) }),
-    parseEvent(),
-    "data invalid",
-  );
+  const { id, pid } = validate(() => z.object({ id: z.string().uuid(), pid: z.string().min(1) }), parseEvent(), "data invalid");
   await client.send(
     new UpdateCommand({
       TableName: Resource.categoryDB.name,
@@ -106,11 +102,7 @@ export const updateParent: APIGatewayProxyHandlerV2 = gatewayMiddleware<{
 export const del: APIGatewayProxyHandlerV2 = gatewayMiddleware<{
   path: { id: string };
 }>(async ({ parseEvent, validate, throwErrorIf }) => {
-  const { id } = validate(
-    () => z.object({ id: z.string().uuid() }),
-    parseEvent(),
-    "data invalid",
-  );
+  const { id } = validate(() => z.object({ id: z.string().uuid() }), parseEvent(), "data invalid");
   let LastEvaluatedKey: QueryCommandOutput["LastEvaluatedKey"];
   let Count = 0;
   do {
@@ -130,7 +122,5 @@ export const del: APIGatewayProxyHandlerV2 = gatewayMiddleware<{
     throwErrorIf(new BadRequestError(`${id} has ${Count} children`));
     return;
   }
-  await client.send(
-    new DeleteCommand({ TableName: Resource.categoryDB.name, Key: { id } }),
-  );
+  await client.send(new DeleteCommand({ TableName: Resource.categoryDB.name, Key: { id } }));
 });

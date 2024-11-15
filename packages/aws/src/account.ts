@@ -1,33 +1,13 @@
-import {
-  DeleteCommand,
-  DynamoDBDocumentClient,
-  PutCommand,
-  QueryCommand,
-  ScanCommand,
-  type ScanCommandOutput,
-  UpdateCommand,
-} from "@aws-sdk/lib-dynamodb";
+import { DeleteCommand, DynamoDBDocumentClient, PutCommand, QueryCommand, ScanCommand, type ScanCommandOutput, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import type { APIGatewayProxyHandlerV2 } from "aws-lambda";
-import { gatewayMiddleware } from "./lambda/APIGateway.ts";
+import { gatewayMiddleware } from "../lambda/APIGateway.ts";
 import { Resource } from "sst";
 import { v4 } from "uuid";
 import { z } from "zod";
+import { Account, type AccountItem } from "types";
 
 const client = DynamoDBDocumentClient.from(new DynamoDBClient({}));
-
-enum Account {
-  deposit = "deposit",
-  debt = "debt",
-}
-
-interface AccountItem {
-  id: string;
-  name: string;
-  value: number;
-  type: Account;
-}
-
 export const list: APIGatewayProxyHandlerV2 = gatewayMiddleware(async () => {
   const Items: AccountItem[] = [];
   let LastEvaluatedKey: ScanCommandOutput["LastEvaluatedKey"];
@@ -48,15 +28,8 @@ export const list: APIGatewayProxyHandlerV2 = gatewayMiddleware(async () => {
   return { Count, Items };
 });
 
-export const get: APIGatewayProxyHandlerV2 = gatewayMiddleware<
-  { path: { id: string } },
-  { Item: AccountItem | null }
->(async ({ validate, parseEvent }) => {
-  const { id } = validate(
-    () => z.object({ id: z.string().uuid() }),
-    parseEvent(),
-    "data invalid",
-  );
+export const get: APIGatewayProxyHandlerV2 = gatewayMiddleware<{ path: { id: string } }, { Item: AccountItem | null }>(async ({ validate, parseEvent }) => {
+  const { id } = validate(() => z.object({ id: z.string().uuid() }), parseEvent(), "data invalid");
   let Item: AccountItem | null = null;
   let LastEvaluatedKey: ScanCommandOutput["LastEvaluatedKey"];
   do {
@@ -74,15 +47,13 @@ export const get: APIGatewayProxyHandlerV2 = gatewayMiddleware<
   } while (LastEvaluatedKey);
   return { Item };
 });
-export const add: APIGatewayProxyHandlerV2 = gatewayMiddleware<{
-  body: Omit<AccountItem, "id">;
-}>(async ({ parseEvent, validate }) => {
+export const add: APIGatewayProxyHandlerV2 = gatewayMiddleware<{ body: Omit<AccountItem, "id"> }, AccountItem>(async ({ parseEvent, validate }) => {
   const { name, value, type } = validate(
     () =>
       z.object({
         name: z.string().min(1),
         value: z.number(),
-        type: z.enum([Account.debt, Account.deposit]),
+        type: z.enum([Account.DEBT, Account.DEPOSIT]),
       }),
     parseEvent(),
     "data invalid",
@@ -94,17 +65,14 @@ export const add: APIGatewayProxyHandlerV2 = gatewayMiddleware<{
       Item: { name, value, id, type },
     }),
   );
+  return { name, value, id, type };
 });
 
 export const updateName: APIGatewayProxyHandlerV2 = gatewayMiddleware<{
   body: { name: string };
   path: { id: string };
 }>(async ({ parseEvent, validate }) => {
-  const { name, id } = validate(
-    () => z.object({ name: z.string().min(1), id: z.string().uuid() }),
-    parseEvent(),
-    "data invalid",
-  );
+  const { name, id } = validate(() => z.object({ name: z.string().min(1), id: z.string().uuid() }), parseEvent(), "data invalid");
   await client.send(
     new UpdateCommand({
       TableName: Resource.accountDB.name,
@@ -120,11 +88,7 @@ export const updateValue: APIGatewayProxyHandlerV2 = gatewayMiddleware<{
   body: { value: number };
   path: { id: string };
 }>(async ({ parseEvent, validate }) => {
-  const { value, id } = validate(
-    () => z.object({ value: z.number(), id: z.string().uuid() }),
-    parseEvent(),
-    "data invalid",
-  );
+  const { value, id } = validate(() => z.object({ value: z.number(), id: z.string().uuid() }), parseEvent(), "data invalid");
   await client.send(
     new UpdateCommand({
       TableName: Resource.accountDB.name,
@@ -139,12 +103,6 @@ export const updateValue: APIGatewayProxyHandlerV2 = gatewayMiddleware<{
 export const del: APIGatewayProxyHandlerV2 = gatewayMiddleware<{
   path: { id: string };
 }>(async ({ parseEvent, validate }) => {
-  const { id } = validate(
-    () => z.object({ id: z.string().uuid() }),
-    parseEvent(),
-    "data invalid",
-  );
-  await client.send(
-    new DeleteCommand({ TableName: Resource.accountDB.name, Key: { id } }),
-  );
+  const { id } = validate(() => z.object({ id: z.string().uuid() }), parseEvent(), "data invalid");
+  await client.send(new DeleteCommand({ TableName: Resource.accountDB.name, Key: { id } }));
 });

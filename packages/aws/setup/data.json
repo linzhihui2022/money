@@ -1,0 +1,14 @@
+{
+  "users": [
+    {
+      "Email": "linzhihui2022+aws_test_1@outlook.com",
+      "Username": "aws_test_1",
+      "Password": "Welcome321!"
+    },
+    {
+      "Email": "linzhihui2022+aws_test_2@outlook.com",
+      "Username": "aws_test_2",
+      "Password": "Welcome321!"
+    }
+  ]
+}
