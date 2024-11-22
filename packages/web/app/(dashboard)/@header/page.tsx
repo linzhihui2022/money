@@ -39,7 +39,7 @@ export default async function Header(props: { searchParams: Promise<{ category: 
         <PopoverTrigger asChild>
           <Button variant={query.has("category") ? "secondary" : "ghost"} size="sm">
             Category
-            <ChevronDown className="size-5 ml-1" />
+            <ChevronDown className="size-4 ml-1" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="space-y-2">
@@ -50,7 +50,7 @@ export default async function Header(props: { searchParams: Promise<{ category: 
             <ScrollBar />
           </ScrollArea>
           <div className="flex justify-end">
-            <Button variant="default" size="sm">
+            <Button variant="default" asChild size="sm">
               <Link href="/category">Add</Link>
             </Button>
           </div>
@@ -60,7 +60,7 @@ export default async function Header(props: { searchParams: Promise<{ category: 
         <PopoverTrigger asChild>
           <Button variant={query.has("account") ? "secondary" : "ghost"} size="sm">
             Account
-            <ChevronDown className="size-5 ml-1" />
+            <ChevronDown className="size-4 ml-1" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="space-y-2">
@@ -71,7 +71,7 @@ export default async function Header(props: { searchParams: Promise<{ category: 
             <ScrollBar />
           </ScrollArea>
           <div className="flex justify-end">
-            <Button variant="default" size="sm">
+            <Button variant="default" asChild size="sm">
               <Link href="/account">Add</Link>
             </Button>
           </div>
