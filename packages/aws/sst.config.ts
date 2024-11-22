@@ -13,13 +13,9 @@ export default $config({
   async run() {
     const importBucket = new sst.aws.Bucket("importBucket");
     const billDB = new sst.aws.Dynamo("billDB", {
-      fields: { id: "string", date: "number", account: "string", category: "string", active: "number" },
+      fields: { id: "string", date: "number", active: "number" },
       primaryIndex: { hashKey: "id" },
-      globalIndexes: {
-        active: { hashKey: "active", rangeKey: "date" },
-        account: { hashKey: "account", rangeKey: "date" },
-        category: { hashKey: "category", rangeKey: "date" },
-      },
+      globalIndexes: { active: { hashKey: "active", rangeKey: "date" } },
       stream: "new-and-old-images",
       transform: { table: { pointInTimeRecovery: { enabled: false } } },
     });
@@ -29,16 +25,15 @@ export default $config({
       transform: { table: { pointInTimeRecovery: { enabled: false } } },
     });
     const categoryDB = new sst.aws.Dynamo("categoryDB", {
-      fields: { id: "string", pid: "string", value: "string" },
+      fields: { id: "string" },
       primaryIndex: { hashKey: "id" },
-      globalIndexes: { pid: { hashKey: "pid" }, value: { hashKey: "value" } },
       transform: { table: { pointInTimeRecovery: { enabled: false } } },
     });
     importBucket.subscribe(
       { handler: "src/bucket._import", link: [importBucket, accountDB, categoryDB, billDB] },
       { filterSuffix: ".import.csv", events: ["s3:ObjectCreated:*"] },
     );
-    billDB.subscribe("updateAccount", { handler: "src/bill.subscribe", link: [accountDB, billDB] });
+    billDB.subscribe("updateAccount", { handler: "src/bill.subscribe", link: [accountDB, billDB, categoryDB] });
 
     const userPool = new sst.aws.CognitoUserPool("MyUserPool", { mfa: "optional", triggers: { preSignUp: "src/cognito.triggers" } });
     const userPoolClient = userPool.addClient("Web", {
@@ -53,10 +48,10 @@ export default $config({
     const jwt = { auth: { jwt: { authorizer: auth.id } } };
 
     api.route("POST /user", { handler: "src/user.login", link: [userPoolClient] });
+    api.route("POST /user/refresh", { handler: "src/user.refresh", link: [userPoolClient] });
 
     api.route("GET /category", { handler: "src/category.list", link: [categoryDB] }, jwt);
     api.route("PUT /category/{id}/text", { handler: "src/category.updateText", link: [categoryDB] }, jwt);
-    api.route("PUT /category/{id}/parent", { handler: "src/category.updateParent", link: [categoryDB] }, jwt);
     api.route("DELETE /category/{id}", { handler: "src/category.del", link: [categoryDB] }, jwt);
     api.route("POST /category", { handler: "src/category.add", link: [categoryDB] }, jwt);
 

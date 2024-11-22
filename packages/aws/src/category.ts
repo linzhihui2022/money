@@ -13,9 +13,8 @@ import {
   UpdateCommand,
 } from "@aws-sdk/lib-dynamodb";
 import { BadRequestError } from "../lambda/exceptions.ts";
-import { v4 } from "uuid";
 import { z } from "zod";
-import { type CategoryItem } from "types";
+import { type CategoryItem, CategoryType, zid } from "types";
 
 const client = DynamoDBDocumentClient.from(new DynamoDBClient({}));
 
@@ -39,33 +38,35 @@ export const list: APIGatewayProxyHandlerV2 = gatewayMiddleware(async () => {
   return { Count, Items };
 });
 
-export const add: APIGatewayProxyHandlerV2 = gatewayMiddleware<
-  {
-    body: {
-      value: string;
-      pid?: string;
-    };
+export const add: APIGatewayProxyHandlerV2 = gatewayMiddleware<{ body: Omit<CategoryItem, ""> }, CategoryItem>(
+  async ({ parseEvent, validate, throwErrorIf }) => {
+    const { value, type, id } = validate(
+      () =>
+        z
+          .object({ value: z.string().min(1), id: zid(), type: z.enum([CategoryType.EXPENSES, CategoryType.INCOME]) })
+          .refine(({ id }) => id !== "root", { message: `id can't be "root"`, path: ["id"] }),
+      parseEvent(),
+      "data invalid",
+    );
+    let LastEvaluatedKey: QueryCommandOutput["LastEvaluatedKey"];
+    let Count = 0;
+    do {
+      const res = await client.send(
+        new QueryCommand({
+          TableName: Resource.categoryDB.name,
+          KeyConditionExpression: "id = :id",
+          ExpressionAttributeValues: { ":id": id },
+          ...(LastEvaluatedKey ? { ExclusiveStartKey: LastEvaluatedKey } : {}),
+        }),
+      );
+      Count += res.Count || 0;
+      if (Count > 0) throwErrorIf(new BadRequestError(`${id} already exists`));
+      LastEvaluatedKey = res.LastEvaluatedKey;
+    } while (LastEvaluatedKey);
+    await client.send(new PutCommand({ TableName: Resource.categoryDB.name, Item: { value, id, type } }));
+    return { value, id, type };
   },
-  CategoryItem
->(async ({ parseEvent, validate }) => {
-  const { pid, value } = validate(
-    () =>
-      z.object({
-        pid: z.string().optional().default(""),
-        value: z.string().min(1),
-      }),
-    parseEvent(),
-    "data invalid",
-  );
-  const id = v4();
-  await client.send(
-    new PutCommand({
-      TableName: Resource.categoryDB.name,
-      Item: { pid, value, id },
-    }),
-  );
-  return { pid, value, id };
-});
+);
 
 export const updateText: APIGatewayProxyHandlerV2 = gatewayMiddleware<{
   body: { value: string };
@@ -83,44 +84,9 @@ export const updateText: APIGatewayProxyHandlerV2 = gatewayMiddleware<{
   );
 });
 
-export const updateParent: APIGatewayProxyHandlerV2 = gatewayMiddleware<{
-  body: { pid: string };
-  path: { id: string };
-}>(async ({ parseEvent, validate }) => {
-  const { id, pid } = validate(() => z.object({ id: z.string().uuid(), pid: z.string().min(1) }), parseEvent(), "data invalid");
-  await client.send(
-    new UpdateCommand({
-      TableName: Resource.categoryDB.name,
-      Key: { id },
-      UpdateExpression: "SET #pid = :pid",
-      ExpressionAttributeValues: { ":pid": pid },
-      ExpressionAttributeNames: { "#pid": "pid" },
-    }),
-  );
-});
-
 export const del: APIGatewayProxyHandlerV2 = gatewayMiddleware<{
   path: { id: string };
-}>(async ({ parseEvent, validate, throwErrorIf }) => {
+}>(async ({ parseEvent, validate }) => {
   const { id } = validate(() => z.object({ id: z.string().uuid() }), parseEvent(), "data invalid");
-  let LastEvaluatedKey: QueryCommandOutput["LastEvaluatedKey"];
-  let Count = 0;
-  do {
-    const res = await client.send(
-      new QueryCommand({
-        TableName: Resource.categoryDB.name,
-        IndexName: "pid",
-        KeyConditionExpression: "pid = :pid",
-        ExpressionAttributeValues: { ":pid": id },
-        ...(LastEvaluatedKey ? { ExclusiveStartKey: LastEvaluatedKey } : {}),
-      }),
-    );
-    LastEvaluatedKey = res.LastEvaluatedKey;
-    Count += res.Count || 0;
-  } while (LastEvaluatedKey);
-  if (Count > 0) {
-    throwErrorIf(new BadRequestError(`${id} has ${Count} children`));
-    return;
-  }
   await client.send(new DeleteCommand({ TableName: Resource.categoryDB.name, Key: { id } }));
 });

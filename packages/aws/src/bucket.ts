@@ -5,8 +5,8 @@ import converter from "json-2-csv";
 import { BatchWriteCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import { Resource } from "sst";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { Account } from "types";
 import dayjs from "dayjs";
+import { CategoryType, zid } from "types";
 
 const dbClient = DynamoDBDocumentClient.from(new DynamoDBClient({}));
 export const _import: S3Handler = bucketMiddleware(async ({ readFile, parseEvent }) => {
@@ -21,8 +21,8 @@ export const _import: S3Handler = bucketMiddleware(async ({ readFile, parseEvent
           id: z.string().uuid(),
           desc: z.string().optional().default(""),
           value: z.number(),
-          account: z.string().uuid(),
-          category: z.string().uuid(),
+          account: zid(),
+          category: zid(),
           date: z.number().refine((v) => dayjs(v).isValid()),
           active: z.number().refine((v) => [0, 1].includes(v)),
         });
@@ -47,10 +47,9 @@ export const _import: S3Handler = bucketMiddleware(async ({ readFile, parseEvent
       }
       case "account": {
         const schema = z.object({
-          id: z.string().uuid(),
+          id: zid(),
           name: z.string().min(1),
           value: z.number(),
-          type: z.enum([Account.DEBT, Account.DEPOSIT]),
         });
         const items = converter
           .csv2json(csv.split("\n").filter(Boolean).join("\n"))
@@ -73,9 +72,9 @@ export const _import: S3Handler = bucketMiddleware(async ({ readFile, parseEvent
       }
       case "category": {
         const schema = z.object({
-          id: z.string().uuid(),
-          pid: z.string().optional().default("root"),
+          id: zid(),
           value: z.string().min(1),
+          type: z.enum([CategoryType.INCOME, CategoryType.EXPENSES]),
         });
         const items = converter
           .csv2json(csv.split("\n").filter(Boolean).join("\n"))

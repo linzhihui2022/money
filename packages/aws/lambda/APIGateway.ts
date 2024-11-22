@@ -1,11 +1,7 @@
 import { createLogger, LoggerProxy } from "./logger.ts";
 import { BadRequestError, type StandardisedError } from "./exceptions.ts";
 import { z, type ZodError } from "zod";
-import type {
-  APIGatewayProxyEventV2,
-  APIGatewayProxyHandlerV2,
-  Context,
-} from "aws-lambda";
+import type { APIGatewayProxyEventV2, APIGatewayProxyHandlerV2, Context } from "aws-lambda";
 import { createErrorResponse, responseOk } from "./response.ts";
 import type { EmptyObj } from "types";
 
@@ -20,11 +16,7 @@ export const Assert =
   };
 export const Validate =
   (logger: ReturnType<typeof LoggerProxy>) =>
-  <T extends z.Schema<unknown>>(
-    schema: () => T,
-    data: unknown,
-    message: string,
-  ) => {
+  <T extends z.Schema<unknown>>(schema: () => T, data: unknown, message: string) => {
     try {
       return schema().parse(data);
     } catch (error) {
@@ -34,14 +26,9 @@ export const Validate =
     }
   };
 
-export const FindHeader = (
-  headers: APIGatewayProxyEventV2["headers"],
-  logger: ReturnType<typeof LoggerProxy>,
-) => {
+export const FindHeader = (headers: APIGatewayProxyEventV2["headers"], logger: ReturnType<typeof LoggerProxy>) => {
   return (rawKey: string) => {
-    const header = Object.entries(headers).find(
-      ([k]) => k.toLowerCase() === rawKey.toLowerCase(),
-    );
+    const header = Object.entries(headers).find(([k]) => k.toLowerCase() === rawKey.toLowerCase());
     if (header) {
       const [key, value] = header;
       logger.debug({ rawKey, header: { key, value } });
@@ -51,11 +38,7 @@ export const FindHeader = (
     return;
   };
 };
-export const ParseEvent = <
-  Body = unknown,
-  Path = Record<string, string>,
-  Query = Record<string, string>,
->(
+export const ParseEvent = <Body = unknown, Path = Record<string, string>, Query = Record<string, string>>(
   event: APIGatewayProxyEventV2,
   logger: ReturnType<typeof LoggerProxy>,
 ) => {
@@ -110,24 +93,15 @@ export const gatewayMiddleware =
     Response = void,
   >(
     handler: (utils: {
-      assert: <Value, E = never>(
-        condition: Value,
-        error: StandardisedError<E>,
-      ) => NonNullable<Value>;
-      parseEvent: () => Partial<Data["body"]> &
-        Partial<Data["path"]> &
-        Partial<Data["query"]>;
+      assert: <Value, E = never>(condition: Value, error: StandardisedError<E>) => NonNullable<Value>;
+      parseEvent: () => Partial<Data["body"]> & Partial<Data["path"]> & Partial<Data["query"]>;
       logger: ReturnType<typeof createLogger>;
       throwErrorIf: (error?: Error) => void;
       headers: ReturnType<typeof ResponseHeaders>;
       event: APIGatewayProxyEventV2;
       context: Context;
       findHeader: ReturnType<typeof FindHeader>;
-      validate: <T extends z.Schema<unknown>>(
-        schema: () => T,
-        data: unknown,
-        message: string,
-      ) => z.infer<T>;
+      validate: <T extends z.Schema<unknown>>(schema: () => T, data: unknown, message: string) => z.infer<T>;
     }) => Promise<Response>,
   ): APIGatewayProxyHandlerV2 =>
   async (event, context) => {
@@ -157,11 +131,7 @@ export const gatewayMiddleware =
         return response;
       } catch (e) {
         const error = e as StandardisedError<unknown>;
-        const response = createErrorResponse(
-          error.statusCode || 400,
-          error.message,
-          error.details,
-        );
+        const response = createErrorResponse(error.statusCode || 400, error.message, error.details);
         loggerProxy.error({
           response,
           success: false,
@@ -170,8 +140,7 @@ export const gatewayMiddleware =
         return response;
       }
     } catch (error) {
-      const message =
-        (error as Error).message || "An unexpected error occurred";
+      const message = (error as Error).message || "An unexpected error occurred";
       createLogger().error(message);
       return createErrorResponse(500, message);
     }

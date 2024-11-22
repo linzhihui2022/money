@@ -1,11 +1,20 @@
-import { DeleteCommand, DynamoDBDocumentClient, PutCommand, QueryCommand, ScanCommand, type ScanCommandOutput, UpdateCommand } from "@aws-sdk/lib-dynamodb";
+import {
+  DeleteCommand,
+  DynamoDBDocumentClient,
+  PutCommand,
+  QueryCommand,
+  type QueryCommandOutput,
+  ScanCommand,
+  type ScanCommandOutput,
+  UpdateCommand,
+} from "@aws-sdk/lib-dynamodb";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import type { APIGatewayProxyHandlerV2 } from "aws-lambda";
 import { gatewayMiddleware } from "../lambda/APIGateway.ts";
 import { Resource } from "sst";
-import { v4 } from "uuid";
 import { z } from "zod";
-import { Account, type AccountItem } from "types";
+import { type AccountItem, zid } from "types";
+import { BadRequestError } from "../lambda/exceptions.ts";
 
 const client = DynamoDBDocumentClient.from(new DynamoDBClient({}));
 export const list: APIGatewayProxyHandlerV2 = gatewayMiddleware(async () => {
@@ -47,25 +56,25 @@ export const get: APIGatewayProxyHandlerV2 = gatewayMiddleware<{ path: { id: str
   } while (LastEvaluatedKey);
   return { Item };
 });
-export const add: APIGatewayProxyHandlerV2 = gatewayMiddleware<{ body: Omit<AccountItem, "id"> }, AccountItem>(async ({ parseEvent, validate }) => {
-  const { name, value, type } = validate(
-    () =>
-      z.object({
-        name: z.string().min(1),
-        value: z.number(),
-        type: z.enum([Account.DEBT, Account.DEPOSIT]),
+export const add: APIGatewayProxyHandlerV2 = gatewayMiddleware<{ body: Omit<AccountItem, ""> }, AccountItem>(async ({ parseEvent, validate, throwErrorIf }) => {
+  const { name, value, id } = validate(() => z.object({ name: z.string().min(1), value: z.number(), id: zid() }), parseEvent(), "data invalid");
+  let LastEvaluatedKey: QueryCommandOutput["LastEvaluatedKey"];
+  let Count = 0;
+  do {
+    const res = await client.send(
+      new QueryCommand({
+        TableName: Resource.accountDB.name,
+        KeyConditionExpression: "id = :id",
+        ExpressionAttributeValues: { ":id": id },
+        ...(LastEvaluatedKey ? { ExclusiveStartKey: LastEvaluatedKey } : {}),
       }),
-    parseEvent(),
-    "data invalid",
-  );
-  const id = v4();
-  await client.send(
-    new PutCommand({
-      TableName: Resource.accountDB.name,
-      Item: { name, value, id, type },
-    }),
-  );
-  return { name, value, id, type };
+    );
+    Count += res.Count || 0;
+    if (Count > 0) throwErrorIf(new BadRequestError(`${id} already exists`));
+    LastEvaluatedKey = res.LastEvaluatedKey;
+  } while (LastEvaluatedKey);
+  await client.send(new PutCommand({ TableName: Resource.accountDB.name, Item: { name, value, id } }));
+  return { name, value, id };
 });
 
 export const updateName: APIGatewayProxyHandlerV2 = gatewayMiddleware<{

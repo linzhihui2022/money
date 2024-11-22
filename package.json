@@ -21,7 +21,8 @@
     "eslint-import-resolver-typescript": "^3.6.3",
     "eslint-plugin-import": "^2.31.0",
     "prettier": "^3.3.3",
-    "turbo": "^2.2.3"
+    "turbo": "^2.2.3",
+    "zod": "^3.23.8"
   },
   "packageManager": "bun@1.1.20"
 }
