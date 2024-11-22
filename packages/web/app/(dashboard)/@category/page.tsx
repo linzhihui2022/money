@@ -7,6 +7,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
 import { isActive, queryToggle } from "@/lib/utils";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 function CheckboxGroup({ category, query }: { category: CategoryItem; query: URLSearchParams }) {
   return (
@@ -32,9 +33,12 @@ export default async function Categories(props: { searchParams: Promise<{ catego
         </Button>
       </PopoverTrigger>
       <PopoverContent>
-        {categories.map((i) => (
-          <CheckboxGroup key={i.id} category={i} query={query} />
-        ))}
+        <ScrollArea className="max-h-64">
+          {categories.map((i) => (
+            <CheckboxGroup key={i.id} category={i} query={query} />
+          ))}
+          <ScrollBar />
+        </ScrollArea>
       </PopoverContent>
     </Popover>
   );

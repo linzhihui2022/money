@@ -7,6 +7,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
 import { isActive, queryToggle } from "@/lib/utils";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 function AccountCheckbox({ account, query }: { account: AccountItem; query: URLSearchParams }) {
   return (
@@ -31,9 +32,12 @@ export default async function Accounts(props: { searchParams: Promise<{ account:
         </Button>
       </PopoverTrigger>
       <PopoverContent>
-        {accounts.map((account) => (
-          <AccountCheckbox key={account.id} account={account} query={query} />
-        ))}
+        <ScrollArea className="max-h-64">
+          {accounts.map((account) => (
+            <AccountCheckbox key={account.id} account={account} query={query} />
+          ))}
+          <ScrollBar />
+        </ScrollArea>
       </PopoverContent>
     </Popover>
   );
