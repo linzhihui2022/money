@@ -1,7 +1,7 @@
 "use client";
 import { SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
 import Link from "next/link";
-import { Receipt } from "lucide-react";
+import { Cat, CreditCard, Receipt } from "lucide-react";
 import React from "react";
 import { usePathname } from "next/navigation";
 
@@ -17,6 +17,18 @@ export default function Menu() {
               <Link href="/">
                 <Receipt />
                 <span>Bill</span>
+              </Link>
+            </SidebarMenuButton>
+            <SidebarMenuButton isActive={pathname === "/category"} asChild>
+              <Link href="/category">
+                <Cat />
+                <span>Category</span>
+              </Link>
+            </SidebarMenuButton>
+            <SidebarMenuButton isActive={pathname === "/account"} asChild>
+              <Link href="/account">
+                <CreditCard />
+                <span>Account</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
