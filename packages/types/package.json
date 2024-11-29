@@ -2,10 +2,21 @@
   "name": "types",
   "module": "index.ts",
   "type": "module",
+  "scripts": {
+    "lint": "eslint --fix ."
+  },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@eslint/js": "^9.15.0",
+    "@types/bun": "latest",
+    "eslint": "^9.15.0",
+    "globals": "^15.12.0",
+    "typescript-eslint": "^8.16.0"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1"
   }
 }

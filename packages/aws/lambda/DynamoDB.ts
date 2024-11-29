@@ -1,11 +1,18 @@
-import type { Context, DynamoDBRecord, DynamoDBStreamHandler } from "aws-lambda";
+import type {
+  Context,
+  DynamoDBRecord,
+  DynamoDBStreamHandler,
+} from "aws-lambda";
 import { DynamoRecordLoggerProxy } from "./logger.ts";
 import { DynamoEventError } from "./exceptions.ts";
 import { ThrowErrorIf } from "./APIGateway.ts";
 import { typedBoolean } from "types";
 
 const Assert =
-  (logger: ReturnType<typeof DynamoRecordLoggerProxy>, sequenceNumber?: string) =>
+  (
+    logger: ReturnType<typeof DynamoRecordLoggerProxy>,
+    sequenceNumber?: string,
+  ) =>
   <Value>(condition: Value, error: Error) => {
     if (!condition) {
       logger.error({ message: error.message });
@@ -67,6 +74,8 @@ export const dynamoMiddleware =
         .map((i) => i.sequenceNumber)
         .filter(typedBoolean)
         .map((itemIdentifier) => ({ itemIdentifier }));
-      callback(new Error(responseList.map((i) => i.message).join("; ")), { batchItemFailures });
+      callback(new Error(responseList.map((i) => i.message).join("; ")), {
+        batchItemFailures,
+      });
     }
   };

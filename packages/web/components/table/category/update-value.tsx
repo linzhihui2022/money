@@ -1,24 +1,31 @@
 "use client";
-import { AccountItem, updateAccountValueSchema } from "types";
-import { Button } from "@/components/ui/button";
+import { CategoryItem, updateCategoryTextSchema } from "types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormField,
+  InlineFormItem,
+  SubmitButton,
+} from "@/components/ui/form";
 import DrawerDialog from "@/components/ui/DrawerDialog";
 import { ComponentProps } from "react";
 import { updateValue } from "./action";
 import { redirect } from "next/navigation";
-import { Spinner } from "@/components/icons";
 import { Input } from "@/components/ui/input";
-import { Money } from "@/components/ui/format";
 
-function UpdateValueForm({ item, setOpen }: { item: AccountItem } & ComponentProps<ComponentProps<typeof DrawerDialog>["Body"]>) {
-  const form = useForm<Pick<AccountItem, "value" | "id">>({
-    resolver: zodResolver(updateAccountValueSchema()),
+function UpdateValueForm({
+  item,
+  setOpen,
+}: { item: CategoryItem } & ComponentProps<
+  ComponentProps<typeof DrawerDialog>["Body"]
+>) {
+  const form = useForm<Pick<CategoryItem, "value" | "id">>({
+    resolver: zodResolver(updateCategoryTextSchema()),
     defaultValues: item,
   });
 
-  async function onSubmit(data: Pick<AccountItem, "value" | "id">) {
+  async function onSubmit(data: Pick<CategoryItem, "value" | "id">) {
     const res = await updateValue(data);
     if (res?.at(0)) {
       form.setError("value", { message: res.at(1) });
@@ -27,7 +34,7 @@ function UpdateValueForm({ item, setOpen }: { item: AccountItem } & ComponentPro
     if (!res) {
       setOpen(false);
       form.reset();
-      redirect(`/account?edited=${data.id}`);
+      redirect(`/category?edited=${data.id}`);
     }
   }
   return (
@@ -37,28 +44,28 @@ function UpdateValueForm({ item, setOpen }: { item: AccountItem } & ComponentPro
           control={form.control}
           name="value"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Value</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-              <FormDescription>
-                <Money value={field.value} />
-              </FormDescription>
-            </FormItem>
+            <InlineFormItem label="Value">
+              <Input {...field} />
+            </InlineFormItem>
           )}
         />
-        <div className="pt-4">
-          <Button className="w-full relative" type="submit" disabled={!form.formState.isDirty || form.formState.isSubmitting}>
-            {form.formState.isSubmitting ? <Spinner /> : `Submit`}
-          </Button>
-        </div>
+        <SubmitButton />
       </form>
     </Form>
   );
 }
 
-export default function UpdateValue({ item, ...props }: Omit<ComponentProps<typeof DrawerDialog>, "Body"> & { item: AccountItem }) {
-  return <DrawerDialog {...props} Body={(props) => <UpdateValueForm item={item} {...props} />} />;
+export default function UpdateValue({
+  item,
+  trigger,
+}: Pick<ComponentProps<typeof DrawerDialog>, "trigger"> & {
+  item: CategoryItem;
+}) {
+  return (
+    <DrawerDialog
+      title={`Edit value of <${item.id}>`}
+      trigger={trigger}
+      Body={(props) => <UpdateValueForm item={item} {...props} />}
+    />
+  );
 }

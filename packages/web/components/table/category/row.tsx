@@ -1,15 +1,13 @@
 "use server";
 import { TableCell, TableRow } from "@/components/ui/table";
-import { Money } from "@/components/ui/format";
-import { AccountItem } from "types";
+import { CategoryItem } from "types";
 import * as React from "react";
-import UpdateName from "@/components/table/account/update-name";
-import { Edit } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import IdBadge from "@/components/table/id-badge";
-import UpdateValue from "@/components/table/account/update-value";
+import UpdateValue from "@/components/table/category/update-value";
+import CellButton from "@/components/table/cell-button";
+import Delete from "@/components/table/category/delete";
 
-export default async function Row({ item }: { item: AccountItem }) {
+export default async function Row({ item }: { item: CategoryItem }) {
   return (
     <TableRow key={item.id}>
       <TableCell>
@@ -17,30 +15,15 @@ export default async function Row({ item }: { item: AccountItem }) {
         <IdBadge id={item.id} />
       </TableCell>
       <TableCell>
-        <UpdateName
-          trigger={
-            <Button variant="link" className="group">
-              <span>{item.name}</span>
-              <Edit className="group-hover:opacity-100 opacity-0" />
-            </Button>
-          }
-          title={`Edit name of <${item.name}>`}
-          item={item}
-        />
-      </TableCell>
-      <TableCell>
         <UpdateValue
-          title={`Edit value of <${item.name}>`}
+          trigger={<CellButton>{item.value}</CellButton>}
           item={item}
-          trigger={
-            <Button variant="link" className="group">
-              <Money value={item.value} />
-              <Edit className="group-hover:opacity-100 opacity-0" />
-            </Button>
-          }
         />
       </TableCell>
-      <TableCell></TableCell>
+      <TableCell>{item.type}</TableCell>
+      <TableCell>
+        <Delete item={item} />
+      </TableCell>
     </TableRow>
   );
 }

@@ -1,4 +1,7 @@
-import type { APIGatewayProxyHandlerV2, DynamoDBStreamHandler } from "aws-lambda";
+import type {
+  APIGatewayProxyHandlerV2,
+  DynamoDBStreamHandler,
+} from "aws-lambda";
 import { gatewayMiddleware } from "../lambda/APIGateway.ts";
 import { z } from "zod";
 import { v4 } from "uuid";
@@ -12,7 +15,27 @@ import {
   UpdateCommand,
 } from "@aws-sdk/lib-dynamodb";
 import { Resource } from "sst";
-import { type AccountItem, type BillItem, type CategoryItem, CategoryType, type DbItem, type ISO, typedBoolean, type UUID, type UUIDArray, zid } from "types";
+import {
+  type AccountItem,
+  BillActive,
+  type BillItem,
+  type CategoryItem,
+  CategoryType,
+  type DbItem,
+  deleteBillSchema,
+  getBillSchema,
+  type IDArray,
+  type ISO,
+  newBillSchema,
+  typedBoolean,
+  updateBillAccountSchema,
+  updateBillCategorySchema,
+  updateBillDateSchema,
+  updateBillDescSchema,
+  updateBillValueSchema,
+  type UUID,
+  zid,
+} from "types";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import dayjs from "dayjs";
 import { dynamoMiddleware } from "../lambda/DynamoDB.ts";
@@ -20,47 +43,22 @@ import { dynamoMiddleware } from "../lambda/DynamoDB.ts";
 const client = DynamoDBDocumentClient.from(new DynamoDBClient({}));
 
 export const add: APIGatewayProxyHandlerV2 = gatewayMiddleware<
-  {
-    body: Omit<BillItem, "id" | "active">;
-  },
+  { body: Omit<BillItem, "id" | "active"> },
   Omit<BillItem, "date"> | { date: number }
->(async ({ parseEvent, validate }) => {
-  const { desc, value, account, category, date } = validate(
-    () =>
-      z.object({
-        desc: z.string().optional().default(""),
-        value: z.number(),
-        account: z.string().uuid(),
-        category: z.string().uuid(),
-        date: z.coerce.date(),
-      }),
-    parseEvent(),
-    "data invalid",
-  );
+>(async ({ validate }) => {
+  const { desc, value, account, category, date } = validate(newBillSchema);
   const id = v4();
-  await client.send(
-    new PutCommand({
-      TableName: Resource.billDB.name,
-      Item: {
-        id,
-        desc,
-        value,
-        account,
-        category,
-        date: dayjs(date).valueOf(),
-        active: 1,
-      },
-    }),
-  );
-  return {
+  const Item = {
     id,
     desc,
     value,
     account,
     category,
     date: dayjs(date).valueOf(),
-    active: 1,
+    active: BillActive.ACTIVE,
   };
+  await client.send(new PutCommand({ TableName: Resource.billDB.name, Item }));
+  return Item;
 });
 
 export const list: APIGatewayProxyHandlerV2 = gatewayMiddleware<
@@ -68,8 +66,8 @@ export const list: APIGatewayProxyHandlerV2 = gatewayMiddleware<
     query: {
       limit?: number;
       lastEvaluatedKey?: QueryCommandOutput["LastEvaluatedKey"];
-      account?: UUIDArray;
-      category?: UUIDArray;
+      account?: IDArray;
+      category?: IDArray;
       from?: ISO;
       to?: ISO;
     };
@@ -78,12 +76,14 @@ export const list: APIGatewayProxyHandlerV2 = gatewayMiddleware<
     Items: BillItem[];
     LastEvaluatedKey: QueryCommandOutput["LastEvaluatedKey"];
   }
->(async ({ parseEvent, validate }) => {
+>(async ({ validate }) => {
   const { lastEvaluatedKey, limit, account, from, to, category } = validate(
     () =>
       z.object({
         limit: z.coerce.number().optional().default(20),
-        lastEvaluatedKey: z.ostring().transform((v) => (v ? JSON.parse(v) : undefined)),
+        lastEvaluatedKey: z
+          .ostring()
+          .transform((v) => (v ? JSON.parse(v) : undefined)),
         account: z.ostring().refine((i) => {
           if (!i) return true;
           return z.array(zid()).safeParse(i.split(",")).success;
@@ -103,20 +103,20 @@ export const list: APIGatewayProxyHandlerV2 = gatewayMiddleware<
           .default(new Date())
           .transform((v) => v.getTime()),
       }),
-    parseEvent(),
-    "Query error",
   );
   const transform = (filter: string | undefined, field: string) => {
     if (!filter) return;
-    const { expression, value } = filter.split(",").reduce<{ expression: string[]; value: Record<string, string> }>(
-      (pre, cur, i) => {
-        const key = `:${field}${i}`;
-        pre.expression.push(key);
-        pre.value[key] = cur;
-        return pre;
-      },
-      { expression: [], value: {} },
-    );
+    const { expression, value } = filter
+      .split(",")
+      .reduce<{ expression: string[]; value: Record<string, string> }>(
+        (pre, cur, i) => {
+          const key = `:${field}${i}`;
+          pre.expression.push(key);
+          pre.value[key] = cur;
+          return pre;
+        },
+        { expression: [], value: {} },
+      );
     if (expression.length)
       return {
         FilterExpression: `#${field} IN (${expression.join(",")})`,
@@ -130,11 +130,14 @@ export const list: APIGatewayProxyHandlerV2 = gatewayMiddleware<
     TableName: Resource.billDB.name,
     IndexName: "active",
     KeyConditionExpression: `#active = :active and #date between :from and :to`,
-    FilterExpression: [categoryFilter?.FilterExpression, accountFilter?.FilterExpression].filter(typedBoolean).join(" AND ") || undefined,
+    FilterExpression:
+      [categoryFilter?.FilterExpression, accountFilter?.FilterExpression]
+        .filter(typedBoolean)
+        .join(" AND ") || undefined,
     ExpressionAttributeValues: {
       ":from": from,
       ":to": to,
-      ":active": 1,
+      ":active": BillActive.ACTIVE,
       ...categoryFilter?.ExpressionAttributeValues,
       ...accountFilter?.ExpressionAttributeValues,
     },
@@ -154,8 +157,11 @@ export const list: APIGatewayProxyHandlerV2 = gatewayMiddleware<
   }));
 });
 
-export const get: APIGatewayProxyHandlerV2 = gatewayMiddleware<{ path: { id: string } }, { Item: BillItem | null }>(async ({ validate, parseEvent }) => {
-  const { id } = validate(() => z.object({ id: z.string().uuid() }), parseEvent(), "data invalid");
+export const get: APIGatewayProxyHandlerV2 = gatewayMiddleware<
+  { path: Pick<BillItem, "id"> },
+  { Item: BillItem | null }
+>(async ({ validate }) => {
+  const { id } = validate(getBillSchema);
   let Item: BillItem | null = null;
   let LastEvaluatedKey: ScanCommandOutput["LastEvaluatedKey"];
   do {
@@ -184,61 +190,58 @@ const update = <T>(id: string, key: string, value: T) =>
     }),
   );
 export const updateDesc: APIGatewayProxyHandlerV2 = gatewayMiddleware<{
-  body: { desc: string };
-  path: { id: string };
-}>(async ({ parseEvent, validate }) => {
-  const { desc, id } = validate(() => z.object({ desc: z.string().default(""), id: z.string().uuid() }), parseEvent(), "data invalid");
+  body: Pick<BillItem, "desc">;
+  path: Pick<BillItem, "id">;
+}>(async ({ validate }) => {
+  const { desc, id } = validate(updateBillDescSchema);
   await update(id, "desc", desc);
 });
 
 export const updateValue: APIGatewayProxyHandlerV2 = gatewayMiddleware<{
-  body: { value: number };
-  path: { id: string };
-}>(async ({ parseEvent, validate }) => {
-  const { value, id } = validate(() => z.object({ value: z.number(), id: z.string().uuid() }), parseEvent(), "data invalid");
+  body: Pick<BillItem, "value">;
+  path: Pick<BillItem, "id">;
+}>(async ({ validate }) => {
+  const { value, id } = validate(updateBillValueSchema);
   await update(id, "value", value);
 });
 
 export const updateAccount: APIGatewayProxyHandlerV2 = gatewayMiddleware<{
-  body: { account: string };
-  path: { id: string };
-}>(async ({ parseEvent, validate }) => {
-  const { account, id } = validate(() => z.object({ account: zid(), id: z.string().uuid() }), parseEvent(), "data invalid");
+  body: Pick<BillItem, "account">;
+  path: Pick<BillItem, "id">;
+}>(async ({ validate }) => {
+  const { account, id } = validate(updateBillAccountSchema);
   await update(id, "account", account);
 });
 
 export const updateCategory: APIGatewayProxyHandlerV2 = gatewayMiddleware<{
-  body: { category: string };
-  path: { id: string };
-}>(async ({ parseEvent, validate }) => {
-  const { category, id } = validate(() => z.object({ category: zid(), id: z.string().uuid() }), parseEvent(), "data invalid");
+  body: Pick<BillItem, "category">;
+  path: Pick<BillItem, "id">;
+}>(async ({ validate }) => {
+  const { category, id } = validate(updateBillCategorySchema);
   await update(id, "category", category);
 });
 
 export const updateDate: APIGatewayProxyHandlerV2 = gatewayMiddleware<{
-  body: { date: ISO };
-  path: { id: string };
-}>(async ({ parseEvent, validate }) => {
-  const { date, id } = validate(() => z.object({ date: z.coerce.date(), id: z.string().uuid() }), parseEvent(), "data invalid");
-  await update(id, "date", date.getTime());
-});
-
-export const updateActive: APIGatewayProxyHandlerV2 = gatewayMiddleware<{
-  body: { active: boolean };
-  path: { id: string };
-}>(async ({ parseEvent, validate }) => {
-  const { active, id } = validate(() => z.object({ active: z.boolean(), id: z.string().uuid() }), parseEvent(), "data invalid");
-  await update(id, "active", +active);
+  body: Pick<BillItem, "date">;
+  path: Pick<BillItem, "id">;
+}>(async ({ validate }) => {
+  const { date, id } = validate(updateBillDateSchema);
+  await update(id, "date", date);
 });
 
 export const del: APIGatewayProxyHandlerV2 = gatewayMiddleware<{
-  path: { id: string };
-}>(async ({ parseEvent, validate }) => {
-  const { id } = validate(() => z.object({ id: z.string().uuid() }), parseEvent(), "data invalid");
-  await client.send(new DeleteCommand({ TableName: Resource.billDB.name, Key: { id } }));
+  path: Pick<BillItem, "id">;
+}>(async ({ validate }) => {
+  const { id } = validate(deleteBillSchema);
+  await client.send(
+    new DeleteCommand({ TableName: Resource.billDB.name, Key: { id } }),
+  );
 });
 
-export const subscribe: DynamoDBStreamHandler = dynamoMiddleware<DbItem<BillItem>, DbItem<BillItem>>(async ({ parseRecord }) => {
+export const subscribe: DynamoDBStreamHandler = dynamoMiddleware<
+  DbItem<BillItem>,
+  DbItem<BillItem>
+>(async ({ parseRecord }) => {
   const { newImage, oldImage, action } = parseRecord();
   async function getAccount(accountId: UUID) {
     let Item: AccountItem | null = null;
@@ -284,7 +287,7 @@ export const subscribe: DynamoDBStreamHandler = dynamoMiddleware<DbItem<BillItem
     const accountId = item?.account?.S;
     const categoryId = item?.category?.S;
     const value = +(item?.value.N || "");
-    const active = item?.active?.N === "1";
+    const active = item?.active?.S === BillActive.ACTIVE;
     if (!accountId) return;
     if (!categoryId) return;
     if (!active) return;
@@ -299,7 +302,9 @@ export const subscribe: DynamoDBStreamHandler = dynamoMiddleware<DbItem<BillItem
         TableName: Resource.accountDB.name,
         Key: { id: accountId },
         UpdateExpression: "SET #value = :value",
-        ExpressionAttributeValues: { ":value": account.value + value * type * categoryType },
+        ExpressionAttributeValues: {
+          ":value": account.value + value * type * categoryType,
+        },
         ExpressionAttributeNames: { "#value": "value" },
       }),
     );

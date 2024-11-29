@@ -2,12 +2,18 @@
   "name": "money",
   "private": true,
   "devDependencies": {
+    "@eslint/js": "^9.15.0",
     "@types/bun": "latest",
-    "@typescript-eslint/eslint-plugin": "^8.13.0"
+    "@typescript-eslint/eslint-plugin": "^8.13.0",
+    "eslint-plugin-react": "^7.37.2",
+    "globals": "^15.12.0",
+    "typescript-eslint": "^8.16.0"
   },
   "scripts": {
     "dev": "turbo watch dev",
-    "dev:aws": "turbo watch dev --filter packages/aws"
+    "dev:aws": "turbo watch dev --filter aws",
+    "dev:web": "turbo watch dev --filter web",
+    "lint": "turbo run lint"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
@@ -17,9 +23,11 @@
   ],
   "dependencies": {
     "@typescript-eslint/typescript-estree": "^8.13.0",
-    "eslint": "^9.14.0",
+    "eslint": "^9.15.0",
+    "eslint-config-prettier": "^9.1.0",
     "eslint-import-resolver-typescript": "^3.6.3",
     "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-prettier": "^5.2.1",
     "prettier": "^3.3.3",
     "turbo": "^2.2.3",
     "zod": "^3.23.8"

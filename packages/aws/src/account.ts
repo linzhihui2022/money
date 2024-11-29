@@ -12,8 +12,15 @@ import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import type { APIGatewayProxyHandlerV2 } from "aws-lambda";
 import { gatewayMiddleware } from "../lambda/APIGateway.ts";
 import { Resource } from "sst";
-import { z } from "zod";
-import { type AccountItem, zid } from "types";
+import {
+  ACCOUNT,
+  type AccountItem,
+  deleteAccountSchema,
+  getAccountSchema,
+  newAccountSchema,
+  updateAccountNameSchema,
+  updateAccountValueSchema,
+} from "types";
 import { BadRequestError } from "../lambda/exceptions.ts";
 
 const client = DynamoDBDocumentClient.from(new DynamoDBClient({}));
@@ -37,8 +44,11 @@ export const list: APIGatewayProxyHandlerV2 = gatewayMiddleware(async () => {
   return { Count, Items };
 });
 
-export const get: APIGatewayProxyHandlerV2 = gatewayMiddleware<{ path: { id: string } }, { Item: AccountItem | null }>(async ({ validate, parseEvent }) => {
-  const { id } = validate(() => z.object({ id: z.string().uuid() }), parseEvent(), "data invalid");
+export const get: APIGatewayProxyHandlerV2 = gatewayMiddleware<
+  { path: Pick<AccountItem, "id"> },
+  { Item: AccountItem | null }
+>(async ({ validate }) => {
+  const { id } = validate(getAccountSchema);
   let Item: AccountItem | null = null;
   let LastEvaluatedKey: ScanCommandOutput["LastEvaluatedKey"];
   do {
@@ -56,8 +66,11 @@ export const get: APIGatewayProxyHandlerV2 = gatewayMiddleware<{ path: { id: str
   } while (LastEvaluatedKey);
   return { Item };
 });
-export const add: APIGatewayProxyHandlerV2 = gatewayMiddleware<{ body: Omit<AccountItem, ""> }, AccountItem>(async ({ parseEvent, validate, throwErrorIf }) => {
-  const { name, value, id } = validate(() => z.object({ name: z.string().min(1), value: z.number(), id: zid() }), parseEvent(), "data invalid");
+export const add: APIGatewayProxyHandlerV2 = gatewayMiddleware<
+  { body: AccountItem },
+  AccountItem
+>(async ({ validate, throwErrorIf }) => {
+  const { name, value, id } = validate(newAccountSchema);
   let LastEvaluatedKey: QueryCommandOutput["LastEvaluatedKey"];
   let Count = 0;
   do {
@@ -70,18 +83,26 @@ export const add: APIGatewayProxyHandlerV2 = gatewayMiddleware<{ body: Omit<Acco
       }),
     );
     Count += res.Count || 0;
-    if (Count > 0) throwErrorIf(new BadRequestError(`${id} already exists`));
+    if (Count > 0)
+      throwErrorIf(
+        new BadRequestError(`${id} already exists`, ACCOUNT.ALREADY_EXISTS),
+      );
     LastEvaluatedKey = res.LastEvaluatedKey;
   } while (LastEvaluatedKey);
-  await client.send(new PutCommand({ TableName: Resource.accountDB.name, Item: { name, value, id } }));
+  await client.send(
+    new PutCommand({
+      TableName: Resource.accountDB.name,
+      Item: { name, value, id },
+    }),
+  );
   return { name, value, id };
 });
 
 export const updateName: APIGatewayProxyHandlerV2 = gatewayMiddleware<{
-  body: { name: string };
-  path: { id: string };
-}>(async ({ parseEvent, validate }) => {
-  const { name, id } = validate(() => z.object({ name: z.string().min(1), id: z.string().uuid() }), parseEvent(), "data invalid");
+  body: Pick<AccountItem, "name">;
+  path: Pick<AccountItem, "id">;
+}>(async ({ validate }) => {
+  const { name, id } = validate(updateAccountNameSchema);
   await client.send(
     new UpdateCommand({
       TableName: Resource.accountDB.name,
@@ -94,10 +115,10 @@ export const updateName: APIGatewayProxyHandlerV2 = gatewayMiddleware<{
 });
 
 export const updateValue: APIGatewayProxyHandlerV2 = gatewayMiddleware<{
-  body: { value: number };
-  path: { id: string };
-}>(async ({ parseEvent, validate }) => {
-  const { value, id } = validate(() => z.object({ value: z.number(), id: z.string().uuid() }), parseEvent(), "data invalid");
+  body: Pick<AccountItem, "value">;
+  path: Pick<AccountItem, "id">;
+}>(async ({ validate }) => {
+  const { value, id } = validate(updateAccountValueSchema);
   await client.send(
     new UpdateCommand({
       TableName: Resource.accountDB.name,
@@ -110,8 +131,10 @@ export const updateValue: APIGatewayProxyHandlerV2 = gatewayMiddleware<{
 });
 
 export const del: APIGatewayProxyHandlerV2 = gatewayMiddleware<{
-  path: { id: string };
-}>(async ({ parseEvent, validate }) => {
-  const { id } = validate(() => z.object({ id: z.string().uuid() }), parseEvent(), "data invalid");
-  await client.send(new DeleteCommand({ TableName: Resource.accountDB.name, Key: { id } }));
+  path: Pick<AccountItem, "id">;
+}>(async ({ validate }) => {
+  const { id } = validate(deleteAccountSchema);
+  await client.send(
+    new DeleteCommand({ TableName: Resource.accountDB.name, Key: { id } }),
+  );
 });

@@ -1,14 +1,19 @@
+import { ReactNode } from "react";
 import "./globals.css";
+import { Toaster } from "@/components/ui/toaster";
 
 export const metadata = {
-  title: "Next.js App Router + NextAuth + Tailwind CSS",
-  description: "A user admin dashboard configured with Next.js, Postgres, NextAuth, Tailwind CSS, TypeScript, and Prettier.",
+  title: "Money",
+  description: "Money,Money,Money",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body className="flex min-h-screen w-full flex-col">{children}</body>
+      <body className="flex min-h-screen w-full flex-col">
+        {children}
+        <Toaster />
+      </body>
     </html>
   );
 }

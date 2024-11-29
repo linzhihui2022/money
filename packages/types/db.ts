@@ -1,31 +1,18 @@
-import type { EmptyObj, ISO } from "./index.ts";
+import {
+  billSchema,
+  type EmptyObj,
+  type ISO,
+  newAccountSchema,
+  newCategorySchema,
+} from "./index.ts";
+import { z } from "zod";
 
-export enum CategoryType {
-  INCOME = "INCOME",
-  EXPENSES = "EXPENSES",
-}
-
-export interface CategoryItem {
-  id: string;
-  value: string;
-  type: CategoryType;
-}
-
-export interface AccountItem {
-  id: string;
-  name: string;
-  value: number;
-}
-
-export interface BillItem {
-  id: string;
-  desc: string;
-  value: number;
-  account: string;
-  category: string;
+export type CategoryItem = z.infer<ReturnType<typeof newCategorySchema>>;
+export type AccountItem = z.infer<ReturnType<typeof newAccountSchema>>;
+export type BillItem = Omit<z.infer<ReturnType<typeof billSchema>>, "date"> & {
   date: ISO;
-  active: 0 | 1;
-}
+};
+
 type DbValue<T> = T extends number
   ? { N: string }
   : T extends string

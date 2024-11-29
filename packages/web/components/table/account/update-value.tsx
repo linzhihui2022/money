@@ -1,26 +1,34 @@
 "use client";
-import { AccountItem, updateAccountNameSchema } from "types";
-import { Button } from "@/components/ui/button";
+import { AccountItem, updateAccountValueSchema } from "types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import {
+  Form,
+  FormField,
+  InlineFormItem,
+  SubmitButton,
+} from "@/components/ui/form";
 import DrawerDialog from "@/components/ui/DrawerDialog";
 import { ComponentProps } from "react";
-import { updateName } from "./action";
+import { updateValue } from "./action";
 import { redirect } from "next/navigation";
-import { Spinner } from "@/components/icons";
+import { MoneyInput } from "@/components/ui/input";
 
-function UpdateNameForm({ item, setOpen }: { item: AccountItem } & ComponentProps<ComponentProps<typeof DrawerDialog>["Body"]>) {
-  const form = useForm<Pick<AccountItem, "name" | "id">>({
-    resolver: zodResolver(updateAccountNameSchema()),
+function UpdateValueForm({
+  item,
+  setOpen,
+}: { item: AccountItem } & ComponentProps<
+  ComponentProps<typeof DrawerDialog>["Body"]
+>) {
+  const form = useForm<Pick<AccountItem, "value" | "id">>({
+    resolver: zodResolver(updateAccountValueSchema()),
     defaultValues: item,
   });
 
-  async function onSubmit(data: Pick<AccountItem, "name" | "id">) {
-    const res = await updateName(data);
+  async function onSubmit(data: Pick<AccountItem, "value" | "id">) {
+    const res = await updateValue(data);
     if (res?.at(0)) {
-      form.setError("id", { message: res.at(1) });
+      form.setError("value", { message: res.at(1) });
       return;
     }
     if (!res) {
@@ -31,30 +39,34 @@ function UpdateNameForm({ item, setOpen }: { item: AccountItem } & ComponentProp
   }
   return (
     <Form {...form}>
-      <form className="space-y-3 p-4 md:p-0" onSubmit={form.handleSubmit(onSubmit)}>
+      <form className="space-y-3" onSubmit={form.handleSubmit(onSubmit)}>
         <FormField
           control={form.control}
-          name="name"
+          name="value"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Name</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
+            <InlineFormItem label="Value">
+              <MoneyInput {...field} />
+            </InlineFormItem>
           )}
         />
-        <div className="pt-4">
-          <Button className="w-full relative" type="submit" disabled={!form.formState.isDirty || form.formState.isSubmitting}>
-            {form.formState.isSubmitting ? <Spinner /> : `Submit`}
-          </Button>
-        </div>
+
+        <SubmitButton />
       </form>
     </Form>
   );
 }
 
-export default function UpdateName({ item, ...props }: Omit<ComponentProps<typeof DrawerDialog>, "Body"> & { item: AccountItem }) {
-  return <DrawerDialog {...props} Body={(props) => <UpdateNameForm item={item} {...props} />} />;
+export default function UpdateValue({
+  item,
+  trigger,
+}: Pick<ComponentProps<typeof DrawerDialog>, "trigger"> & {
+  item: AccountItem;
+}) {
+  return (
+    <DrawerDialog
+      title={`Edit value of <${item.name}>`}
+      trigger={trigger}
+      Body={(props) => <UpdateValueForm item={item} {...props} />}
+    />
+  );
 }

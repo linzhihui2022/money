@@ -1,12 +1,18 @@
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Money } from "@/components/ui/format";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { MoreHorizontal } from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { AccountItem } from "types";
+import Row from "./row";
 
-export default function AccountTable({ accounts, newItem }: { accounts: AccountItem[]; newItem: string | undefined }) {
+export default function AccountTable({
+  accounts,
+}: {
+  accounts: AccountItem[];
+}) {
   return (
     <Table>
       <TableHeader>
@@ -18,39 +24,9 @@ export default function AccountTable({ accounts, newItem }: { accounts: AccountI
         </TableRow>
       </TableHeader>
       <TableBody>
-        {accounts
-          .sort((i) => (i.id === newItem ? -1 : 1))
-          .map((i) => (
-            <TableRow key={i.id}>
-              <TableCell>
-                {i.id}
-                {i.id === newItem && (
-                  <Badge variant="default" className="ml-2">
-                    new
-                  </Badge>
-                )}
-              </TableCell>
-              <TableCell>{i.name}</TableCell>
-              <TableCell>
-                <Money value={i.value} />
-              </TableCell>
-              <TableCell>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                      <span className="sr-only">Open menu</span>
-                      <MoreHorizontal className="size-3.5" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                    <DropdownMenuItem>Update value</DropdownMenuItem>
-                    <DropdownMenuItem>Update name</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </TableCell>
-            </TableRow>
-          ))}
+        {accounts.map((i) => (
+          <Row item={i} key={i.id} />
+        ))}
       </TableBody>
     </Table>
   );

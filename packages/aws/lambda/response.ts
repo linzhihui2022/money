@@ -1,12 +1,5 @@
 import { type StandardisedError } from "./exceptions";
-
-export interface ErrorBody<T = unknown> {
-  error: {
-    message: string;
-    statusCode: number;
-    details: T;
-  };
-}
+import { type AwsResponse, COMMON, type ErrorBody } from "types";
 
 const createResponse = <T>(
   statusCode: number,
@@ -32,17 +25,21 @@ export function responseOk<T>(
   body: T,
   headers: { [key: string]: string } = {},
 ) {
+  if (!body) {
+    return createResponse<T>(204, body, headers);
+  }
   return createResponse<T>(200, body, headers);
 }
 
-export function createErrorResponse<T>(
-  statusCode: number,
-  message: string,
-  details?: T,
+export function createErrorResponse(
+  error: StandardisedError,
   headers: { [key: string]: string } = {},
 ) {
-  const body: ErrorBody = { error: { message, statusCode, details } };
-  return createResponse(statusCode, JSON.stringify(body), headers);
+  const body: ErrorBody = {
+    message: error.message,
+    code: error.code || COMMON.UNEXPECTED,
+  };
+  return createResponse(error.statusCode, body, headers);
 }
 
 export const ResponseHeaders = () => {
@@ -54,18 +51,15 @@ export const ResponseHeaders = () => {
   };
 };
 
-export type ServiceResponse<Data, E = unknown> = [null, Data] | [E, null];
-export type Resp<T> = Promise<ServiceResponse<T>>;
-
 export const errorHandle = async <E extends Error, T>(
   fn: () => Promise<T>,
-  standardisedError: (error: E) => StandardisedError<E>,
-): Promise<ServiceResponse<T, StandardisedError<E>>> => {
+  standardisedError: (error: E) => StandardisedError,
+): Promise<AwsResponse<T, StandardisedError>> => {
   try {
     const res = await fn();
-    return [null, res];
+    return ["OK", res];
   } catch (_error) {
     const error = _error as E;
-    return [standardisedError(error), null];
+    return ["fail", standardisedError(error)];
   }
 };

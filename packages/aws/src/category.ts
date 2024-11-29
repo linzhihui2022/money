@@ -13,8 +13,14 @@ import {
   UpdateCommand,
 } from "@aws-sdk/lib-dynamodb";
 import { BadRequestError } from "../lambda/exceptions.ts";
-import { z } from "zod";
-import { type CategoryItem, CategoryType, zid } from "types";
+import {
+  type CategoryItem,
+  deleteCategorySchema,
+  getCategorySchema,
+  newCategorySchema,
+  updateCategoryTextSchema,
+} from "types";
+import { CATEGORY } from "types/code.ts";
 
 const client = DynamoDBDocumentClient.from(new DynamoDBClient({}));
 
@@ -38,41 +44,66 @@ export const list: APIGatewayProxyHandlerV2 = gatewayMiddleware(async () => {
   return { Count, Items };
 });
 
-export const add: APIGatewayProxyHandlerV2 = gatewayMiddleware<{ body: Omit<CategoryItem, ""> }, CategoryItem>(
-  async ({ parseEvent, validate, throwErrorIf }) => {
-    const { value, type, id } = validate(
-      () =>
-        z
-          .object({ value: z.string().min(1), id: zid(), type: z.enum([CategoryType.EXPENSES, CategoryType.INCOME]) })
-          .refine(({ id }) => id !== "root", { message: `id can't be "root"`, path: ["id"] }),
-      parseEvent(),
-      "data invalid",
+export const get: APIGatewayProxyHandlerV2 = gatewayMiddleware<
+  { path: Pick<CategoryItem, "id"> },
+  { Item: CategoryItem | null }
+>(async ({ validate }) => {
+  const { id } = validate(getCategorySchema);
+  let Item: CategoryItem | null = null;
+  let LastEvaluatedKey: ScanCommandOutput["LastEvaluatedKey"];
+  do {
+    const res = await client.send(
+      new QueryCommand({
+        TableName: Resource.categoryDB.name,
+        KeyConditionExpression: "id = :id",
+        ExpressionAttributeValues: { ":id": id },
+        ...(LastEvaluatedKey ? { ExclusiveStartKey: LastEvaluatedKey } : {}),
+      }),
     );
-    let LastEvaluatedKey: QueryCommandOutput["LastEvaluatedKey"];
-    let Count = 0;
-    do {
-      const res = await client.send(
-        new QueryCommand({
-          TableName: Resource.categoryDB.name,
-          KeyConditionExpression: "id = :id",
-          ExpressionAttributeValues: { ":id": id },
-          ...(LastEvaluatedKey ? { ExclusiveStartKey: LastEvaluatedKey } : {}),
-        }),
+    Item = (res.Items?.at(0) as CategoryItem) || null;
+    if (Item) return { Item };
+    LastEvaluatedKey = res.LastEvaluatedKey;
+  } while (LastEvaluatedKey);
+  return { Item };
+});
+
+export const add: APIGatewayProxyHandlerV2 = gatewayMiddleware<
+  { body: CategoryItem },
+  CategoryItem
+>(async ({ validate, throwErrorIf }) => {
+  const { value, type, id } = validate(newCategorySchema);
+  let LastEvaluatedKey: QueryCommandOutput["LastEvaluatedKey"];
+  let Count = 0;
+  do {
+    const res = await client.send(
+      new QueryCommand({
+        TableName: Resource.categoryDB.name,
+        KeyConditionExpression: "id = :id",
+        ExpressionAttributeValues: { ":id": id },
+        ...(LastEvaluatedKey ? { ExclusiveStartKey: LastEvaluatedKey } : {}),
+      }),
+    );
+    Count += res.Count || 0;
+    if (Count > 0)
+      throwErrorIf(
+        new BadRequestError(`${id} already exists`, CATEGORY.ALREADY_EXISTS),
       );
-      Count += res.Count || 0;
-      if (Count > 0) throwErrorIf(new BadRequestError(`${id} already exists`));
-      LastEvaluatedKey = res.LastEvaluatedKey;
-    } while (LastEvaluatedKey);
-    await client.send(new PutCommand({ TableName: Resource.categoryDB.name, Item: { value, id, type } }));
-    return { value, id, type };
-  },
-);
+    LastEvaluatedKey = res.LastEvaluatedKey;
+  } while (LastEvaluatedKey);
+  await client.send(
+    new PutCommand({
+      TableName: Resource.categoryDB.name,
+      Item: { value, id, type },
+    }),
+  );
+  return { value, id, type };
+});
 
 export const updateText: APIGatewayProxyHandlerV2 = gatewayMiddleware<{
-  body: { value: string };
-  path: { id: string };
-}>(async ({ parseEvent, validate }) => {
-  const { id, value } = validate(() => z.object({ id: z.string().uuid(), value: z.string().min(1) }), parseEvent(), "data invalid");
+  body: Pick<CategoryItem, "value">;
+  path: Pick<CategoryItem, "id">;
+}>(async ({ validate }) => {
+  const { id, value } = validate(updateCategoryTextSchema);
   await client.send(
     new UpdateCommand({
       TableName: Resource.categoryDB.name,
@@ -85,8 +116,10 @@ export const updateText: APIGatewayProxyHandlerV2 = gatewayMiddleware<{
 });
 
 export const del: APIGatewayProxyHandlerV2 = gatewayMiddleware<{
-  path: { id: string };
-}>(async ({ parseEvent, validate }) => {
-  const { id } = validate(() => z.object({ id: z.string().uuid() }), parseEvent(), "data invalid");
-  await client.send(new DeleteCommand({ TableName: Resource.categoryDB.name, Key: { id } }));
+  path: Pick<CategoryItem, "id">;
+}>(async ({ validate }) => {
+  const { id } = validate(deleteCategorySchema);
+  await client.send(
+    new DeleteCommand({ TableName: Resource.categoryDB.name, Key: { id } }),
+  );
 });

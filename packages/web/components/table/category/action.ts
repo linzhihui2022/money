@@ -1,29 +1,37 @@
 "use server";
 
-import { AccountItem, updateAccountNameSchema, updateAccountValueSchema } from "types";
+import {
+  CategoryItem,
+  deleteCategorySchema,
+  updateCategoryTextSchema,
+} from "types";
 import { api } from "@/lib/api";
-import { expireTag } from "next/cache";
+import { unstable_expireTag as expireTag } from "next/cache";
 
-export const updateName = async (form: Pick<AccountItem, "name" | "id">) => {
-  const { id, name } = updateAccountNameSchema().parse(form);
-  const [match, data] = await api({ uri: `/account/${id}/name`, method: "PUT", body: { name } });
+export const updateValue = async (form: Pick<CategoryItem, "value" | "id">) => {
+  const { id, value } = updateCategoryTextSchema().parse(form);
+  const [match, data] = await api({
+    uri: `/category/${id}/text`,
+    method: "PUT",
+    body: { value },
+  });
   switch (match) {
     case "fail":
       return data;
     case "OK": {
-      expireTag("account");
+      expireTag("category");
     }
   }
 };
 
-export const updateValue = async (form: Pick<AccountItem, "value" | "id">) => {
-  const { id, value } = updateAccountValueSchema().parse(form);
-  const [match, data] = await api({ uri: `/account/${id}/value`, method: "PUT", body: { value } });
+export const deleteCategory = async (form: Pick<CategoryItem, "id">) => {
+  const { id } = deleteCategorySchema().parse(form);
+  const [match, data] = await api({ uri: `/category/${id}`, method: "DELETE" });
   switch (match) {
     case "fail":
       return data;
     case "OK": {
-      expireTag("account");
+      expireTag("category");
     }
   }
 };

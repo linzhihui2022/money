@@ -1,124 +1,126 @@
-export class BadRequestError<T> extends Error {
+import type { Code } from "types/code.ts";
+
+export class BadRequestError extends Error {
   statusCode = 400 as const;
 
   constructor(
     message: string,
-    public details?: T,
+    public code: Code,
   ) {
     super(message);
   }
 }
 
-export class UnauthorizedError<T> extends Error {
+export class UnauthorizedError extends Error {
   statusCode = 401 as const;
 
   constructor(
     message: string,
-    public details?: T,
+    public code: Code,
   ) {
     super(message);
   }
 }
 
-export class ForbiddenError<T> extends Error {
+export class ForbiddenError extends Error {
   statusCode = 403 as const;
 
   constructor(
     message: string,
-    public details?: T,
+    public code: Code,
   ) {
     super(message);
   }
 }
 
-export class NotFoundError<T> extends Error {
+export class NotFoundError extends Error {
   statusCode = 404 as const;
 
   constructor(
     message: string,
-    public details?: T,
+    public code: Code,
   ) {
     super(message);
   }
 }
 
-export class MethodNotAllowedError<T> extends Error {
+export class MethodNotAllowedError extends Error {
   statusCode = 405 as const;
 
   constructor(
     message: string,
-    public details?: T,
+    public code: Code,
   ) {
     super(message);
   }
 }
 
-export class RequestRejectedError<T> extends Error {
+export class RequestRejectedError extends Error {
   statusCode = 409 as const;
 
   constructor(
     message: string,
-    public details?: T,
+    public code: Code,
   ) {
     super(message);
   }
 }
 
-export class ServerError<T> extends Error {
+export class ServerError extends Error {
   statusCode = 500 as const;
 
   constructor(
     message: string,
-    public details?: T,
+    public code: Code,
   ) {
     super(message);
   }
 }
 
-export class NotImplementedError<T> extends Error {
+export class NotImplementedError extends Error {
   statusCode = 501 as const;
 
   constructor(
     message: string,
-    public details?: T,
+    public code: Code,
   ) {
     super(message);
   }
 }
 
-export class BadGatewayError<T> extends Error {
+export class BadGatewayError extends Error {
   statusCode = 502 as const;
 
   constructor(
     message: string,
-    public details?: T,
+    public code: Code,
   ) {
     super(message);
   }
 }
 
-export class ServiceUnavailableError<T> extends Error {
+export class ServiceUnavailableError extends Error {
   statusCode = 503 as const;
 
   constructor(
     message: string,
-    public details?: T,
+    public code: Code,
   ) {
     super(message);
   }
 }
 
-export type StandardisedError<T> =
-  | ServiceUnavailableError<T>
-  | BadGatewayError<T>
-  | NotImplementedError<T>
-  | ServerError<T>
-  | MethodNotAllowedError<T>
-  | NotFoundError<T>
-  | ForbiddenError<T>
-  | UnauthorizedError<T>
-  | BadRequestError<T>
-  | RequestRejectedError<T>;
+export type StandardisedError =
+  | ServiceUnavailableError
+  | BadGatewayError
+  | NotImplementedError
+  | ServerError
+  | MethodNotAllowedError
+  | NotFoundError
+  | ForbiddenError
+  | UnauthorizedError
+  | BadRequestError
+  | RequestRejectedError;
 
 export class SqsEventError extends Error {
   constructor(

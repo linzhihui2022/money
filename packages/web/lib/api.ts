@@ -1,31 +1,14 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { COMMON, ErrorBody, type NextResponse } from "types";
 
-class ApiError<T> extends Error {
-  constructor(
-    msg: string,
-    public details?: T,
-  ) {
-    super(msg);
-  }
-}
-interface ErrorBody<T = unknown> {
-  error: {
-    message: string;
-    statusCode: number;
-    details: T;
-  };
-}
 export const api = async <T>(
   {
     uri,
     ...request
-  }: Omit<RequestInit, "body"> & {
-    uri: string;
-    body?: unknown;
-  },
+  }: Omit<RequestInit, "body"> & { uri: string; body?: unknown },
   tags?: string[],
-): Promise<T> => {
+): Promise<NextResponse<T>> => {
   const baseUrl = process.env.API;
   const headers: { Authorization?: string } = {};
   const cookie = await cookies();
@@ -40,7 +23,11 @@ export const api = async <T>(
     ...(tags ? { next: { tags, revalidate: false } } : {}),
   });
   if (response.ok) {
-    return (await response.clone().json()) as Promise<T>;
+    if (response.status === 204) {
+      return ["OK", {} as T];
+    }
+    const data = (await response.clone().json()) as T;
+    return ["OK", data];
   }
   if ([401, 403].includes(response.status)) {
     redirect("/login");
@@ -50,9 +37,23 @@ export const api = async <T>(
     .json()
     .catch(() => null)) as ErrorBody | null;
   if (errorBody) {
-    console.log(errorBody);
-    throw new ApiError(errorBody.error.message, errorBody.error.details);
+    return ["fail", [errorBody.code, errorBody.message]];
   } else {
-    throw new ApiError(response.statusText, await response.clone().text());
+    return ["fail", [COMMON.UNEXPECTED, response.statusText]];
   }
+};
+
+export const _catch = async <T>(res: Promise<NextResponse<T>>): Promise<T> => {
+  const [match, data] = await res;
+  switch (match) {
+    case "OK":
+      return data;
+    case "fail": {
+      throw new Error(data[1]);
+    }
+  }
+};
+
+export const ApiWithCatch = <T>(...props: Parameters<typeof api>) => {
+  return _catch(api<T>(...props));
 };
