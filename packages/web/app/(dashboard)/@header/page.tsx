@@ -9,7 +9,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { getQuery, isActive, queryToggle } from "@/lib/query";
 import { ApiWithCatch } from "@/lib/api";
 import type { AccountItem, CategoryItem } from "types";
-import { Checkbox } from "@/components/ui/checkbox";
+import { CheckboxLink } from "@/components/ui/checkbox";
 import AddBill from "@/components/form/add-bill";
 import { Link } from "@/lib/use-nav";
 
@@ -22,15 +22,12 @@ function CategoryCheckbox({
 }) {
   return (
     <div className="ml-1 mb-1">
-      <Link
-        className="flex items-center space-x-2 space-y-0 py-1"
+      <CheckboxLink
         href={`/?${queryToggle(query, "category", category.id)}`}
+        state={isActive(query, "category", category.id)}
       >
-        <Checkbox checked={isActive(query, "category", category.id)} />
-        <label className="text-sm font-normal cursor-pointer">
-          {category.value}
-        </label>
-      </Link>
+        {category.value}
+      </CheckboxLink>
     </div>
   );
 }
@@ -43,13 +40,12 @@ function AccountCheckbox({
 }) {
   return (
     <div className="ml-1 mb-1">
-      <Link
-        className="flex items-center text-sm space-x-2 space-y-0 py-1"
+      <CheckboxLink
         href={`/?${queryToggle(query, "account", account.id)}`}
+        state={isActive(query, "account", account.id)}
       >
-        <Checkbox checked={isActive(query, "account", account.id)} />
-        <span>{account.name}</span>
-      </Link>
+        {account.name}
+      </CheckboxLink>
     </div>
   );
 }

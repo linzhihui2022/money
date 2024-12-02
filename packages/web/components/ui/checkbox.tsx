@@ -4,6 +4,7 @@ import * as React from "react";
 import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
 import { cn } from "@/lib/utils";
 import { CheckIcon } from "@radix-ui/react-icons";
+import { Link } from "@/lib/use-nav";
 
 const Checkbox = React.forwardRef<
   React.ComponentRef<typeof CheckboxPrimitive.Root>,
@@ -26,4 +27,26 @@ const Checkbox = React.forwardRef<
 ));
 Checkbox.displayName = CheckboxPrimitive.Root.displayName;
 
-export { Checkbox };
+const CheckboxLink = ({
+  state,
+  href,
+  children,
+}: React.PropsWithChildren<{ state: boolean; href: string }>) => {
+  const [checked, onClick] = React.useOptimistic<boolean, "click">(
+    state,
+    (v) => !v,
+  );
+  return (
+    <Link
+      className="flex items-center space-x-2 space-y-0 py-1"
+      href={href}
+      onClick={() => onClick("click")}
+    >
+      <Checkbox checked={checked} />
+      <label className="text-sm font-normal cursor-pointer">{children}</label>
+    </Link>
+  );
+};
+CheckboxLink.displayName = "CheckboxLink";
+
+export { Checkbox, CheckboxLink };
