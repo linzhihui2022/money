@@ -37,7 +37,7 @@ export const api = async <T>(
     .json()
     .catch(() => null)) as ErrorBody | null;
   if (errorBody) {
-    return ["fail", [errorBody.code, errorBody.message]];
+    return ["fail", [errorBody.code || COMMON.UNEXPECTED, errorBody.message]];
   } else {
     return ["fail", [COMMON.UNEXPECTED, response.statusText]];
   }

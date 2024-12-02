@@ -21,6 +21,7 @@ export const updateName = async (form: Pick<AccountItem, "name" | "id">) => {
       return data;
     case "OK": {
       expireTag("account");
+      break;
     }
   }
 };
@@ -43,7 +44,10 @@ export const updateValue = async (form: Pick<AccountItem, "value" | "id">) => {
 
 export const deleteAccount = async (form: Pick<AccountItem, "id">) => {
   const { id } = deleteAccountSchema().parse(form);
-  const [match, data] = await api({ uri: `/account/${id}`, method: "DELETE" });
+  const [match, data] = await api({
+    uri: `/account/${id}`,
+    method: "DELETE",
+  });
   switch (match) {
     case "fail":
       return data;

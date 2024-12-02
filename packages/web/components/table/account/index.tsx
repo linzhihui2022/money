@@ -6,28 +6,31 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { AccountItem } from "types";
-import Row from "./row";
+import AccountTableBody from "./row";
+import { AccountsProvider } from "./provider";
 
-export default function AccountTable({
+export default async function AccountTable({
   accounts,
+  lastAction,
 }: {
   accounts: AccountItem[];
+  lastAction: { type: "new" | "updated"; id: string } | null;
 }) {
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>ID</TableHead>
-          <TableHead>Name</TableHead>
-          <TableHead>Value</TableHead>
-          <TableHead></TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {accounts.map((i) => (
-          <Row item={i} key={i.id} />
-        ))}
-      </TableBody>
-    </Table>
+    <AccountsProvider accounts={accounts} lastAction={lastAction}>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>ID</TableHead>
+            <TableHead>Name</TableHead>
+            <TableHead>Value</TableHead>
+            <TableHead></TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          <AccountTableBody />
+        </TableBody>
+      </Table>
+    </AccountsProvider>
   );
 }
