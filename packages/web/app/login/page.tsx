@@ -18,6 +18,7 @@ export default async function LoginPage() {
           <CardHeader>
             <CardTitle className="text-2xl">Login</CardTitle>
           </CardHeader>
+
           <CardContent>
             <div className="space-y-2">
               <Label htmlFor="username">Username</Label>
