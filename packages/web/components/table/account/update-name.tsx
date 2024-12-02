@@ -12,7 +12,10 @@ import { Input } from "@/components/ui/input";
 import DrawerDialog from "@/components/ui/DrawerDialog";
 import { ComponentProps } from "react";
 import { updateName } from "./action";
-import { redirect } from "next/navigation";
+import CellButton from "../cell-button";
+import { useAccounts } from "./provider";
+import { useToast } from "@/lib/use-toast";
+import { useRouter } from "next/navigation";
 
 function UpdateNameForm({
   item,
@@ -24,17 +27,25 @@ function UpdateNameForm({
     resolver: zodResolver(updateAccountNameSchema()),
     defaultValues: item,
   });
-
+  const { onAction } = useAccounts();
+  const { toast } = useToast();
+  const router = useRouter();
   async function onSubmit(data: Pick<AccountItem, "name" | "id">) {
+    setOpen(false);
+    onAction({ action: "updated", item: { ...item, name: data.name } });
     const res = await updateName(data);
+
     if (res?.at(0)) {
-      form.setError("name", { message: res.at(1) });
+      toast({
+        variant: "destructive",
+        title: `Update name of <${item.id}> failed`,
+        description: res.at(1),
+      });
       return;
     }
     if (!res) {
-      setOpen(false);
       form.reset();
-      redirect(`/account?edited=${data.id}`);
+      router.push(`/account?updated=${data.id}`);
     }
   }
   return (
@@ -55,16 +66,11 @@ function UpdateNameForm({
   );
 }
 
-export default function UpdateName({
-  item,
-  trigger,
-}: Pick<ComponentProps<typeof DrawerDialog>, "trigger"> & {
-  item: AccountItem;
-}) {
+export default function UpdateName({ item }: { item: AccountItem }) {
   return (
     <DrawerDialog
       title={`Edit name of <${item.name}>`}
-      trigger={trigger}
+      trigger={<CellButton>{item.name}</CellButton>}
       Body={(props) => <UpdateNameForm item={item} {...props} />}
     />
   );

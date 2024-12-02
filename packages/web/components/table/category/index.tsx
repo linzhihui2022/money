@@ -6,28 +6,31 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { CategoryItem } from "types";
-import Row from "./row";
+import { CategoriesProvider } from "./provider";
+import CategoriesTableBody from "./row";
 
 export default function CategoryTable({
   categories,
+  lastAction,
 }: {
   categories: CategoryItem[];
+  lastAction: { type: "new" | "updated"; id: string } | null;
 }) {
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>ID</TableHead>
-          <TableHead>Name</TableHead>
-          <TableHead>Type</TableHead>
-          <TableHead></TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {categories.map((i) => (
-          <Row item={i} key={i.id} />
-        ))}
-      </TableBody>
-    </Table>
+    <CategoriesProvider categories={categories} lastAction={lastAction}>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>ID</TableHead>
+            <TableHead>Name</TableHead>
+            <TableHead>Type</TableHead>
+            <TableHead></TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          <CategoriesTableBody />
+        </TableBody>
+      </Table>
+    </CategoriesProvider>
   );
 }
