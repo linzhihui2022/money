@@ -9,9 +9,9 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { getQuery, isActive, queryToggle } from "@/lib/query";
 import { ApiWithCatch } from "@/lib/api";
 import type { AccountItem, CategoryItem } from "types";
-import Link from "next/link";
 import { Checkbox } from "@/components/ui/checkbox";
 import AddBill from "@/components/form/add-bill";
+import { Link } from "@/lib/use-nav";
 
 function CategoryCheckbox({
   category,

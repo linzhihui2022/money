@@ -5,14 +5,13 @@ import { DateTime, Money } from "@/components/ui/format";
 import { Separator } from "@/components/ui/separator";
 import { PackageOpen, X } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Fragment, PropsWithChildren } from "react";
 import { getQuery, isActive, queryToggle } from "@/lib/query";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import IdBadge from "@/components/table/id-badge";
-
+import { Link } from "@/lib/use-nav";
 const Cell = ({
   children,
   className,
@@ -118,70 +117,68 @@ export const BillList = async (props: {
     );
   }
   return (
-    <>
-      <ScrollArea>
-        {filters}
-        <div className="grid md:grid-cols-[auto,auto,1fr,auto,auto] gap-y-2 gap-x-4 text-sm">
-          {Object.entries(groupByDate).map(([date, bills]) => (
-            <Fragment key={date}>
-              <div className="col-span-full bg-accent px-4 py-1 text-center md:text-left">
-                {date}
-              </div>
-              {bills.map((i, index, arr) => (
-                <Fragment key={i.id}>
-                  <Cell className="md:pl-4" label="Time">
-                    <DateTime value={i.date} />
-                  </Cell>
-                  <Cell label="Category">
-                    <Link
-                      href={`/?${queryToggle(query, "category", i.category)}`}
-                      className={cn(
-                        "hover:underline",
-                        isActive(query, "category", i.category)
-                          ? "underline text-accent-foreground"
-                          : "",
-                      )}
-                    >
-                      {categories[i.category]?.value}
-                    </Link>
-                  </Cell>
-                  <Cell label="Desc">{i.desc || "-"}</Cell>
-                  <Cell label="Account">
-                    <Link
-                      href={`/?${queryToggle(query, "account", i.account)}`}
-                      className={cn(
-                        "hover:underline flex items-center space-x-1",
-                        isActive(query, "account", i.account)
-                          ? "underline text-accent-foreground"
-                          : "",
-                      )}
-                    >
-                      {accounts[i.account]?.name}
-                    </Link>
-                  </Cell>
-                  <Cell className="md:pr-4" label="Money">
-                    <div className="flex items-center">
-                      <Money
-                        value={
-                          i.value *
-                          (categories[i.category]?.type === CategoryType.INCOME
-                            ? 1
-                            : -1)
-                        }
-                      />
-                      <IdBadge id={i.id} />
-                    </div>
-                  </Cell>
-                  {index < arr.length - 1 && (
-                    <Separator className="col-span-full" />
-                  )}
-                </Fragment>
-              ))}
-            </Fragment>
-          ))}
-        </div>
-        <ScrollBar />
-      </ScrollArea>
-    </>
+    <ScrollArea>
+      {filters}
+      <div className="grid md:grid-cols-[auto,auto,1fr,auto,auto] gap-y-2 gap-x-4 text-sm">
+        {Object.entries(groupByDate).map(([date, bills]) => (
+          <Fragment key={date}>
+            <div className="col-span-full bg-accent px-4 py-1 text-center md:text-left">
+              {date}
+            </div>
+            {bills.map((i, index, arr) => (
+              <Fragment key={i.id}>
+                <Cell className="md:pl-4" label="Time">
+                  <DateTime value={i.date} />
+                </Cell>
+                <Cell label="Category">
+                  <Link
+                    href={`/?${queryToggle(query, "category", i.category)}`}
+                    className={cn(
+                      "hover:underline",
+                      isActive(query, "category", i.category)
+                        ? "underline text-accent-foreground"
+                        : "",
+                    )}
+                  >
+                    {categories[i.category]?.value}
+                  </Link>
+                </Cell>
+                <Cell label="Desc">{i.desc || "-"}</Cell>
+                <Cell label="Account">
+                  <Link
+                    href={`/?${queryToggle(query, "account", i.account)}`}
+                    className={cn(
+                      "hover:underline flex items-center space-x-1",
+                      isActive(query, "account", i.account)
+                        ? "underline text-accent-foreground"
+                        : "",
+                    )}
+                  >
+                    {accounts[i.account]?.name}
+                  </Link>
+                </Cell>
+                <Cell className="md:pr-4" label="Money">
+                  <div className="flex items-center">
+                    <Money
+                      value={
+                        i.value *
+                        (categories[i.category]?.type === CategoryType.INCOME
+                          ? 1
+                          : -1)
+                      }
+                    />
+                    <IdBadge id={i.id} />
+                  </div>
+                </Cell>
+                {index < arr.length - 1 && (
+                  <Separator className="col-span-full" />
+                )}
+              </Fragment>
+            ))}
+          </Fragment>
+        ))}
+      </div>
+      <ScrollBar />
+    </ScrollArea>
   );
 };

@@ -38,7 +38,9 @@ export default function Breadcrumb({
             <DropdownMenuContent align="start">
               {list.map((item) => (
                 <DropdownMenuItem disabled={item.page === page} key={item.page}>
-                  <BreadcrumbLink href={item.href}>{item.page}</BreadcrumbLink>
+                  <BreadcrumbLink asChild href={item.href}>
+                    {item.page}
+                  </BreadcrumbLink>
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>
