@@ -1,11 +1,11 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import Breadcrumb from "../breadcrumb";
+import Breadcrumb from "@/features/breadcrumb";
 import { Plus } from "lucide-react";
 
-export default function Page() {
+export default function AccountHeader() {
   return (
-    <div className="flex w-full items-center">
+    <div className="flex w-full items-center justify-between py-3">
       <Breadcrumb page="Account" />
       <Button size="icon" className="ml-4" asChild variant="ghost">
         <Link href="/account/add">

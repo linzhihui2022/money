@@ -1,10 +1,10 @@
-import Breadcrumb from "../../breadcrumb";
+import Breadcrumb from "@/features/breadcrumb";
 import { BreadcrumbItem, BreadcrumbPage } from "@/components/ui/breadcrumb";
 
-export default function Page() {
+export default function AddCategoryHeader() {
   return (
-    <div className="flex w-full items-center">
-      <Breadcrumb page="Account">
+    <div className="flex w-full items-center justify-between py-3">
+      <Breadcrumb page="Category">
         <BreadcrumbItem>
           <BreadcrumbPage>Add</BreadcrumbPage>
         </BreadcrumbItem>

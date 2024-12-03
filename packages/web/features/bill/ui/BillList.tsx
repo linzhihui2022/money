@@ -9,7 +9,6 @@ import { cn } from "@/lib/utils";
 import { Fragment, PropsWithChildren } from "react";
 import { getQuery, isActive, queryToggle } from "@/lib/query";
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import IdBadge from "@/components/table/id-badge";
 import { Link } from "@/lib/use-nav";
 const Cell = ({
@@ -117,7 +116,7 @@ export const BillList = async (props: {
     );
   }
   return (
-    <ScrollArea>
+    <>
       {filters}
       <div className="grid md:grid-cols-[auto,auto,1fr,auto,auto] gap-y-2 gap-x-4 text-sm">
         {Object.entries(groupByDate).map(([date, bills]) => (
@@ -178,7 +177,6 @@ export const BillList = async (props: {
           </Fragment>
         ))}
       </div>
-      <ScrollBar />
-    </ScrollArea>
+    </>
   );
 };

@@ -37,7 +37,6 @@ export default function Menu() {
   ];
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Money, Money, Money</SidebarGroupLabel>
       <SidebarGroupContent>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -48,6 +47,8 @@ export default function Menu() {
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
+
+          <SidebarGroupLabel>Settings</SidebarGroupLabel>
           {menu.map((group) => (
             <SidebarMenuItem key={group.pathname}>
               <SidebarMenuButton

@@ -5,51 +5,37 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { getQuery, isActive, queryToggle } from "@/lib/query";
 import { ApiWithCatch } from "@/lib/api";
 import type { AccountItem, CategoryItem } from "types";
 import { CheckboxLink } from "@/components/ui/checkbox";
 import AddBill from "@/components/form/add-bill";
-import { Link } from "@/lib/use-nav";
+import { Link, Suspense } from "@/lib/use-nav";
+import { Skeleton } from "@/components/ui/skeleton";
 
-function CategoryCheckbox({
-  category,
+type CheckboxProps =
+  | { item: CategoryItem; type: "category" }
+  | { item: AccountItem; type: "account" };
+function Checkbox({
+  item,
   query,
+  type,
 }: {
-  category: CategoryItem;
   query: URLSearchParams;
-}) {
+} & CheckboxProps) {
   return (
     <div className="ml-1 mb-1">
       <CheckboxLink
-        href={`/?${queryToggle(query, "category", category.id)}`}
-        state={isActive(query, "category", category.id)}
+        href={`/?${queryToggle(query, type, item.id)}`}
+        state={isActive(query, type, item.id)}
       >
-        {category.value}
+        {type === "account" && "name" in item ? item.name : item.value}
       </CheckboxLink>
     </div>
   );
 }
-function AccountCheckbox({
-  account,
-  query,
-}: {
-  account: AccountItem;
-  query: URLSearchParams;
-}) {
-  return (
-    <div className="ml-1 mb-1">
-      <CheckboxLink
-        href={`/?${queryToggle(query, "account", account.id)}`}
-        state={isActive(query, "account", account.id)}
-      >
-        {account.name}
-      </CheckboxLink>
-    </div>
-  );
-}
-export default async function Header(props: {
+
+async function BillHeaderAsync(props: {
   searchParams: Promise<{ category: string | string[] }>;
 }) {
   const query = await getQuery(props);
@@ -76,12 +62,11 @@ export default async function Header(props: {
             </Button>
           </PopoverTrigger>
           <PopoverContent className="space-y-2">
-            <ScrollArea className="h-64">
+            <div className="h-64 overflow-y-auto no-scrollbar">
               {categories.map((i) => (
-                <CategoryCheckbox key={i.id} category={i} query={query} />
+                <Checkbox key={i.id} item={i} query={query} type="category" />
               ))}
-              <ScrollBar />
-            </ScrollArea>
+            </div>
             <div className="flex justify-end">
               <Button variant="default" asChild size="sm">
                 <Link href="/category">Add</Link>
@@ -100,16 +85,16 @@ export default async function Header(props: {
             </Button>
           </PopoverTrigger>
           <PopoverContent className="space-y-2">
-            <ScrollArea className="h-64">
+            <div className="h-64 overflow-y-auto no-scrollbar">
               {accounts.map((account) => (
-                <AccountCheckbox
+                <Checkbox
                   key={account.id}
-                  account={account}
+                  item={account}
                   query={query}
+                  type="account"
                 />
               ))}
-              <ScrollBar />
-            </ScrollArea>
+            </div>
             <div className="flex justify-end">
               <Button variant="default" asChild size="sm">
                 <Link href="/account">Add</Link>
@@ -119,6 +104,32 @@ export default async function Header(props: {
         </Popover>
       </div>
       <AddBill categories={categories} accounts={accounts} />
+    </div>
+  );
+}
+
+export function BillHeaderSkeleton() {
+  return (
+    <div className="flex items-center space-x-3 w-full py-3">
+      <div className="flex justify-between flex-1">
+        <div className="flex space-x-3">
+          <Skeleton className="w-24 h-8 bg-accent" />
+          <Skeleton className="w-24 h-8 bg-accent" />
+        </div>
+        <Skeleton className="w-10 h-8 bg-accent" />
+      </div>
+    </div>
+  );
+}
+
+export default function BillHeader(props: {
+  searchParams: Promise<{ category: string | string[] }>;
+}) {
+  return (
+    <div className="flex items-center space-x-3 w-full py-3">
+      <Suspense fallback={<BillHeaderSkeleton />}>
+        <BillHeaderAsync searchParams={props.searchParams} />
+      </Suspense>
     </div>
   );
 }
