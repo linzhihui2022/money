@@ -6,42 +6,9 @@ import "sst"
 export {}
 declare module "sst" {
   export interface Resource {
-    "MyIdentityPool": {
-      "id": string
-      "type": "sst.aws.CognitoIdentityPool"
-    }
-    "MyUserPool": {
-      "id": string
-      "type": "sst.aws.CognitoUserPool"
-    }
     "MyWeb": {
       "type": "sst.aws.Nextjs"
       "url": string
-    }
-    "Web": {
-      "id": string
-      "secret": string
-      "type": "sst.aws.CognitoUserPoolClient"
-    }
-    "accountDB": {
-      "name": string
-      "type": "sst.aws.Dynamo"
-    }
-    "api": {
-      "type": "sst.aws.ApiGatewayV2"
-      "url": string
-    }
-    "billDB": {
-      "name": string
-      "type": "sst.aws.Dynamo"
-    }
-    "categoryDB": {
-      "name": string
-      "type": "sst.aws.Dynamo"
-    }
-    "importBucket": {
-      "name": string
-      "type": "sst.aws.Bucket"
     }
   }
 }
