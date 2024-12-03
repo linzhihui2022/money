@@ -3,7 +3,7 @@ import { api } from "@/lib/api";
 import { AccountItem, newAccountSchema } from "types";
 import { unstable_expireTag as expireTag } from "next/cache";
 
-export const add = async (form: AccountItem) => {
+export const addAccount = async (form: AccountItem) => {
   const { id, value, name } = newAccountSchema().parse(form);
   const [match, data] = await api({
     uri: `/account`,

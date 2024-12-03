@@ -1,23 +1,18 @@
 "use client";
-
-import { Input } from "@/components/ui/input";
-
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { CATEGORY, CategoryItem, CategoryType, newCategorySchema } from "types";
+import { Input } from "@/components/ui/input";
+import { SubmitButton } from "@/components/ui/form";
+import { useToast } from "@/lib/use-toast";
+import { ResponsiveDialog } from "@/components/ui/ResponsiveDialog";
 import {
   Form,
   FormControl,
   FormField,
   InlineFormItem,
-  SubmitButton,
 } from "@/components/ui/form";
-import {
-  CATEGORY,
-  type CategoryItem,
-  CategoryType,
-  newCategorySchema,
-} from "types";
 import {
   Select,
   SelectContent,
@@ -25,13 +20,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { add } from "./action";
-import { TypographyH2 } from "@/components/ui/typography";
-import { useToast } from "@/lib/use-toast";
+import { addCategory } from "../actions";
 import { redirect } from "next/navigation";
-import AddCategoryHeader from "@/features/category/ui/AddCategoryHeader";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import { useState } from "react";
 
-export default function Page() {
+export function AddCategoryDialog() {
+  const [open, setOpen] = useState(false);
+  const [isPending, setIsPending] = useState(false);
+
   const form = useForm<CategoryItem>({
     resolver: zodResolver(newCategorySchema()),
     defaultValues: { id: "", value: "", type: CategoryType.EXPENSES },
@@ -39,25 +37,47 @@ export default function Page() {
   const { toast } = useToast();
 
   async function onSubmit(data: CategoryItem) {
-    const res = await add(data);
-    switch (res?.at(0)) {
+    setIsPending(true);
+    const res = await addCategory(data);
+
+    if (!res) {
+      toast({ title: `Add ${data.value} successful` });
+      setIsPending(false);
+      form.reset();
+      setOpen(false);
+      redirect(`/category?new=${data.id}`);
+      return;
+    }
+
+    switch (res.at(0)) {
       case CATEGORY.ALREADY_EXISTS: {
         form.setError("id", { message: res.at(1) });
         break;
       }
     }
-    if (!res) {
-      toast({ title: `Add ${data.value} successful` });
-      redirect(`/category?new=${data.id}`);
-    }
+    setIsPending(false);
   }
 
   return (
-    <>
-      <AddCategoryHeader />
+    <ResponsiveDialog
+      open={open}
+      onOpenChange={(open) => {
+        if (isPending && !open) return;
+        setOpen(open);
+      }}
+      title="Add new category"
+      trigger={
+        <Button size="icon" className="ml-4" variant="ghost">
+          <Plus className="size-3.5" />
+          <span className="sr-only">Add category</span>
+        </Button>
+      }
+    >
       <Form {...form}>
-        <form className="w-80 space-y-3" onSubmit={form.handleSubmit(onSubmit)}>
-          <TypographyH2>Add new category</TypographyH2>
+        <form
+          className="w-full space-y-3"
+          onSubmit={form.handleSubmit(onSubmit)}
+        >
           <FormField
             control={form.control}
             name="id"
@@ -105,6 +125,6 @@ export default function Page() {
           <SubmitButton />
         </form>
       </Form>
-    </>
+    </ResponsiveDialog>
   );
 }
