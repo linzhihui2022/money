@@ -12,7 +12,6 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import NextLink from "next/link";
-import { format } from "node:url";
 import { Loader2Icon } from "lucide-react";
 
 interface PendingContextValue {
@@ -56,7 +55,7 @@ const useNav = () => {
     (path: ComponentPropsWithoutRef<typeof NextLink>["href"]) => {
       if (path) {
         startTransition(async () => {
-          router.push(format(path));
+          router.push(path.toString());
         });
       }
     },

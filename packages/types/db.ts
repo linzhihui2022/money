@@ -4,7 +4,7 @@ import {
   type ISO,
   newAccountSchema,
   newCategorySchema,
-} from "./index.ts";
+} from "./index";
 import { z } from "zod";
 
 export type CategoryItem = z.infer<ReturnType<typeof newCategorySchema>>;

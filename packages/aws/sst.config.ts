@@ -178,6 +178,12 @@ export default $config({
       jwt,
     );
 
+    const web = new sst.aws.Nextjs("MyWeb", {
+      path: "../web",
+      environment: { API: api.url },
+      domain: { name: `${$app.stage}-money.linzhihui.app` },
+    });
+
     return {
       userPool: userPool.id,
       userPoolClient: userPoolClient.id,
@@ -185,6 +191,7 @@ export default $config({
       billDB: billDB.arn,
       accountDB: accountDB.arn,
       categoryDB: categoryDB.arn,
+      web: web.url,
     };
   },
 });
