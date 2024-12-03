@@ -2,6 +2,7 @@ import { ApiWithCatch } from "@/lib/api";
 import { CategoryItem } from "types";
 import CategoryTable from "@/components/table/category";
 import { getQuery } from "@/lib/query";
+import CategoryHeader from "@/features/category/ui/CategoryHeader";
 
 export default async function Page(props: {
   searchParams: Promise<{ new?: string; updated?: string }>;
@@ -21,6 +22,9 @@ export default async function Page(props: {
         : null;
   return (
     <div>
+      <div className="flex items-center space-x-3 w-full">
+        <CategoryHeader />
+      </div>
       <CategoryTable categories={categories} lastAction={lastAction} />
     </div>
   );

@@ -2,6 +2,7 @@ import { ApiWithCatch } from "@/lib/api";
 import { AccountItem } from "types";
 import AccountTable from "@/components/table/account";
 import { getQuery } from "@/lib/query";
+import AccountHeader from "@/features/account/ui/AccountHeader";
 
 export default async function Page(props: {
   searchParams: Promise<{ new?: string; updated?: string }>;
@@ -21,6 +22,9 @@ export default async function Page(props: {
         : null;
   return (
     <div>
+      <div className="flex items-center space-x-3 w-full">
+        <AccountHeader />
+      </div>
       <AccountTable accounts={accounts} lastAction={lastAction} />
     </div>
   );

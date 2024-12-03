@@ -16,6 +16,7 @@ import { add } from "./action";
 import { TypographyH2 } from "@/components/ui/typography";
 import { useToast } from "@/lib/use-toast";
 import { redirect } from "next/navigation";
+import AddAccountHeader from "@/features/account/ui/AddAccountHeader";
 
 export default function Page() {
   const form = useForm<AccountItem>({
@@ -39,38 +40,41 @@ export default function Page() {
   }
 
   return (
-    <Form {...form}>
-      <form className="w-80 space-y-3" onSubmit={form.handleSubmit(onSubmit)}>
-        <TypographyH2>Add new account</TypographyH2>
-        <FormField
-          control={form.control}
-          name="id"
-          render={({ field }) => (
-            <InlineFormItem label="ID">
-              <Input {...field} />
-            </InlineFormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <InlineFormItem label="Name">
-              <Input {...field} />
-            </InlineFormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="value"
-          render={({ field }) => (
-            <InlineFormItem label="Value">
-              <MoneyInput {...field} />
-            </InlineFormItem>
-          )}
-        />
-        <SubmitButton />
-      </form>
-    </Form>
+    <>
+      <AddAccountHeader />
+      <Form {...form}>
+        <form className="w-80 space-y-3" onSubmit={form.handleSubmit(onSubmit)}>
+          <TypographyH2>Add new account</TypographyH2>
+          <FormField
+            control={form.control}
+            name="id"
+            render={({ field }) => (
+              <InlineFormItem label="ID">
+                <Input {...field} />
+              </InlineFormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <InlineFormItem label="Name">
+                <Input {...field} />
+              </InlineFormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="value"
+            render={({ field }) => (
+              <InlineFormItem label="Value">
+                <MoneyInput {...field} />
+              </InlineFormItem>
+            )}
+          />
+          <SubmitButton />
+        </form>
+      </Form>
+    </>
   );
 }

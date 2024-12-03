@@ -37,7 +37,6 @@ import { Label } from "@/components/ui/label";
 import * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
 import { Money } from "@/components/ui/format";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import {
   Select,
   SelectContent,
@@ -66,7 +65,12 @@ function AccountStep({
 }) {
   const { onNext } = useStepper();
   return (
-    <ScrollArea className={cn("mt-4 h-60", accounts.length > 6 ? "h-60" : "")}>
+    <div
+      className={cn(
+        "mt-4 h-60 overflow-y-auto no-scrollbar",
+        accounts.length > 6 ? "h-60" : "",
+      )}
+    >
       <RadioGroupPrimitive.Root
         value={account}
         onValueChange={(value) => onAccount(value)}
@@ -97,8 +101,7 @@ function AccountStep({
           </div>
         ))}
       </RadioGroupPrimitive.Root>
-      <ScrollBar />
-    </ScrollArea>
+    </div>
   );
 }
 function CategoryStep({
@@ -133,7 +136,7 @@ function CategoryStep({
           </TabsList>
           {[CategoryType.EXPENSES, CategoryType.INCOME].map((type) => (
             <TabsContent value={type} key={type}>
-              <ScrollArea className={cn("my-4 h-36")}>
+              <div className="my-4 h-36 overflow-y-auto no-scrollbar">
                 <div className="grid grid-cols-3 sm:grid-cols-4 gap-1">
                   {categories
                     .filter((i) => i.type === type)
@@ -161,7 +164,7 @@ function CategoryStep({
                       </div>
                     ))}
                 </div>
-              </ScrollArea>
+              </div>
             </TabsContent>
           ))}
         </Tabs>

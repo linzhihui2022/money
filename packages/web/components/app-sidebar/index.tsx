@@ -2,6 +2,7 @@ import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
+  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -17,6 +18,7 @@ import React from "react";
 import { cookies } from "next/headers";
 import { logout } from "@/lib/auth";
 import Menu from "@/components/app-sidebar/menu";
+import { AppLogo } from "@/features/layout/ui/AppLogo";
 
 export async function AppSidebar() {
   const cookie = await cookies();
@@ -24,6 +26,9 @@ export async function AppSidebar() {
 
   return (
     <Sidebar>
+      <SidebarHeader className="h-12">
+        <AppLogo theme="sidebar" />
+      </SidebarHeader>
       <SidebarContent>
         <Menu />
       </SidebarContent>
