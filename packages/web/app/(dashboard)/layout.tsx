@@ -1,31 +1,34 @@
-import Providers from "./providers";
 import React from "react";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { AppLogo } from "@/features/layout/ui/AppLogo";
 
 export default function DashboardLayout({
   children,
-  header,
 }: {
   children: React.ReactNode;
-  header: React.ReactNode;
 }) {
   return (
-    <Providers>
+    <TooltipProvider>
       <SidebarProvider>
-        <AppSidebar />
-        <main className="w-full relative h-screen grid gap-y-3 grid-rows-[48px,1fr] pb-3">
+        <main className="w-full h-dvh grid grid-rows-[48px,1fr] overflow-hidden">
           <header className="border-b bg-sidebar p-3 space-x-3 flex items-center">
-            <SidebarTrigger />
-            {header}
+            <AppLogo />
+            todo @coco header
           </header>
-          <ScrollArea className="px-3">
-            {children}
-            <ScrollBar />
-          </ScrollArea>
+          <div className="pb-3 overflow-hidden">
+            <div className="size-full flex flex-row">
+              <AppSidebar />
+              <div className="flex-1 h-full px-3">
+                <div className="flex flex-col size-full overflow-y-auto no-scrollbar">
+                  {children}
+                </div>
+              </div>
+            </div>
+          </div>
         </main>
       </SidebarProvider>
-    </Providers>
+    </TooltipProvider>
   );
 }

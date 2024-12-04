@@ -3,7 +3,7 @@ import { api } from "@/lib/api";
 import { type CategoryItem, newCategorySchema } from "types";
 import { unstable_expireTag as expireTag } from "next/cache";
 
-export const add = async (form: CategoryItem) => {
+export const addCategory = async (form: CategoryItem) => {
   const { id, value, type } = newCategorySchema().parse(form);
   const [match, data] = await api({
     uri: `/category`,
