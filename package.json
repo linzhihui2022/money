@@ -14,7 +14,8 @@
     "dev:web": "turbo watch dev --filter web",
     "lint": "turbo run lint",
     "typecheck:web": "bun run --cwd ./packages/web typecheck",
-    "prepare": "husky install"
+    "prepare": "husky",
+    "precheck": "bun run typecheck:web && bun run --cwd ./packages/web lint"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
