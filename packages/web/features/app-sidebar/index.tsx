@@ -16,7 +16,7 @@ import { ChevronUp, User2 } from "lucide-react";
 import React from "react";
 import { cookies } from "next/headers";
 import { logout } from "@/lib/auth";
-import Menu from "@/components/app-sidebar/menu";
+import Menu from "@/features/app-sidebar/menu";
 import { AppLogo } from "@/features/layout/ui/AppLogo";
 
 export async function AppSidebar() {

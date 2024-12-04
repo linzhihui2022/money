@@ -1,6 +1,6 @@
 import React from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar";
+import { AppSidebar } from "@/features/app-sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppLogo } from "@/features/layout/ui/AppLogo";
 

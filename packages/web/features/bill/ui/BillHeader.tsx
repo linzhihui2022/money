@@ -110,7 +110,7 @@ async function BillHeaderAsync(props: {
 
 export function BillHeaderSkeleton() {
   return (
-    <div className="flex items-center space-x-3 w-full py-3">
+    <div className="flex items-center space-x-3 w-full py-3 max-lg:pb-0">
       <div className="flex justify-between flex-1">
         <div className="flex space-x-3">
           <Skeleton className="w-24 h-8 bg-accent" />
