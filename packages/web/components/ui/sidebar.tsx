@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Tooltip,
@@ -170,6 +170,7 @@ const Sidebar = React.forwardRef<
     side?: "left" | "right";
     variant?: "sidebar" | "floating" | "inset";
     collapsible?: "offcanvas" | "icon" | "none";
+    header?: React.ReactNode;
   }
 >(
   (
@@ -177,6 +178,7 @@ const Sidebar = React.forwardRef<
       side = "left",
       variant = "sidebar",
       collapsible = "offcanvas",
+      header,
       className,
       children,
       ...props
@@ -195,6 +197,9 @@ const Sidebar = React.forwardRef<
           ref={ref}
           {...props}
         >
+          {header ? (
+            <SidebarHeader className="h-12">{header}</SidebarHeader>
+          ) : null}
           {children}
         </div>
       );
@@ -202,7 +207,12 @@ const Sidebar = React.forwardRef<
 
     if (isMobile) {
       return (
-        <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
+        <Sheet
+          open={openMobile}
+          onOpenChange={setOpenMobile}
+          {...props}
+          aria-describedby={undefined}
+        >
           <SheetContent
             data-sidebar="sidebar"
             data-mobile="true"
@@ -213,7 +223,14 @@ const Sidebar = React.forwardRef<
               } as React.CSSProperties
             }
             side={side}
+            title="Sidebar"
+            aria-describedby={undefined}
           >
+            {header ? (
+              <SheetTitle>
+                <SidebarHeader className="h-12">{header}</SidebarHeader>
+              </SheetTitle>
+            ) : null}
             <div className="flex h-full w-full flex-col">{children}</div>
           </SheetContent>
         </Sheet>
@@ -258,6 +275,9 @@ const Sidebar = React.forwardRef<
             data-sidebar="sidebar"
             className="flex h-full w-full flex-col bg-sidebar group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:border-sidebar-border group-data-[variant=floating]:shadow"
           >
+            {header ? (
+              <SidebarHeader className="h-12">{header}</SidebarHeader>
+            ) : null}
             {children}
           </div>
         </div>

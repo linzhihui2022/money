@@ -2,7 +2,6 @@ import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
-  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -25,10 +24,7 @@ export async function AppSidebar() {
   const username = cookie.get("username")?.value;
 
   return (
-    <Sidebar>
-      <SidebarHeader className="h-12">
-        <AppLogo theme="sidebar" />
-      </SidebarHeader>
+    <Sidebar header={<AppLogo theme="sidebar" />}>
       <SidebarContent>
         <Menu />
       </SidebarContent>
