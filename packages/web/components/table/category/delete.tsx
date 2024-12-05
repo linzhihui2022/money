@@ -1,31 +1,34 @@
 "use client";
-import { deleteCategory } from "@/components/table/category/action";
-import { CategoryItem } from "types";
+import { CategoryItem, EmptyObj } from "types";
 import { useToast } from "@/lib/use-toast";
 import DeleteDialog from "@/components/table/delete-dialog";
-import { useCategories } from "./provider";
+import { useRevalidateCategories } from "@/lib/use-categories";
+import { useMutation } from "@tanstack/react-query";
+import { api, ApiError } from "@/lib/api";
 
 export default function Delete({ item }: { item: CategoryItem }) {
   const { toast } = useToast();
-  const { onAction } = useCategories();
-
-  async function onSubmit() {
-    onAction({ action: "deleted", item });
-    const res = await deleteCategory(item);
-    if (res?.at(0)) {
+  const revalidate = useRevalidateCategories();
+  const deleteMutation = useMutation<
+    EmptyObj,
+    ApiError,
+    Pick<CategoryItem, "id">
+  >({
+    mutationFn: ({ id }) => api({ uri: `/category/${id}`, method: "DELETE" }),
+    onError: (error, { id }) =>
       toast({
         variant: "destructive",
-        title: `Delete ${item.id} fail`,
-        description: res.at(1),
-      });
-      return;
-    }
-  }
+        title: `Delete ${id} failed`,
+        description: error.message,
+      }),
+    onSuccess: revalidate,
+  });
+
   return (
     <DeleteDialog
       onDeleteAction={async (setOpen) => {
         setOpen(false);
-        await onSubmit();
+        deleteMutation.mutate(item);
       }}
       name={item.value}
     />

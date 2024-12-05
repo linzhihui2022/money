@@ -2,17 +2,17 @@
 import { useForm } from "react-hook-form";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CATEGORY, CategoryItem, CategoryType, newCategorySchema } from "types";
+import { CategoryItem, CategoryType, EmptyObj, newCategorySchema } from "types";
 import { Input } from "@/components/ui/input";
-import { SubmitButton } from "@/components/ui/form";
-import { useToast } from "@/lib/use-toast";
-import { ResponsiveDialog } from "@/components/ui/ResponsiveDialog";
 import {
   Form,
   FormControl,
   FormField,
   InlineFormItem,
+  SubmitButton,
 } from "@/components/ui/form";
+import { useToast } from "@/lib/use-toast";
+import { ResponsiveDialog } from "@/components/ui/ResponsiveDialog";
 import {
   Select,
   SelectContent,
@@ -20,51 +20,37 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { addCategory } from "../actions";
-import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useState } from "react";
+import { useRevalidateCategories } from "@/lib/use-categories";
+import { useMutation } from "@tanstack/react-query";
+import { api, ApiError } from "@/lib/api";
 
 export function AddCategoryDialog() {
   const [open, setOpen] = useState(false);
-  const [isPending, setIsPending] = useState(false);
 
   const form = useForm<CategoryItem>({
     resolver: zodResolver(newCategorySchema()),
     defaultValues: { id: "", value: "", type: CategoryType.EXPENSES },
   });
   const { toast } = useToast();
-
+  const revalidate = useRevalidateCategories();
+  const addMutation = useMutation<EmptyObj, ApiError, CategoryItem>({
+    mutationFn: (body) => api({ uri: `/category`, method: "POST", body }),
+    onError: () => toast({ title: "Add fail" }),
+    onSuccess: revalidate,
+  });
   async function onSubmit(data: CategoryItem) {
-    setIsPending(true);
-    const res = await addCategory(data);
-
-    if (!res) {
-      toast({ title: `Add ${data.value} successful` });
-      setIsPending(false);
-      form.reset();
-      setOpen(false);
-      redirect(`/category?new=${data.id}`);
-      return;
-    }
-
-    switch (res.at(0)) {
-      case CATEGORY.ALREADY_EXISTS: {
-        form.setError("id", { message: res.at(1) });
-        break;
-      }
-    }
-    setIsPending(false);
+    setOpen(false);
+    form.reset();
+    addMutation.mutate(data);
   }
 
   return (
     <ResponsiveDialog
       open={open}
-      onOpenChange={(open) => {
-        if (isPending && !open) return;
-        setOpen(open);
-      }}
+      onOpenChange={setOpen}
       title="Add new category"
       trigger={
         <Button size="icon" className="ml-4" variant="ghost">
