@@ -1,5 +1,5 @@
 "use client";
-import { AccountItem, updateAccountValueSchema } from "types";
+import { AccountItem, EmptyObj, updateAccountValueSchema } from "types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -10,13 +10,13 @@ import {
 } from "@/components/ui/form";
 import DrawerDialog from "@/components/ui/DrawerDialog";
 import { ComponentProps } from "react";
-import { updateValue } from "./action";
-import { useRouter } from "next/navigation";
 import { MoneyInput } from "@/components/ui/input";
 import CellButton from "../cell-button";
 import { Money } from "@/components/ui/format";
 import { useToast } from "@/lib/use-toast";
-import { useAccounts } from "./provider";
+import { useRevalidateAccounts } from "@/lib/use-accounts";
+import { useMutation } from "@tanstack/react-query";
+import { api, ApiError } from "@/lib/api";
 
 function UpdateValueForm({
   item,
@@ -28,26 +28,31 @@ function UpdateValueForm({
     resolver: zodResolver(updateAccountValueSchema()),
     defaultValues: item,
   });
-  const { onAction } = useAccounts();
   const { toast } = useToast();
-  const router = useRouter();
-  async function onSubmit(data: Pick<AccountItem, "value" | "id">) {
-    setOpen(false);
-    onAction({ action: "updated", item: { ...item, value: data.value } });
-    const res = await updateValue(data);
-
-    if (res?.at(0)) {
+  const revalidate = useRevalidateAccounts();
+  const updateValueMutation = useMutation<
+    EmptyObj,
+    ApiError,
+    Pick<AccountItem, "value" | "id">
+  >({
+    mutationFn: ({ id, value }) =>
+      api({
+        uri: `/account/${id}/value`,
+        method: "PUT",
+        body: { value },
+      }),
+    onError: (error, { id }) =>
       toast({
         variant: "destructive",
-        title: `Update value of <${item.id}> failed`,
-        description: res.at(1),
-      });
-      return;
-    }
-    if (!res) {
-      form.reset();
-      router.push(`/account?updated=${data.id}`);
-    }
+        title: `Update value of ${id} failed`,
+        description: error.message,
+      }),
+    onSuccess: revalidate,
+  });
+  async function onSubmit(data: Pick<AccountItem, "value" | "id">) {
+    setOpen(false);
+    form.reset();
+    updateValueMutation.mutate(data);
   }
   return (
     <Form {...form}>

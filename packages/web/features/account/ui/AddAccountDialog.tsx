@@ -2,57 +2,48 @@
 import { useForm } from "react-hook-form";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ACCOUNT, AccountItem, newAccountSchema } from "types";
+import { AccountItem, EmptyObj, newAccountSchema } from "types";
 import { Input, MoneyInput } from "@/components/ui/input";
-import { SubmitButton } from "@/components/ui/form";
+import {
+  Form,
+  FormField,
+  InlineFormItem,
+  SubmitButton,
+} from "@/components/ui/form";
 import { useToast } from "@/lib/use-toast";
 import { ResponsiveDialog } from "@/components/ui/ResponsiveDialog";
-import { Form, FormField, InlineFormItem } from "@/components/ui/form";
-import { addAccount } from "../actions";
-import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { api, ApiError } from "@/lib/api";
+import { useRevalidateAccounts } from "@/lib/use-accounts";
 
 export function AddAccountDialog() {
   const [open, setOpen] = useState(false);
-  const [isPending, setIsPending] = useState(false);
 
   const form = useForm<AccountItem>({
     resolver: zodResolver(newAccountSchema()),
     defaultValues: { id: "", value: 0, name: "" },
   });
   const { toast } = useToast();
+  const revalidate = useRevalidateAccounts();
+  const addMutation = useMutation<EmptyObj, ApiError, AccountItem>({
+    mutationFn: (body) => api({ uri: `/account`, method: "POST", body }),
+    onError: () => toast({ title: "Add fail" }),
+    onSuccess: revalidate,
+  });
 
   async function onSubmit(data: AccountItem) {
-    setIsPending(true);
-    const res = await addAccount(data);
-
-    if (!res) {
-      toast({ title: `Add ${data.value} successful` });
-      setIsPending(false);
-      form.reset();
-      setOpen(false);
-      redirect(`/account?new=${data.id}`);
-      return;
-    }
-
-    switch (res.at(0)) {
-      case ACCOUNT.ALREADY_EXISTS: {
-        form.setError("id", { message: res.at(1) });
-        break;
-      }
-    }
-    setIsPending(false);
+    setOpen(false);
+    form.reset();
+    addMutation.mutate(data);
   }
 
   return (
     <ResponsiveDialog
       open={open}
-      onOpenChange={(open) => {
-        if (isPending && !open) return;
-        setOpen(open);
-      }}
+      onOpenChange={setOpen}
       title="Add new category"
       trigger={
         <Button size="icon" className="ml-4" variant="ghost">
