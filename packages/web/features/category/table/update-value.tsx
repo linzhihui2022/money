@@ -1,5 +1,12 @@
 "use client";
-import { CategoryItem, EmptyObj, updateCategoryTextSchema } from "types";
+import {
+  ActionState,
+  CategoryItem,
+  EmptyObj,
+  initialState,
+  successState,
+  updateCategoryTextSchema,
+} from "types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -8,14 +15,12 @@ import {
   InlineFormItem,
   SubmitButton,
 } from "@/components/ui/form";
-import DrawerDialog from "@/components/ui/DrawerDialog";
-import { ComponentProps } from "react";
+import DrawerDialog from "@/components/ui/drawer-dialog";
+import { ComponentProps, useOptimistic, useTransition } from "react";
 import { Input } from "@/components/ui/input";
-import CellButton from "../cell-button";
 import { useToast } from "@/lib/use-toast";
-import { useRevalidateCategories } from "@/lib/use-categories";
-import { useMutation } from "@tanstack/react-query";
-import { api, ApiError } from "@/lib/api";
+import { updateText } from "actions/category";
+import CellButton from "@/components/table/cell-button";
 
 function UpdateValueForm({
   item,
@@ -28,30 +33,27 @@ function UpdateValueForm({
     defaultValues: item,
   });
   const { toast } = useToast();
-  const revalidate = useRevalidateCategories();
-  const updateValueMutation = useMutation<
-    EmptyObj,
-    ApiError,
-    Pick<CategoryItem, "value" | "id">
-  >({
-    mutationFn: ({ id, value }) =>
-      api({
-        uri: `/category/${id}/text`,
-        method: "PUT",
-        body: { value },
-      }),
-    onError: (error, { id }) =>
-      toast({
-        variant: "destructive",
-        title: `Update value of ${id} failed`,
-        description: error.message,
-      }),
-    onSuccess: revalidate,
-  });
+
+  const [state, setState] = useOptimistic<ActionState<EmptyObj>>(
+    initialState({}),
+  );
+  const [, startTransition] = useTransition();
   async function onSubmit(data: Pick<CategoryItem, "value" | "id">) {
     setOpen(false);
     form.reset();
-    updateValueMutation.mutate(data);
+    startTransition(async () => {
+      setState(successState({}));
+      const res = await updateText(state, data);
+      switch (res.status) {
+        case "error":
+          toast({
+            variant: "destructive",
+            title: `Update value of ${data.id} failed`,
+            description: res.error?.message,
+          });
+          break;
+      }
+    });
   }
   return (
     <Form {...form}>

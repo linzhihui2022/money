@@ -20,15 +20,18 @@ export const login = gatewayMiddleware<
     ClientId: Resource.Web.id,
     AuthParameters: { USERNAME: username, PASSWORD: password },
   });
-  const res = await cognitoClient.send(command);
-  if (res?.AuthenticationResult?.AccessToken) {
-    return {
-      expiresIn: res.AuthenticationResult.ExpiresIn,
-      token: res.AuthenticationResult.AccessToken,
-      refreshToken: res.AuthenticationResult.RefreshToken,
-    };
+  try {
+    const res = await cognitoClient.send(command);
+    if (res?.AuthenticationResult?.AccessToken) {
+      return {
+        expiresIn: res.AuthenticationResult.ExpiresIn,
+        token: res.AuthenticationResult.AccessToken,
+        refreshToken: res.AuthenticationResult.RefreshToken,
+      };
+    }
+  } catch (e) {
+    throwErrorIf(new UnauthorizedError((e as Error).message, AUTH.LOGIN_FAIL));
   }
-  throwErrorIf(new UnauthorizedError("login fail", AUTH.LOGIN_FAIL));
 });
 
 export const refresh = gatewayMiddleware<
@@ -42,13 +45,18 @@ export const refresh = gatewayMiddleware<
     ClientId: Resource.Web.id,
     AuthParameters: { REFRESH_TOKEN: token },
   });
-  const res = await cognitoClient.send(command);
-  if (res?.AuthenticationResult?.AccessToken) {
-    return {
-      expiresIn: res.AuthenticationResult.ExpiresIn,
-      token: res.AuthenticationResult.AccessToken,
-      refreshToken: res.AuthenticationResult.RefreshToken,
-    };
+  try {
+    const res = await cognitoClient.send(command);
+    if (res?.AuthenticationResult?.AccessToken) {
+      return {
+        expiresIn: res.AuthenticationResult.ExpiresIn,
+        token: res.AuthenticationResult.AccessToken,
+        refreshToken: res.AuthenticationResult.RefreshToken,
+      };
+    }
+  } catch (e) {
+    throwErrorIf(
+      new UnauthorizedError((e as Error).message, AUTH.REFRESH_FAIL),
+    );
   }
-  throwErrorIf(new UnauthorizedError("refresh fail", AUTH.REFRESH_FAIL));
 });

@@ -4,8 +4,8 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
 } from "@/components/ui/sidebar";
-import { BillMenuGroup } from "./BillMenuGroup";
-import PlanningMenuGroup from "./PlanningMenuGroup";
+import { BillMenuGroup } from "./bill-group";
+import PlanningMenuGroup from "./planning-group";
 
 const GroupContainer = ({
   label,

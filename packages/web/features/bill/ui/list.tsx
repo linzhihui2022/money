@@ -1,20 +1,17 @@
-"use client";
-
 import { AccountItem, BillItem, CategoryItem, CategoryType } from "types";
 import dayjs from "dayjs";
 import { DateTime, Money } from "@/components/ui/format";
 import { Separator } from "@/components/ui/separator";
-import { X } from "lucide-react";
+import { PackageOpen, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Fragment, PropsWithChildren, useMemo } from "react";
+import { Fragment, PropsWithChildren } from "react";
 import { isActive, queryToggle } from "@/lib/query";
 import { Badge } from "@/components/ui/badge";
 import IdBadge from "@/components/table/id-badge";
 import { Link } from "@/lib/use-nav";
-import { useSearchParams } from "next/navigation";
-import { useCategoriesQuery } from "@/lib/use-categories";
-import { useAccountsQuery } from "@/lib/use-accounts";
-import { useBillsQuery } from "@/lib/use-bills";
+
+import { api } from "@/lib/api";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
 const Cell = ({
   children,
@@ -29,45 +26,42 @@ const Cell = ({
   </div>
 );
 
-export const BillList = () => {
-  const query = useSearchParams();
+export const BillList = async ({ query }: { query: URLSearchParams }) => {
   const accountChecked = query.getAll("account");
   const categoryChecked = query.getAll("category");
 
-  const categoriesRes = useCategoriesQuery();
+  const categoriesRes = await api<{ Count: number; Items: CategoryItem[] }>({
+    uri: "/category",
+    next: { tags: ["categories"] },
+  }).then((res) => res.data?.Items);
+  const accountsRes = await api<{ Count: number; Items: AccountItem[] }>({
+    uri: "/accounts",
+    next: { tags: ["accounts"] },
+  }).then((res) => res.data?.Items);
 
-  const categories = useMemo(
-    () =>
-      categoriesRes.data.reduce<Record<string, CategoryItem>>(
-        (pre, cur) => ({ ...pre, [cur.id]: cur }),
-        {},
-      ) || {},
-    [categoriesRes],
-  );
+  const categories =
+    categoriesRes?.reduce<Record<string, CategoryItem>>(
+      (pre, cur) => ({ ...pre, [cur.id]: cur }),
+      {},
+    ) || {};
 
-  const accountsRes = useAccountsQuery();
+  const accounts =
+    accountsRes?.reduce<Record<string, AccountItem>>(
+      (pre, cur) => ({ ...pre, [cur.id]: cur }),
+      {},
+    ) || {};
+  const bills = await api<{ Count: number; Items: BillItem[] }>({
+    uri: `/bills?${query}`,
+    next: { tags: ["bills"] },
+  }).then((res) => res.data?.Items || []);
 
-  const accounts = useMemo(
-    () =>
-      accountsRes.data.reduce<Record<string, AccountItem>>(
-        (pre, cur) => ({ ...pre, [cur.id]: cur }),
-        {},
-      ) || {},
-    [accountsRes],
-  );
-
-  const bills = useBillsQuery();
-
-  const groupByDate = useMemo(
-    () =>
-      bills.data.reduce<Record<string, BillItem[]>>((pre, cur) => {
-        const date = dayjs(cur.date).format("YYYY-MM-DD");
-        pre[date] = pre[date] || [];
-        pre[date].push(cur);
-        return pre;
-      }, {}),
-    [bills.data],
-  );
+  const groupByDate =
+    bills.reduce<Record<string, BillItem[]>>((pre, cur) => {
+      const date = dayjs(cur.date).format("YYYY-MM-DD");
+      pre[date] = pre[date] || [];
+      pre[date].push(cur);
+      return pre;
+    }, {}) || {};
   const filters =
     accountChecked.length || categoryChecked.length ? (
       <div className="flex flex-wrap -mb-1 -mr-1 pb-3">
@@ -103,43 +97,27 @@ export const BillList = () => {
     ) : (
       <></>
     );
-  // if (bills.isPending) {
-  //   return (
-  //     <>
-  //       {filters}
-  //       <div className="grid grid-cols-1 gap-y-2">
-  //         <Skeleton className="w-full h-5 bg-accent" />
-  //         <Skeleton className="w-full h-5" />
-  //         <Skeleton className="w-full h-5" />
-  //         <Skeleton className="w-full h-5 bg-accent" />
-  //         <Skeleton className="w-full h-5" />
-  //         <Skeleton className="w-full h-5" />
-  //         <Skeleton className="w-full h-5 bg-accent" />
-  //         <Skeleton className="w-full h-5" />
-  //       </div>
-  //     </>
-  //   );
-  // }
-  // if (bills.data.length === 0) {
-  //   return (
-  //     <>
-  //       {filters}
-  //       <div className="flex items-center justify-center">
-  //         <Alert>
-  //           <PackageOpen className="h-4 w-4" />
-  //           <AlertTitle>No bills!</AlertTitle>
-  //           <AlertDescription>
-  //             Remove your{" "}
-  //             <Link href="/" className="underline">
-  //               filters
-  //             </Link>{" "}
-  //             or add a new bill!
-  //           </AlertDescription>
-  //         </Alert>
-  //       </div>
-  //     </>
-  //   );
-  // }
+
+  if (bills.length === 0) {
+    return (
+      <>
+        {filters}
+        <div className="flex items-center justify-center">
+          <Alert>
+            <PackageOpen className="h-4 w-4" />
+            <AlertTitle>No bills!</AlertTitle>
+            <AlertDescription>
+              Remove your{" "}
+              <Link href="/" className="underline">
+                filters
+              </Link>{" "}
+              or add a new bill!
+            </AlertDescription>
+          </Alert>
+        </div>
+      </>
+    );
+  }
   return (
     <>
       {filters}

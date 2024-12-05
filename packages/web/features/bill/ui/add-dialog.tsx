@@ -12,10 +12,20 @@ import {
   InlineFormItem,
   SubmitButton,
 } from "@/components/ui/form";
-import { BillItem, CategoryType, newBillSchema } from "types";
+import {
+  AccountItem,
+  ActionState,
+  BillItem,
+  CategoryItem,
+  CategoryType,
+  EmptyObj,
+  initialState,
+  newBillSchema,
+  successState,
+} from "types";
 import { useToast } from "@/lib/use-toast";
-import DrawerDialog from "@/components/ui/DrawerDialog";
-import { ComponentProps, useState } from "react";
+import DrawerDialog from "@/components/ui/drawer-dialog";
+import { ComponentProps, useOptimistic, useState, useTransition } from "react";
 import { CalendarIcon, Plus } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -45,26 +55,23 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import dayjs from "dayjs";
-import { useMutation } from "@tanstack/react-query";
-import { api, ApiError } from "@/lib/api";
-import { useCategoriesQuery } from "@/lib/use-categories";
-import { useAccountsQuery } from "@/lib/use-accounts";
-import { useRevalidateBills } from "@/lib/use-bills";
+import { addBill } from "actions/bill";
 
 function AccountStep({
   onAccount,
   account,
+  accounts,
 }: {
   account: string;
   onAccount: (account: string) => void;
+  accounts: AccountItem[];
 }) {
-  const accounts = useAccountsQuery();
   const { onNext } = useStepper();
   return (
     <div
       className={cn(
         "mt-4 h-60 overflow-y-auto no-scrollbar",
-        accounts.data.length > 6 ? "h-60" : "",
+        accounts.length > 6 ? "h-60" : "",
       )}
     >
       <RadioGroupPrimitive.Root
@@ -72,7 +79,7 @@ function AccountStep({
         onValueChange={(value) => onAccount(value)}
         className="grid pr-2"
       >
-        {accounts.data.map((i) => (
+        {accounts.map((i) => (
           <div
             key={i.id}
             className={cn(
@@ -103,12 +110,13 @@ function AccountStep({
 function CategoryStep({
   category,
   onCategory,
+  categories,
 }: {
   category: string;
   onCategory: (account: string) => void;
+  categories: CategoryItem[];
 }) {
   const { onNext, onPrev } = useStepper();
-  const categories = useCategoriesQuery();
 
   return (
     <>
@@ -118,7 +126,7 @@ function CategoryStep({
       >
         <Tabs
           defaultValue={
-            categories.data.find((i) => i.id === category)?.type ||
+            categories.find((i) => i.id === category)?.type ||
             CategoryType.EXPENSES
           }
         >
@@ -133,7 +141,7 @@ function CategoryStep({
             <TabsContent value={type} key={type}>
               <div className="my-4 h-36 overflow-y-auto no-scrollbar">
                 <div className="grid grid-cols-3 sm:grid-cols-4 gap-1">
-                  {categories.data
+                  {categories
                     .filter((i) => i.type === type)
                     .map((i) => (
                       <div
@@ -173,31 +181,37 @@ function CategoryStep({
 function BillStep({
   defaultValues,
   setOpen,
+  categories,
+  accounts,
 }: ComponentProps<typeof AddBillForm> & {
   defaultValues: Omit<BillItem, "id" | "active">;
+  categories: CategoryItem[];
+  accounts: AccountItem[];
 }) {
-  const categories = useCategoriesQuery();
-  const accounts = useAccountsQuery();
-
   const { toast } = useToast();
   const form = useForm<Omit<BillItem, "id" | "active">>({
     resolver: zodResolver(newBillSchema()),
     defaultValues,
   });
-  const revalidate = useRevalidateBills();
-  const addMutation = useMutation<
-    Omit<BillItem, "date"> & { date: number },
-    ApiError,
-    Omit<BillItem, "id" | "active">
-  >({
-    mutationFn: (body) => api({ uri: `/bill`, method: "POST", body }),
-    onError: () => toast({ title: "Add fail" }),
-    onSuccess: revalidate,
-  });
+  const [state, setState] = useOptimistic<ActionState<EmptyObj>>(
+    initialState({}),
+  );
+  const [, startTransition] = useTransition();
   async function onSubmit(data: Omit<BillItem, "id" | "active">) {
     setOpen(false);
     form.reset();
-    addMutation.mutate(data);
+    startTransition(async () => {
+      setState(successState({}));
+      const res = await addBill(state, data);
+      switch (res.status) {
+        case "success":
+          toast({ title: "Add success" });
+          break;
+        case "error":
+          toast({ title: res.error?.message, variant: "destructive" });
+          break;
+      }
+    });
   }
 
   return (
@@ -219,7 +233,7 @@ function BillStep({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {accounts.data.map((account) => (
+                  {accounts.map((account) => (
                     <SelectItem key={account.id} value={account.id}>
                       {account.name}
                     </SelectItem>
@@ -245,7 +259,7 @@ function BillStep({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {categories.data.map((category) => (
+                  {categories.map((category) => (
                     <SelectItem key={category.id} value={category.id}>
                       {category.value}
                     </SelectItem>
@@ -318,9 +332,14 @@ function BillStep({
   );
 }
 
-function AddBillForm(
-  props: ComponentProps<ComponentProps<typeof DrawerDialog>["Body"]>,
-) {
+function AddBillForm({
+  accounts,
+  categories,
+  ...props
+}: ComponentProps<ComponentProps<typeof DrawerDialog>["Body"]> & {
+  categories: CategoryItem[];
+  accounts: AccountItem[];
+}) {
   const query = useSearchParams();
   const [account, setAccount] = useState(query.getAll("account")?.at(0) || "");
   const [category, setCategory] = useState(
@@ -337,16 +356,20 @@ function AddBillForm(
         <AccountStep
           account={account}
           onAccount={(account) => setAccount(account)}
+          accounts={accounts}
         />
       </StepperContent>
       <StepperContent value={2}>
         <CategoryStep
           category={category}
           onCategory={(category) => setCategory(category)}
+          categories={categories}
         />
       </StepperContent>
       <StepperContent value={3}>
         <BillStep
+          categories={categories}
+          accounts={accounts}
           {...props}
           defaultValues={{
             desc: "",
@@ -360,7 +383,13 @@ function AddBillForm(
     </StepperRoot>
   );
 }
-export default function AddBill() {
+export default function AddBill({
+  categories,
+  accounts,
+}: {
+  categories: CategoryItem[];
+  accounts: AccountItem[];
+}) {
   return (
     <DrawerDialog
       title={"Add"}
@@ -369,7 +398,9 @@ export default function AddBill() {
           <Plus />
         </Button>
       }
-      Body={AddBillForm}
+      Body={(props) => (
+        <AddBillForm {...props} categories={categories} accounts={accounts} />
+      )}
     />
   );
 }

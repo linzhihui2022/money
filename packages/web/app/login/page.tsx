@@ -7,86 +7,82 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { api } from "@/lib/api";
 import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useOptimistic, useTransition } from "react";
+import { ActionState, EmptyObj, initialState, successState } from "types";
+import { Form, FormField, InlineFormItem } from "@/components/ui/form";
+import { login } from "actions/auth";
 import { useRouter } from "next/navigation";
-import { useLocalStorage } from "react-use";
+import { useToast } from "@/lib/use-toast";
 
 export default function LoginPage() {
+  const form = useForm<{ username: string; password: string }>({
+    resolver: zodResolver(
+      z.object({ username: z.string().min(1), password: z.string().min(1) }),
+    ),
+    defaultValues: { username: "aws_test_2", password: "Welcome321!" },
+  });
+  const [state, setState] = useOptimistic<ActionState<EmptyObj>>(
+    initialState({}),
+  );
+  const [, startTransition] = useTransition();
   const router = useRouter();
-  const [, setRefreshToken] = useLocalStorage<string>("refreshToken", "", {
-    raw: true,
-  });
-  const [, setExpiresAt] = useLocalStorage<string>("expiresAt", "", {
-    raw: true,
-  });
-  const [, setToken] = useLocalStorage<string>("token", "", {
-    raw: true,
-  });
-  const [, setUsername] = useLocalStorage<string>("username", "", {
-    raw: true,
-  });
+  const { toast } = useToast();
   return (
     <div className="min-h-screen flex justify-center items-start md:items-center p-8">
-      <form
-        className="w-full max-w-xs"
-        action={async (form: FormData) => {
-          const { username, password } = z
-            .object({ username: z.string(), password: z.string() })
-            .parse({
-              username: form.get("username"),
-              password: form.get("password"),
+      <Form {...form}>
+        <form
+          className="w-full max-w-xs"
+          onSubmit={form.handleSubmit(async (data) => {
+            startTransition(async () => {
+              setState(successState({}));
+              const res = await login(state, data);
+              switch (res.status) {
+                case "success":
+                  router.push("/");
+                  break;
+                case "error":
+                  toast({ title: res.error?.message, variant: "destructive" });
+                  break;
+              }
             });
-          const data = await api<{
-            token: string;
-            refreshToken?: string;
-            expiresIn: number;
-          }>({
-            uri: `/user`,
-            method: "POST",
-            body: { username, password },
-          });
-          const { token, refreshToken, expiresIn } = data;
-          const expiresAt = new Date().getTime() + expiresIn * 1000;
-          if (refreshToken) {
-            setRefreshToken(refreshToken);
-            setExpiresAt(`${expiresAt}`);
-            setToken(token);
-            setUsername(username);
-            router.push("/");
-          }
-        }}
-      >
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-2xl">Login</CardTitle>
-          </CardHeader>
-
-          <CardContent>
-            <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
-              <Input
-                id="username"
-                name="username"
-                type="text"
-                defaultValue="aws_test_2"
-              />
-              <Label htmlFor="password">Password</Label>
-              <Input
-                name="password"
-                id="password"
-                type="password"
-                defaultValue="Welcome321!"
-              />
-            </div>
-          </CardContent>
-          <CardFooter>
-            <Button className="w-full">Sign in</Button>
-          </CardFooter>
-        </Card>
-      </form>
+          })}
+        >
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl">Login</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <FormField
+                  control={form.control}
+                  name="username"
+                  render={({ field }) => (
+                    <InlineFormItem label="Username">
+                      <Input {...field} />
+                    </InlineFormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <InlineFormItem label="Password">
+                      <Input {...field} type="password" />
+                    </InlineFormItem>
+                  )}
+                />
+              </div>
+            </CardContent>
+            <CardFooter>
+              <Button className="w-full">Sign in</Button>
+            </CardFooter>
+          </Card>
+        </form>
+      </Form>
     </div>
   );
 }

@@ -1,5 +1,12 @@
 "use client";
-import { AccountItem, EmptyObj, updateAccountNameSchema } from "types";
+import {
+  AccountItem,
+  ActionState,
+  EmptyObj,
+  initialState,
+  successState,
+  updateAccountNameSchema,
+} from "types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -9,13 +16,11 @@ import {
   SubmitButton,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import DrawerDialog from "@/components/ui/DrawerDialog";
-import { ComponentProps } from "react";
-import CellButton from "../cell-button";
+import DrawerDialog from "@/components/ui/drawer-dialog";
+import { ComponentProps, useOptimistic, useTransition } from "react";
 import { useToast } from "@/lib/use-toast";
-import { useMutation } from "@tanstack/react-query";
-import { api, ApiError } from "@/lib/api";
-import { useRevalidateAccounts } from "@/lib/use-accounts";
+import { updateName } from "actions/account";
+import CellButton from "@/components/table/cell-button";
 
 function UpdateNameForm({
   item,
@@ -28,30 +33,26 @@ function UpdateNameForm({
     defaultValues: item,
   });
   const { toast } = useToast();
-  const revalidate = useRevalidateAccounts();
-  const updateNameMutation = useMutation<
-    EmptyObj,
-    ApiError,
-    Pick<AccountItem, "name" | "id">
-  >({
-    mutationFn: ({ id, name }) =>
-      api({
-        uri: `/account/${id}/name`,
-        method: "PUT",
-        body: { name },
-      }),
-    onError: (error, { id }) =>
-      toast({
-        variant: "destructive",
-        title: `Update name of ${id} failed`,
-        description: error.message,
-      }),
-    onSuccess: revalidate,
-  });
+  const [state, setState] = useOptimistic<ActionState<EmptyObj>>(
+    initialState({}),
+  );
+  const [, startTransition] = useTransition();
   async function onSubmit(data: Pick<AccountItem, "name" | "id">) {
     setOpen(false);
     form.reset();
-    updateNameMutation.mutate(data);
+    startTransition(async () => {
+      setState(successState({}));
+      const res = await updateName(state, data);
+      switch (res.status) {
+        case "error":
+          toast({
+            variant: "destructive",
+            title: `Update name of ${data.id} failed`,
+            description: res.error?.message,
+          });
+          break;
+      }
+    });
   }
 
   return (

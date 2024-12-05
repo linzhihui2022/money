@@ -1,15 +1,11 @@
-"use client";
-
-import AccountTable from "@/components/table/account";
-import AccountHeader from "@/features/account/ui/AccountHeader";
+import AccountTable from "@/features/account/ui/table";
+import AccountHeader from "@/features/account/ui/header";
 
 export default function Page() {
   return (
-    <div>
-      <div className="flex items-center space-x-3 w-full">
-        <AccountHeader />
-      </div>
+    <>
+      <AccountHeader />
       <AccountTable />
-    </div>
+    </>
   );
 }

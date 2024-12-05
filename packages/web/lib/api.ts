@@ -1,20 +1,25 @@
-import { type Code, COMMON, ErrorBody } from "types";
+"use server";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import {
+  ActionState,
+  COMMON,
+  ErrorBody,
+  errorState,
+  SuccessState,
+  successState,
+} from "types";
 
-export class ApiError extends Error {
-  constructor(
-    message: string,
-    public code: Code,
-  ) {
-    super(message);
-  }
-}
 export const api = async <T>({
   uri,
   ...request
-}: Omit<RequestInit, "body"> & { uri: string; body?: unknown }): Promise<T> => {
-  const baseUrl = process.env.NEXT_PUBLIC_API;
+}: Omit<RequestInit, "body"> & { uri: string; body?: unknown }): Promise<
+  ActionState<T>
+> => {
+  const baseUrl = process.env.API_URL;
   const headers: { Authorization?: string } = {};
-  const token = localStorage.getItem("token");
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
   if (token) {
     headers["Authorization"] = `Bearer ${token}`;
   }
@@ -25,20 +30,27 @@ export const api = async <T>({
   });
   if (response.ok) {
     if (response.status === 204) {
-      return {} as T;
+      return successState({}) as SuccessState<T>;
     }
-    return (await response.clone().json()) as T;
+    return successState((await response.clone().json()) as T);
   }
-  if ([401, 403].includes(response.status)) {
-    window.location.href = "/login";
+  if (
+    [401, 403].includes(response.status) &&
+    uri !== "/user" &&
+    request.method !== "POST"
+  ) {
+    redirect("/login");
   }
   const errorBody = (await response
     .clone()
     .json()
     .catch(() => null)) as ErrorBody | null;
   if (errorBody) {
-    throw new ApiError(errorBody.message, errorBody.code || COMMON.UNEXPECTED);
+    return errorState(errorBody);
   } else {
-    throw new ApiError(response.statusText, COMMON.UNEXPECTED);
+    return errorState({
+      message: response.statusText,
+      code: COMMON.UNEXPECTED,
+    });
   }
 };

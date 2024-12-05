@@ -16,15 +16,12 @@ import { ChevronUp, User2 } from "lucide-react";
 import React from "react";
 import Menu from "@/features/app-sidebar/menu";
 import { AppLogo } from "@/features/layout/ui/AppLogo";
-import { useLocalStorage } from "react-use";
-import { useRouter } from "next/navigation";
+import { cookies } from "next/headers";
+import { logout } from "actions/auth";
 
-export function AppSidebar() {
-  const [username] = useLocalStorage<string>("username");
-  const [, , removeToken] = useLocalStorage<string>("token");
-  const [, , removeRefreshToken] = useLocalStorage<string>("refreshToken");
-  const [, , removeExpiresAt] = useLocalStorage<string>("expiresAt");
-  const router = useRouter();
+export async function AppSidebar() {
+  const cookieStore = await cookies();
+  const username = cookieStore.get("username")?.value;
   return (
     <Sidebar header={<AppLogo theme="sidebar" />}>
       <SidebarContent>
@@ -46,17 +43,9 @@ export function AppSidebar() {
                 className="w-[--radix-popper-anchor-width]"
               >
                 <DropdownMenuItem>
-                  <button
-                    onClick={() => {
-                      removeToken();
-                      removeExpiresAt();
-                      removeRefreshToken();
-                      router.push("/login");
-                    }}
-                    className="w-full"
-                  >
-                    Sign out
-                  </button>
+                  <form className="w-full" action={logout}>
+                    <button className="w-full">Sign out</button>
+                  </form>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

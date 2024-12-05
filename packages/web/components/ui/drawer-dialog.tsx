@@ -1,5 +1,4 @@
 "use client";
-import { useMediaQuery } from "@/lib/use-media-query";
 import {
   Dialog,
   DialogContent,
@@ -20,6 +19,7 @@ import {
 } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { Dispatch, FC, ReactNode, SetStateAction, useState } from "react";
+import { useIsMobile } from "../hooks/use-mobile";
 
 export default function DrawerDialog({
   trigger,
@@ -33,9 +33,9 @@ export default function DrawerDialog({
   Body: FC<{ open: boolean; setOpen: Dispatch<SetStateAction<boolean>> }>;
 }) {
   const [open, setOpen] = useState(false);
-  const isDesktop = useMediaQuery("(min-width: 768px)");
+  const isMobile = useIsMobile();
 
-  if (isDesktop) {
+  if (!isMobile) {
     return (
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>{trigger}</DialogTrigger>

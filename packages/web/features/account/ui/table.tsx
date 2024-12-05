@@ -7,10 +7,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { AccountItem } from "types";
-import UpdateName from "@/components/table/account/update-name";
-import UpdateValue from "@/components/table/account/update-value";
-import Delete from "@/components/table/account/delete";
-import { useAccountsQuery } from "@/lib/use-accounts";
+import UpdateName from "../table/update-name";
+import UpdateValue from "../table/update-value";
+import Delete from "../table/delete";
+import { api } from "@/lib/api";
 
 function Row({ item }: { item: AccountItem }) {
   return (
@@ -29,9 +29,11 @@ function Row({ item }: { item: AccountItem }) {
   );
 }
 
-function AccountTableBody() {
-  const { data } = useAccountsQuery();
-
+async function AccountTableBody() {
+  const data = await api<{ Count: number; Items: AccountItem[] }>({
+    uri: "/accounts",
+    next: { tags: ["accounts"] },
+  }).then((res) => res.data?.Items || []);
   return (
     <>
       {data.map((i) => (

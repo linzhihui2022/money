@@ -1,5 +1,5 @@
 import Breadcrumb from "@/features/breadcrumb";
-import { AddCategoryDialog } from "./AddCategoryDialog";
+import { AddCategoryDialog } from "./add-dialog";
 
 export default function CategoryHeader() {
   return (

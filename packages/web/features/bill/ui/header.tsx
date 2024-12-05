@@ -1,4 +1,3 @@
-"use client";
 import {
   Popover,
   PopoverContent,
@@ -9,12 +8,10 @@ import { ChevronDown } from "lucide-react";
 import { isActive, queryToggle } from "@/lib/query";
 import type { AccountItem, CategoryItem } from "types";
 import { CheckboxLink } from "@/components/ui/checkbox";
-import AddBill from "@/components/form/add-bill";
+import AddBill from "@/features/bill/ui/add-dialog";
 import { Link } from "@/lib/use-nav";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useSearchParams } from "next/navigation";
-import { useAccountsQuery } from "@/lib/use-accounts";
-import { useCategoriesQuery } from "@/lib/use-categories";
+import { api } from "@/lib/api";
 
 type CheckboxProps =
   | { item: CategoryItem; type: "category" }
@@ -38,10 +35,15 @@ function Checkbox({
   );
 }
 
-function BillHeaderAsync() {
-  const query = useSearchParams();
-  const categories = useCategoriesQuery();
-  const accounts = useAccountsQuery();
+async function BillHeaderAsync({ query }: { query: URLSearchParams }) {
+  const categories = await api<{ Count: number; Items: CategoryItem[] }>({
+    uri: "/category",
+    next: { tags: ["categories"] },
+  }).then((res) => res.data?.Items || []);
+  const accounts = await api<{ Count: number; Items: AccountItem[] }>({
+    uri: "/accounts",
+    next: { tags: ["accounts"] },
+  }).then((res) => res.data?.Items || []);
 
   return (
     <div className="flex justify-between flex-1">
@@ -58,7 +60,7 @@ function BillHeaderAsync() {
           </PopoverTrigger>
           <PopoverContent className="space-y-2">
             <div className="h-64 overflow-y-auto no-scrollbar">
-              {categories.data.map((i) => (
+              {categories.map((i) => (
                 <Checkbox key={i.id} item={i} query={query} type="category" />
               ))}
             </div>
@@ -81,7 +83,7 @@ function BillHeaderAsync() {
           </PopoverTrigger>
           <PopoverContent className="space-y-2">
             <div className="h-64 overflow-y-auto no-scrollbar">
-              {accounts.data.map((account) => (
+              {accounts.map((account) => (
                 <Checkbox
                   key={account.id}
                   item={account}
@@ -98,7 +100,7 @@ function BillHeaderAsync() {
           </PopoverContent>
         </Popover>
       </div>
-      <AddBill />
+      <AddBill categories={categories} accounts={accounts} />
     </div>
   );
 }
@@ -117,10 +119,14 @@ export function BillHeaderSkeleton() {
   );
 }
 
-export default function BillHeader() {
+export default async function BillHeader({
+  query,
+}: {
+  query: URLSearchParams;
+}) {
   return (
     <div className="flex items-center space-x-3 w-full py-3">
-      <BillHeaderAsync />
+      <BillHeaderAsync query={query} />
     </div>
   );
 }

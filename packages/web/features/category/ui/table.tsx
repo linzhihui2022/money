@@ -1,3 +1,4 @@
+"use server";
 import {
   Table,
   TableBody,
@@ -6,20 +7,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useCategoriesQuery } from "@/lib/use-categories";
 import { CategoryItem } from "types";
-import UpdateValue from "@/components/table/category/update-value";
-import Delete from "@/components/table/category/delete";
+import UpdateValue from "../table/update-value";
+import Delete from "../table/delete";
+import { api } from "@/lib/api";
 
-function CategoriesTableBody() {
-  const { data } = useCategoriesQuery();
-  return (
-    <>
-      {data.map((i) => (
-        <Row item={i} key={i.id} />
-      ))}
-    </>
-  );
+async function CategoriesTableBody() {
+  const data = await api<{ Count: number; Items: CategoryItem[] }>({
+    uri: "/category",
+    next: { tags: ["categories"] },
+  }).then((res) => res.data?.Items);
+  return <>{data?.map((i) => <Row item={i} key={i.id} />)}</>;
 }
 
 function Row({ item }: { item: CategoryItem }) {
@@ -37,7 +35,7 @@ function Row({ item }: { item: CategoryItem }) {
   );
 }
 
-export default function CategoryTable() {
+export default async function CategoryTable() {
   return (
     <Table>
       <TableHeader>

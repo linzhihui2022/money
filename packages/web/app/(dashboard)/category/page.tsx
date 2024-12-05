@@ -1,13 +1,10 @@
-"use client";
-import CategoryTable from "@/components/table/category";
-import CategoryHeader from "@/features/category/ui/CategoryHeader";
+import CategoryTable from "@/features/category/ui/table";
+import CategoryHeader from "@/features/category/ui/header";
 
-export default function Page() {
+export default async function Page() {
   return (
     <div>
-      <div className="flex items-center space-x-3 w-full">
-        <CategoryHeader />
-      </div>
+      <CategoryHeader />
       <CategoryTable />
     </div>
   );

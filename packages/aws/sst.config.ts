@@ -21,15 +21,11 @@ export default $config({
     const cognito = await import("./infra/cognito");
     const api = await import("./infra/api");
     return {
-      db: {
-        bill: db.billDB.arn,
-        account: db.accountDB.arn,
-        category: db.categoryDB.arn,
-      },
+      bill: db.billDB.arn,
+      account: db.accountDB.arn,
+      category: db.categoryDB.arn,
       importBucket: importBucket.importBucket.arn,
-      cognito: {
-        client: cognito.userPoolClient.id,
-      },
+      cognitoClient: cognito.userPoolClient.id,
       api: api.api.url,
     };
   },

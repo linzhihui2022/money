@@ -1,5 +1,5 @@
 import Breadcrumb from "@/features/breadcrumb";
-import { AddAccountDialog } from "./AddAccountDialog";
+import { AddAccountDialog } from "./add-dialog";
 
 export default function AccountHeader() {
   return (
