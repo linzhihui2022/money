@@ -1,31 +1,34 @@
 "use client";
-import { AccountItem } from "types";
+import { AccountItem, EmptyObj } from "types";
 import { useToast } from "@/lib/use-toast";
-import { deleteAccount } from "@/components/table/account/action";
 import DeleteDialog from "@/components/table/delete-dialog";
-import { useAccounts } from "./provider";
+import { useMutation } from "@tanstack/react-query";
+import { api, ApiError } from "@/lib/api";
+import { useRevalidateAccounts } from "@/lib/use-accounts";
 
 export default function Delete({ item }: { item: AccountItem }) {
   const { toast } = useToast();
-  const { onAction } = useAccounts();
-
-  async function onSubmit() {
-    onAction({ action: "deleted", item });
-    const res = await deleteAccount(item);
-    if (res?.at(0)) {
+  const revalidate = useRevalidateAccounts();
+  const deleteMutation = useMutation<
+    EmptyObj,
+    ApiError,
+    Pick<AccountItem, "id">
+  >({
+    mutationFn: ({ id }) => api({ uri: `/account/${id}`, method: "DELETE" }),
+    onError: (error, { id }) =>
       toast({
         variant: "destructive",
-        title: `Delete ${item.id} fail`,
-        description: res.at(1),
-      });
-      return;
-    }
-  }
+        title: `Delete ${id} failed`,
+        description: error.message,
+      }),
+    onSuccess: revalidate,
+  });
+
   return (
     <DeleteDialog
       onDeleteAction={async (setOpen) => {
         setOpen(false);
-        await onSubmit();
+        deleteMutation.mutate(item);
       }}
       name={item.name}
     />

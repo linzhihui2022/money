@@ -1,3 +1,4 @@
+"use client";
 import {
   Popover,
   PopoverContent,
@@ -5,13 +6,15 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
-import { getQuery, isActive, queryToggle } from "@/lib/query";
-import { ApiWithCatch } from "@/lib/api";
+import { isActive, queryToggle } from "@/lib/query";
 import type { AccountItem, CategoryItem } from "types";
 import { CheckboxLink } from "@/components/ui/checkbox";
 import AddBill from "@/components/form/add-bill";
-import { Link, Suspense } from "@/lib/use-nav";
+import { Link } from "@/lib/use-nav";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useSearchParams } from "next/navigation";
+import { useAccountsQuery } from "@/lib/use-accounts";
+import { useCategoriesQuery } from "@/lib/use-categories";
 
 type CheckboxProps =
   | { item: CategoryItem; type: "category" }
@@ -35,18 +38,10 @@ function Checkbox({
   );
 }
 
-async function BillHeaderAsync(props: {
-  searchParams: Promise<{ category: string | string[] }>;
-}) {
-  const query = await getQuery(props);
-  const categories = await ApiWithCatch<{
-    Count: number;
-    Items: CategoryItem[];
-  }>({ uri: "/category" }, ["category"]).then((res) => res.Items);
-  const accounts = await ApiWithCatch<{ Count: number; Items: AccountItem[] }>(
-    { uri: "/accounts" },
-    ["account"],
-  ).then((res) => res.Items);
+function BillHeaderAsync() {
+  const query = useSearchParams();
+  const categories = useCategoriesQuery();
+  const accounts = useAccountsQuery();
 
   return (
     <div className="flex justify-between flex-1">
@@ -63,7 +58,7 @@ async function BillHeaderAsync(props: {
           </PopoverTrigger>
           <PopoverContent className="space-y-2">
             <div className="h-64 overflow-y-auto no-scrollbar">
-              {categories.map((i) => (
+              {categories.data.map((i) => (
                 <Checkbox key={i.id} item={i} query={query} type="category" />
               ))}
             </div>
@@ -86,7 +81,7 @@ async function BillHeaderAsync(props: {
           </PopoverTrigger>
           <PopoverContent className="space-y-2">
             <div className="h-64 overflow-y-auto no-scrollbar">
-              {accounts.map((account) => (
+              {accounts.data.map((account) => (
                 <Checkbox
                   key={account.id}
                   item={account}
@@ -103,7 +98,7 @@ async function BillHeaderAsync(props: {
           </PopoverContent>
         </Popover>
       </div>
-      <AddBill categories={categories} accounts={accounts} />
+      <AddBill />
     </div>
   );
 }
@@ -122,14 +117,10 @@ export function BillHeaderSkeleton() {
   );
 }
 
-export default function BillHeader(props: {
-  searchParams: Promise<{ category: string | string[] }>;
-}) {
+export default function BillHeader() {
   return (
     <div className="flex items-center space-x-3 w-full py-3">
-      <Suspense fallback={<BillHeaderSkeleton />}>
-        <BillHeaderAsync searchParams={props.searchParams} />
-      </Suspense>
+      <BillHeaderAsync />
     </div>
   );
 }

@@ -47,8 +47,5 @@
   ],
   "exclude": [
     "node_modules",
-    ".sst",
-    ".open-next",
-    "sst.config.ts"
   ]
 }

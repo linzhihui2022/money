@@ -12,14 +12,7 @@ import {
   InlineFormItem,
   SubmitButton,
 } from "@/components/ui/form";
-import {
-  AccountItem,
-  BILL,
-  BillItem,
-  CategoryItem,
-  CategoryType,
-  newBillSchema,
-} from "types";
+import { BillItem, CategoryType, newBillSchema } from "types";
 import { useToast } from "@/lib/use-toast";
 import DrawerDialog from "@/components/ui/DrawerDialog";
 import { ComponentProps, useState } from "react";
@@ -52,23 +45,26 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import dayjs from "dayjs";
-import { add, redirectList } from "@/components/form/add-bill.action";
+import { useMutation } from "@tanstack/react-query";
+import { api, ApiError } from "@/lib/api";
+import { useCategoriesQuery } from "@/lib/use-categories";
+import { useAccountsQuery } from "@/lib/use-accounts";
+import { useRevalidateBills } from "@/lib/use-bills";
 
 function AccountStep({
   onAccount,
-  accounts,
   account,
 }: {
   account: string;
   onAccount: (account: string) => void;
-  accounts: AccountItem[];
 }) {
+  const accounts = useAccountsQuery();
   const { onNext } = useStepper();
   return (
     <div
       className={cn(
         "mt-4 h-60 overflow-y-auto no-scrollbar",
-        accounts.length > 6 ? "h-60" : "",
+        accounts.data.length > 6 ? "h-60" : "",
       )}
     >
       <RadioGroupPrimitive.Root
@@ -76,7 +72,7 @@ function AccountStep({
         onValueChange={(value) => onAccount(value)}
         className="grid pr-2"
       >
-        {accounts.map((i) => (
+        {accounts.data.map((i) => (
           <div
             key={i.id}
             className={cn(
@@ -107,13 +103,12 @@ function AccountStep({
 function CategoryStep({
   category,
   onCategory,
-  categories,
 }: {
   category: string;
   onCategory: (account: string) => void;
-  categories: CategoryItem[];
 }) {
   const { onNext, onPrev } = useStepper();
+  const categories = useCategoriesQuery();
 
   return (
     <>
@@ -123,7 +118,7 @@ function CategoryStep({
       >
         <Tabs
           defaultValue={
-            categories.find((i) => i.id === category)?.type ||
+            categories.data.find((i) => i.id === category)?.type ||
             CategoryType.EXPENSES
           }
         >
@@ -138,7 +133,7 @@ function CategoryStep({
             <TabsContent value={type} key={type}>
               <div className="my-4 h-36 overflow-y-auto no-scrollbar">
                 <div className="grid grid-cols-3 sm:grid-cols-4 gap-1">
-                  {categories
+                  {categories.data
                     .filter((i) => i.type === type)
                     .map((i) => (
                       <div
@@ -178,34 +173,33 @@ function CategoryStep({
 function BillStep({
   defaultValues,
   setOpen,
-  categories,
-  accounts,
 }: ComponentProps<typeof AddBillForm> & {
   defaultValues: Omit<BillItem, "id" | "active">;
 }) {
+  const categories = useCategoriesQuery();
+  const accounts = useAccountsQuery();
+
   const { toast } = useToast();
   const form = useForm<Omit<BillItem, "id" | "active">>({
     resolver: zodResolver(newBillSchema()),
     defaultValues,
   });
-  const query = useSearchParams();
+  const revalidate = useRevalidateBills();
+  const addMutation = useMutation<
+    Omit<BillItem, "date"> & { date: number },
+    ApiError,
+    Omit<BillItem, "id" | "active">
+  >({
+    mutationFn: (body) => api({ uri: `/bill`, method: "POST", body }),
+    onError: () => toast({ title: "Add fail" }),
+    onSuccess: revalidate,
+  });
   async function onSubmit(data: Omit<BillItem, "id" | "active">) {
     setOpen(false);
     form.reset();
-    const res = await add(data);
-    switch (res?.at(0)) {
-      case BILL.UNKNOWN: {
-        form.setError("value", { message: res.at(1) });
-        break;
-      }
-    }
-    if (!res) {
-      setOpen(false);
-      form.reset();
-      toast({ description: "Add bill" });
-      await redirectList(query);
-    }
+    addMutation.mutate(data);
   }
+
   return (
     <Form {...form}>
       <form className="space-y-3" onSubmit={form.handleSubmit(onSubmit)}>
@@ -225,7 +219,7 @@ function BillStep({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {accounts.map((account) => (
+                  {accounts.data.map((account) => (
                     <SelectItem key={account.id} value={account.id}>
                       {account.name}
                     </SelectItem>
@@ -251,7 +245,7 @@ function BillStep({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {categories.map((category) => (
+                  {categories.data.map((category) => (
                     <SelectItem key={category.id} value={category.id}>
                       {category.value}
                     </SelectItem>
@@ -325,10 +319,7 @@ function BillStep({
 }
 
 function AddBillForm(
-  props: ComponentProps<ComponentProps<typeof DrawerDialog>["Body"]> & {
-    accounts: AccountItem[];
-    categories: CategoryItem[];
-  },
+  props: ComponentProps<ComponentProps<typeof DrawerDialog>["Body"]>,
 ) {
   const query = useSearchParams();
   const [account, setAccount] = useState(query.getAll("account")?.at(0) || "");
@@ -346,14 +337,12 @@ function AddBillForm(
         <AccountStep
           account={account}
           onAccount={(account) => setAccount(account)}
-          accounts={props.accounts}
         />
       </StepperContent>
       <StepperContent value={2}>
         <CategoryStep
           category={category}
           onCategory={(category) => setCategory(category)}
-          categories={props.categories}
         />
       </StepperContent>
       <StepperContent value={3}>
@@ -371,13 +360,7 @@ function AddBillForm(
     </StepperRoot>
   );
 }
-export default function AddBill({
-  accounts,
-  categories,
-}: {
-  accounts: AccountItem[];
-  categories: CategoryItem[];
-}) {
+export default function AddBill() {
   return (
     <DrawerDialog
       title={"Add"}
@@ -386,9 +369,7 @@ export default function AddBill({
           <Plus />
         </Button>
       }
-      Body={(props) => (
-        <AddBillForm accounts={accounts} categories={categories} {...props} />
-      )}
+      Body={AddBillForm}
     />
   );
 }

@@ -1,5 +1,5 @@
 "use client";
-import { AccountItem, updateAccountNameSchema } from "types";
+import { AccountItem, EmptyObj, updateAccountNameSchema } from "types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -11,11 +11,11 @@ import {
 import { Input } from "@/components/ui/input";
 import DrawerDialog from "@/components/ui/DrawerDialog";
 import { ComponentProps } from "react";
-import { updateName } from "./action";
 import CellButton from "../cell-button";
-import { useAccounts } from "./provider";
 import { useToast } from "@/lib/use-toast";
-import { useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
+import { api, ApiError } from "@/lib/api";
+import { useRevalidateAccounts } from "@/lib/use-accounts";
 
 function UpdateNameForm({
   item,
@@ -27,27 +27,33 @@ function UpdateNameForm({
     resolver: zodResolver(updateAccountNameSchema()),
     defaultValues: item,
   });
-  const { onAction } = useAccounts();
   const { toast } = useToast();
-  const router = useRouter();
-  async function onSubmit(data: Pick<AccountItem, "name" | "id">) {
-    setOpen(false);
-    onAction({ action: "updated", item: { ...item, name: data.name } });
-    const res = await updateName(data);
-
-    if (res?.at(0)) {
+  const revalidate = useRevalidateAccounts();
+  const updateNameMutation = useMutation<
+    EmptyObj,
+    ApiError,
+    Pick<AccountItem, "name" | "id">
+  >({
+    mutationFn: ({ id, name }) =>
+      api({
+        uri: `/account/${id}/name`,
+        method: "PUT",
+        body: { name },
+      }),
+    onError: (error, { id }) =>
       toast({
         variant: "destructive",
-        title: `Update name of <${item.id}> failed`,
-        description: res.at(1),
-      });
-      return;
-    }
-    if (!res) {
-      form.reset();
-      router.push(`/account?updated=${data.id}`);
-    }
+        title: `Update name of ${id} failed`,
+        description: error.message,
+      }),
+    onSuccess: revalidate,
+  });
+  async function onSubmit(data: Pick<AccountItem, "name" | "id">) {
+    setOpen(false);
+    form.reset();
+    updateNameMutation.mutate(data);
   }
+
   return (
     <Form {...form}>
       <form className="space-y-3" onSubmit={form.handleSubmit(onSubmit)}>
