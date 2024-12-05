@@ -11,7 +11,7 @@
   },
   "scripts": {
     "deploy": "turbo run deploy",
-    "dev:web": "turbo watch dev --filter web",
+    "dev": "turbo watch dev --filter web",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "precheck": "bun run typecheck && bun run lint",
