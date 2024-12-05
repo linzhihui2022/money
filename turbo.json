@@ -2,6 +2,11 @@
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
   "tasks": {
+    "typecheck": {
+      "dependsOn": [
+        "^typecheck"
+      ]
+    },
     "deploy": {
       "dependsOn": [
         "^deploy"
