@@ -41,3 +41,27 @@ export const logout = async () => {
   cookieStore.delete("username");
   redirect("/login");
 };
+
+export const refresh = async () => {
+  "use server";
+  const cookie = await cookies();
+  const expiresAt = cookie.get("expiresAt")?.value;
+  const refreshToken = cookie.get("refreshToken")?.value;
+  if (!expiresAt || !refreshToken) return;
+  if (new Date(+expiresAt).getTime() - new Date().getTime() >= 1000 * 60 * 10)
+    return;
+  const res = await api<{ token: string; expiresIn: number }>({
+    uri: `/user/refresh`,
+    method: "POST",
+    body: { token: refreshToken },
+  });
+  switch (res.status) {
+    case "success": {
+      const { token, expiresIn } = res.data;
+      console.log("refresh");
+      cookie.set("expiresAt", `${new Date().getTime() + expiresIn * 1000}`);
+      cookie.set("token", `${token}`);
+    }
+  }
+  return res;
+};
