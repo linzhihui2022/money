@@ -12,7 +12,10 @@
   "scripts": {
     "deploy": "turbo run deploy",
     "dev:web": "turbo watch dev --filter web",
-    "lint": "turbo run lint"
+    "lint": "turbo run lint",
+    "typecheck:web": "bun run --cwd ./packages/web typecheck",
+    "prepare": "husky",
+    "precheck": "bun run typecheck:web && bun run --cwd ./packages/web lint"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
@@ -27,6 +30,7 @@
     "eslint-import-resolver-typescript": "^3.6.3",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-prettier": "^5.2.1",
+    "husky": "^9.1.7",
     "prettier": "^3.3.3",
     "sst": "^3.3.41",
     "turbo": "^2.2.3",

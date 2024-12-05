@@ -6,7 +6,8 @@
     "dev": "next dev --turbo",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint --fix ."
+    "lint": "eslint --fix .",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
