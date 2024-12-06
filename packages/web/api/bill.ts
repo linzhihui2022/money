@@ -7,7 +7,8 @@ import { formatDate } from "date-fns";
 export const getBills = async (query: string) =>
   api<{ Count: number; Items: BillItem[] }>({
     uri: `/bills?${query}`,
-    next: { tags: ["bills"] },
+    next: { tags: ["bills", query], revalidate: 60 * 10 * 24 },
+    cache: "force-cache",
   })
     .then((res) => res.data?.Items || [])
     .then(

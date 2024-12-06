@@ -118,13 +118,15 @@ export const BillList = async ({ query }: { query: URLSearchParams }) => {
                     <Link
                       href={`/?${queryToggle(query, "category", i.category)}`}
                       className={cn(
-                        "hover:underline",
                         isActive(query, "category", i.category)
                           ? "underline text-accent-foreground"
                           : "",
+                        !categories[i.category]?.value
+                          ? "line-through pointer-events-none"
+                          : "hover:underline",
                       )}
                     >
-                      {categories[i.category]?.value}
+                      {categories[i.category]?.value || i.category}
                     </Link>
                   </Cell>
                   <Cell label="Desc">{i.desc || "-"}</Cell>
@@ -132,13 +134,15 @@ export const BillList = async ({ query }: { query: URLSearchParams }) => {
                     <Link
                       href={`/?${queryToggle(query, "account", i.account)}`}
                       className={cn(
-                        "hover:underline flex items-center space-x-1",
                         isActive(query, "account", i.account)
                           ? "underline text-accent-foreground"
                           : "",
+                        !accounts[i.account]?.name
+                          ? "line-through pointer-events-none"
+                          : "hover:underline",
                       )}
                     >
-                      {accounts[i.account]?.name}
+                      {accounts[i.account]?.name || i.account}
                     </Link>
                   </Cell>
                   <Cell className="md:pr-4" label="Money">
