@@ -1,13 +1,13 @@
 "use server";
-import { api } from "@/lib/api";
-import { unstable_expireTag } from "next/cache";
+import { revalidateTag } from "next/cache";
 import { Action, BillItem, EmptyObj } from "types";
+import { api } from "@/lib/api";
 
-export const addBill: Action<
+export const addBillAction: Action<
   EmptyObj,
   Omit<BillItem, "id" | "active">
 > = async (_, body) => {
   await api({ uri: "/bill", method: "POST", body });
-  unstable_expireTag("bills");
+  revalidateTag("bills");
   return _;
 };

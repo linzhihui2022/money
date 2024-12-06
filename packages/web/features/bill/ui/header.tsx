@@ -11,7 +11,8 @@ import { CheckboxLink } from "@/components/ui/checkbox";
 import AddBill from "@/features/bill/ui/add-dialog";
 import { Link } from "@/lib/use-nav";
 import { Skeleton } from "@/components/ui/skeleton";
-import { api } from "@/lib/api";
+import { getAccounts } from "api/account";
+import { getCategories } from "api/category";
 
 type CheckboxProps =
   | { item: CategoryItem; type: "category" }
@@ -35,19 +36,16 @@ function Checkbox({
   );
 }
 
-async function BillHeaderAsync({ query }: { query: URLSearchParams }) {
-  const categories = await api<{ Count: number; Items: CategoryItem[] }>({
-    uri: "/category",
-    next: { tags: ["categories"] },
-  }).then((res) => res.data?.Items || []);
-  const accounts = await api<{ Count: number; Items: AccountItem[] }>({
-    uri: "/accounts",
-    next: { tags: ["accounts"] },
-  }).then((res) => res.data?.Items || []);
-
+export default async function BillHeader({
+  query,
+}: {
+  query: URLSearchParams;
+}) {
+  const categories = await getCategories();
+  const accounts = await getAccounts();
   return (
-    <div className="flex justify-between flex-1">
-      <div>
+    <div className="flex justify-between items-center w-full">
+      <div className="flex items-center space-x-3">
         <Popover>
           <PopoverTrigger asChild>
             <Button
@@ -115,18 +113,6 @@ export function BillHeaderSkeleton() {
         </div>
         <Skeleton className="w-10 h-8 bg-accent" />
       </div>
-    </div>
-  );
-}
-
-export default async function BillHeader({
-  query,
-}: {
-  query: URLSearchParams;
-}) {
-  return (
-    <div className="flex items-center space-x-3 w-full py-3">
-      <BillHeaderAsync query={query} />
     </div>
   );
 }

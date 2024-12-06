@@ -117,8 +117,8 @@ export function AddCategoryDialog() {
     <DrawerDialog
       title="Add new category"
       trigger={
-        <Button size="icon" className="ml-4" variant="ghost">
-          <Plus className="size-3.5" />
+        <Button size="icon" variant="ghost">
+          <Plus />
           <span className="sr-only">Add category</span>
         </Button>
       }

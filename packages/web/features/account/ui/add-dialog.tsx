@@ -1,7 +1,5 @@
 "use client";
 import { useForm } from "react-hook-form";
-
-import { zodResolver } from "@hookform/resolvers/zod";
 import {
   AccountItem,
   ActionState,
@@ -10,6 +8,8 @@ import {
   newAccountSchema,
   successState,
 } from "types";
+import { zodResolver } from "@hookform/resolvers/zod";
+
 import { Input, MoneyInput } from "@/components/ui/input";
 import {
   Form,
@@ -90,11 +90,11 @@ function AddAccountForm({
 export function AddAccountDialog() {
   return (
     <DrawerDialog
-      title="Add new category"
+      title="Add new account"
       trigger={
-        <Button size="icon" className="ml-4" variant="ghost">
-          <Plus className="size-3.5" />
-          <span className="sr-only">Add category</span>
+        <Button size="icon" variant="ghost">
+          <Plus />
+          <span className="sr-only">Add account</span>
         </Button>
       }
       Body={AddAccountForm}

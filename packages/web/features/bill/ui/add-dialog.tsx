@@ -55,7 +55,7 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import dayjs from "dayjs";
-import { addBill } from "actions/bill";
+import { addBillAction } from "actions/bill";
 
 function AccountStep({
   onAccount,
@@ -202,7 +202,7 @@ function BillStep({
     form.reset();
     startTransition(async () => {
       setState(successState({}));
-      const res = await addBill(state, data);
+      const res = await addBillAction(state, data);
       switch (res.status) {
         case "success":
           toast({ title: "Add success" });

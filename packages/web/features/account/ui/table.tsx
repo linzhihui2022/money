@@ -6,44 +6,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { AccountItem } from "types";
 import UpdateName from "../table/update-name";
 import UpdateValue from "../table/update-value";
 import Delete from "../table/delete";
-import { api } from "@/lib/api";
+import { getAccounts } from "api/account";
 
-function Row({ item }: { item: AccountItem }) {
-  return (
-    <TableRow key={item.id}>
-      <TableCell>{item.id}</TableCell>
-      <TableCell>
-        <UpdateName item={item} />
-      </TableCell>
-      <TableCell>
-        <UpdateValue item={item} />
-      </TableCell>
-      <TableCell>
-        <Delete item={item} />
-      </TableCell>
-    </TableRow>
-  );
-}
+export default async function AccountTable() {
+  const accounts = await getAccounts();
 
-async function AccountTableBody() {
-  const data = await api<{ Count: number; Items: AccountItem[] }>({
-    uri: "/accounts",
-    next: { tags: ["accounts"] },
-  }).then((res) => res.data?.Items || []);
-  return (
-    <>
-      {data.map((i) => (
-        <Row item={i} key={i.id} />
-      ))}
-    </>
-  );
-}
-
-export default function AccountTable() {
   return (
     <Table>
       <TableHeader>
@@ -55,7 +25,20 @@ export default function AccountTable() {
         </TableRow>
       </TableHeader>
       <TableBody>
-        <AccountTableBody />
+        {accounts.map((item) => (
+          <TableRow key={item.id}>
+            <TableCell>{item.id}</TableCell>
+            <TableCell>
+              <UpdateName item={item} />
+            </TableCell>
+            <TableCell>
+              <UpdateValue item={item} />
+            </TableCell>
+            <TableCell>
+              <Delete item={item} />
+            </TableCell>
+          </TableRow>
+        ))}
       </TableBody>
     </Table>
   );
