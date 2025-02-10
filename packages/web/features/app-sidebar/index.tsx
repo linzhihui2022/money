@@ -16,12 +16,12 @@ import { ChevronUp, User2 } from "lucide-react";
 import React from "react";
 import Menu from "@/features/app-sidebar/menu";
 import { AppLogo } from "@/features/layout/ui/AppLogo";
-import { cookies } from "next/headers";
 import { logout } from "actions/auth";
+import { getUser } from "../../api/auth";
 
 export async function AppSidebar() {
-  const cookieStore = await cookies();
-  const username = cookieStore.get("username")?.value;
+  const user = await getUser();
+  const username = user.data.user?.user_metadata?.name;
   return (
     <Sidebar header={<AppLogo theme="sidebar" />}>
       <SidebarContent>

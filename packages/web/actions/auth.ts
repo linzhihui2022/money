@@ -3,7 +3,8 @@
 import { api } from "@/lib/api";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { Action, EmptyObj, successState } from "types";
+import { Action, EmptyObj, errorState, successState } from "types";
+import { supabase } from "@/lib/supabase";
 
 export const login: Action<
   EmptyObj,
@@ -39,6 +40,7 @@ export const logout = async () => {
   cookieStore.delete("expiresAt");
   cookieStore.delete("token");
   cookieStore.delete("username");
+  await supabase().auth.signOut();
   redirect("/login");
 };
 
@@ -64,4 +66,38 @@ export const refresh = async () => {
     }
   }
   return res;
+};
+
+export const singUp: Action<
+  { email: string; name: string },
+  { email: string; password: string; name: string }
+> = async (_, { email, password, name }) => {
+  const res = await supabase().auth.signUp({
+    email,
+    password,
+    options: {
+      data: { name },
+    },
+  });
+  if (res.data.user?.email) {
+    return successState({ email, name });
+  }
+  if (res.error) {
+    return errorState(res.error);
+  }
+  return errorState(new Error("Unknown"));
+};
+
+export const singIn: Action<
+  EmptyObj,
+  { email: string; password: string }
+> = async (_, { email, password }) => {
+  const res = await supabase().auth.signInWithPassword({ email, password });
+  if (res.data.session) {
+    return successState({});
+  }
+  if (res.error) {
+    return errorState(res.error);
+  }
+  return errorState(new Error("Unknown"));
 };

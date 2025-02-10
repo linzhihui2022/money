@@ -2,12 +2,18 @@ import React from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/features/app-sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { redirect } from "next/navigation";
+import { getUser } from "../../api/auth";
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const res = await getUser();
+  if (!res.data.user) {
+    redirect("/sign-in");
+  }
   return (
     <TooltipProvider>
       <SidebarProvider>
