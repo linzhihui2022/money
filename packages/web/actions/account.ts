@@ -1,6 +1,6 @@
 "use server";
 import { api } from "@/lib/api";
-import { unstable_expireTag } from "next/cache";
+import { revalidateTag } from "next/cache";
 import { AccountItem, Action, EmptyObj, successState } from "types";
 
 export const updateName: Action<
@@ -14,7 +14,7 @@ export const updateName: Action<
   });
   switch (res.status) {
     case "success":
-      unstable_expireTag("accounts");
+      revalidateTag("accounts");
       return successState({});
     case "error":
       return res;
@@ -33,7 +33,7 @@ export const updateValue: Action<
   });
   switch (res.status) {
     case "success":
-      unstable_expireTag("accounts");
+      revalidateTag("accounts");
       return successState({});
     case "error":
       return res;
@@ -48,7 +48,7 @@ export const deleteAccount: Action<EmptyObj, Pick<AccountItem, "id">> = async (
   const res = await api({ uri: `/account/${id}`, method: "DELETE" });
   switch (res.status) {
     case "success":
-      unstable_expireTag("accounts");
+      revalidateTag("accounts");
       return successState({});
     case "error":
       return res;
@@ -65,7 +65,7 @@ export const createAccount: Action<EmptyObj, AccountItem> = async (_, body) => {
   });
   switch (res.status) {
     case "success":
-      unstable_expireTag("accounts");
+      revalidateTag("accounts");
       return successState({});
     case "error":
       return res;

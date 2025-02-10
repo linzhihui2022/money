@@ -45,7 +45,6 @@ export const BillList = async ({ query }: { query: URLSearchParams }) => {
       {},
     ),
   );
-
   const bills = await getBills(query.toString());
 
   return (

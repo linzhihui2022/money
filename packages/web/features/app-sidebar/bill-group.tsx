@@ -5,7 +5,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
-import { Cat, CreditCard, Receipt, Settings } from "lucide-react";
+import { Cat, CreditCard, Receipt, Settings, Beef } from "lucide-react";
 import { usePathname } from "next/navigation";
 import {
   Accordion,
@@ -26,6 +26,11 @@ export function BillMenuGroup() {
       pathname: "/category",
       Icon: Cat,
       name: "Category",
+    },
+    {
+      pathname: "/food",
+      Icon: Beef,
+      name: "Food",
     },
   ];
   return (

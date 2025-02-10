@@ -23,7 +23,7 @@ export default function LoginPage() {
     resolver: zodResolver(
       z.object({ username: z.string().min(1), password: z.string().min(1) }),
     ),
-    defaultValues: { username: "aws_test_2", password: "Welcome321!" },
+    defaultValues: { username: "aws_test_2", password: "Lin123456!" },
   });
   const [state, setState] = useOptimistic<ActionState<EmptyObj>>(
     initialState({}),
