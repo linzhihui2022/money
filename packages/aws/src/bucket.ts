@@ -7,7 +7,12 @@ import {
 } from "@aws-sdk/lib-dynamodb";
 import { Resource } from "sst";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { billSchema, newAccountSchema, newCategorySchema } from "types";
+import {
+  billSchema,
+  newAccountSchema,
+  newCategorySchema,
+  newFoodSchema,
+} from "types";
 
 const dbClient = DynamoDBDocumentClient.from(new DynamoDBClient({}));
 export const _import: S3Handler = bucketMiddleware(
@@ -15,7 +20,7 @@ export const _import: S3Handler = bucketMiddleware(
     const { key } = parseEvent();
     const matchers = key.match(/^(.*)\.import\.csv$/);
     if (matchers) {
-      const db = matchers[1] as "account" | "category" | "bill";
+      const db = matchers[1] as "account" | "category" | "bill" | "food";
       const csv = await readFile();
       switch (db) {
         case "bill": {
@@ -73,6 +78,27 @@ export const _import: S3Handler = bucketMiddleware(
               new BatchWriteCommand({
                 RequestItems: {
                   [Resource.categoryDB.name]: Items.map((Item) => ({
+                    PutRequest: { Item },
+                  })),
+                },
+              }),
+            );
+          }
+          return;
+        }
+        case "food": {
+          const schema = newFoodSchema();
+          const items = converter
+            .csv2json(csv.split("\n").filter(Boolean).join("\n"))
+            .map((i) => schema.safeParse(i))
+            .filter((i) => i.success)
+            .map((i) => i.data);
+          while (items.length) {
+            const Items = items.splice(0, 25);
+            await dbClient.send(
+              new BatchWriteCommand({
+                RequestItems: {
+                  [Resource.foodDB.name]: Items.map((Item) => ({
                     PutRequest: { Item },
                   })),
                 },
