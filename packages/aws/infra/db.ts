@@ -16,7 +16,11 @@ export const categoryDB = new sst.aws.Dynamo("categoryDB", {
   primaryIndex: { hashKey: "id" },
   transform: { table: { pointInTimeRecovery: { enabled: false } } },
 });
-
+export const foodDB = new sst.aws.Dynamo("foodDB", {
+  fields: { id: "string" },
+  primaryIndex: { hashKey: "id" },
+  transform: { table: { pointInTimeRecovery: { enabled: false } } },
+});
 billDB.subscribe("updateAccount", {
   handler: "src/bill.subscribe",
   link: [accountDB, billDB, categoryDB],

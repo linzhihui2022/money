@@ -4,6 +4,12 @@ export enum CategoryType {
   INCOME = "INCOME",
   EXPENSES = "EXPENSES",
 }
+export enum FoodType {
+  MEET = "MEET",
+  VEGETABLE = "VEGETABLE",
+  FRUIT = "FRUIT",
+  SEAFOOD = "SEAFOOD",
+}
 export enum BillActive {
   ACTIVE = "ACTIVE",
   INACTIVE = "INACTIVE",
@@ -72,3 +78,28 @@ export const deleteBillSchema = getBillSchema;
 export const loginSchema = () =>
   z.object({ username: z.string(), password: z.string() });
 export const refreshSchema = () => z.object({ token: z.string() });
+
+export const newFoodSchema = () =>
+  z.object({
+    name: z.string().min(1),
+    id: zid(),
+    type: z.enum([
+      FoodType.FRUIT,
+      FoodType.VEGETABLE,
+      FoodType.MEET,
+      FoodType.SEAFOOD,
+    ]),
+    image: z.string().optional().default(""),
+  });
+
+export const getFoodSchema = () => newFoodSchema().pick({ id: true });
+
+export const updateFoodNameSchema = () =>
+  newFoodSchema().pick({ name: true, id: true });
+
+export const updateFoodTypeSchema = () =>
+  newFoodSchema().pick({ type: true, id: true });
+export const updateFoodImageSchema = () =>
+  newFoodSchema().pick({ image: true, id: true });
+
+export const deleteFoodSchema = getFoodSchema;

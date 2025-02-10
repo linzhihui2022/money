@@ -35,6 +35,10 @@ declare module "sst" {
       "name": string
       "type": "sst.aws.Dynamo"
     }
+    "foodDB": {
+      "name": string
+      "type": "sst.aws.Dynamo"
+    }
     "importBucket": {
       "name": string
       "type": "sst.aws.Bucket"

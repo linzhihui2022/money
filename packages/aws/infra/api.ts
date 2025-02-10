@@ -1,5 +1,5 @@
 import { userPool, userPoolClient } from "./cognito";
-import { categoryDB, accountDB, billDB } from "./db";
+import { categoryDB, accountDB, billDB, foodDB } from "./db";
 
 export const api = new sst.aws.ApiGatewayV2("api", {
   cors: false,
@@ -113,5 +113,28 @@ api.route(
 api.route(
   "DELETE /bill/{id}",
   { handler: "src/bill.del", link: [billDB] },
+  jwt,
+);
+
+api.route("GET /foods", { handler: "src/food.list", link: [foodDB] }, jwt);
+api.route("POST /food", { handler: "src/food.add", link: [foodDB] }, jwt);
+api.route(
+  `PUT /food/{id}/name`,
+  { handler: "src/food.updateName", link: [foodDB] },
+  jwt,
+);
+api.route(
+  `PUT /food/{id}/type`,
+  { handler: "src/food.updateType", link: [foodDB] },
+  jwt,
+);
+api.route(
+  `PUT /food/{id}/image`,
+  { handler: "src/food.updateImage", link: [foodDB] },
+  jwt,
+);
+api.route(
+  "DELETE /food/{id}",
+  { handler: "src/food.del", link: [foodDB] },
   jwt,
 );

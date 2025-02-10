@@ -1,6 +1,9 @@
 export enum CATEGORY {
   ALREADY_EXISTS = "C000",
 }
+export enum FOOD {
+  FOOD_EXISTS = "F000",
+}
 export enum ACCOUNT {
   ALREADY_EXISTS = "A000",
 }
@@ -16,4 +19,4 @@ export enum AUTH {
   LOGIN_FAIL = "U000",
   REFRESH_FAIL = "U001",
 }
-export type Code = CATEGORY | ACCOUNT | COMMON | AUTH | BILL;
+export type Code = CATEGORY | ACCOUNT | COMMON | AUTH | BILL | FOOD;

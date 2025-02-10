@@ -24,6 +24,7 @@ export default $config({
       bill: db.billDB.arn,
       account: db.accountDB.arn,
       category: db.categoryDB.arn,
+      food: db.foodDB.arn,
       importBucket: importBucket.importBucket.arn,
       cognitoClient: cognito.userPoolClient.id,
       api: api.api.url,

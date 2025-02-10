@@ -4,10 +4,12 @@ import {
   type ISO,
   newAccountSchema,
   newCategorySchema,
+  newFoodSchema,
 } from "./index";
 import { z } from "zod";
 
 export type CategoryItem = z.infer<ReturnType<typeof newCategorySchema>>;
+export type FoodItem = z.infer<ReturnType<typeof newFoodSchema>>;
 export type AccountItem = z.infer<ReturnType<typeof newAccountSchema>>;
 export type BillItem = Omit<z.infer<ReturnType<typeof billSchema>>, "date"> & {
   date: ISO;
