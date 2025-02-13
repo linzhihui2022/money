@@ -21,4 +21,5 @@ export const getCookbooks = unstable_cache(
       },
     }),
   ["cookbooks"],
+  { tags: ["cookbooks"], revalidate: 60 * 5 },
 );
