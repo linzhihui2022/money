@@ -12,11 +12,9 @@
   },
   "auth": {
     "Sign out": "Uitloggen",
-    "Email": "E-mail",
-    "Password": "Wachtwoord",
-    "Sign up": "Registreren",
     "Sign in": "Inloggen",
-    "Name": "Naam"
+    "signup_disabled": "Persoonlijke projecten, voorlopig geen registratiediensten",
+    "error": "Inloggen mislukt, weet niet waarom"
   },
   "sidebar": {
     "Money": "Geld 💰",

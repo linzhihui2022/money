@@ -12,11 +12,9 @@
   },
   "auth": {
     "Sign out": "退出登录",
-    "Email": "邮箱",
-    "Password": "密码",
-    "Sign up": "注册",
     "Sign in": "登录",
-    "Name": "姓名"
+    "signup_disabled": "个人项目，暂不对外提供注册服务",
+    "error": "登录失败，不知道为什么🤷"
   },
   "sidebar": {
     "Money": "钱啊💰",
@@ -42,9 +40,9 @@
     "Edit <Food>": "修改食材",
     "FoodType": {
       "MEET": "肉类",
-      "VEGETABLE":"蔬菜",
+      "VEGETABLE": "蔬菜",
       "FRUIT": "水果",
-      "SEAFOOD":"海鲜",
+      "SEAFOOD": "海鲜",
       "OTHER": "其他"
     }
   }

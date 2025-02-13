@@ -12,11 +12,9 @@
   },
   "auth": {
     "Sign out": "Sign out",
-    "Email": "Email",
-    "Password": "Password",
-    "Sign up": "Sign up",
     "Sign in": "Sign in",
-    "Name": "Name"
+    "signup_disabled": "Personal projects, no registration services",
+    "error": "Sign in failed, don't know why"
   },
   "sidebar": {
     "Money": "Money 💰",

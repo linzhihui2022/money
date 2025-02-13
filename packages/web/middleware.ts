@@ -4,7 +4,10 @@ import createMiddleware from "next-intl/middleware";
 import { routing } from "./i18n/routing";
 
 export async function middleware(request: NextRequest) {
+  const url = new URL(request.url);
+  const origin = url.origin;
   const response = createMiddleware(routing)(request);
+  response.headers.set("x-origin", origin);
   return await updateSession(request, response);
 }
 
