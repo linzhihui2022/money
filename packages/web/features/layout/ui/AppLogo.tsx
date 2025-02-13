@@ -17,7 +17,7 @@ export function AppLogo({
   if (theme === "sidebar") {
     return (
       <div className={className} style={{ width: SIDEBAR_WIDTH }}>
-        logo
+        💰
       </div>
     );
   }
@@ -27,7 +27,7 @@ export function AppLogo({
         className={cn("max-lg:hidden flex h-full items-center", className)}
         style={{ width: SIDEBAR_WIDTH }}
       >
-        logo
+        💰
       </div>
       <div
         className="flex lg:hidden h-full items-center"

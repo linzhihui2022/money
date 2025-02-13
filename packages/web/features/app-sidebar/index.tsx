@@ -15,15 +15,16 @@ import {
 import { ChevronUp, User2 } from "lucide-react";
 import React from "react";
 import Menu from "@/features/app-sidebar/menu";
-import { AppLogo } from "@/features/layout/ui/AppLogo";
 import { logout } from "actions/auth";
 import { getUser } from "api/auth";
+import { getTranslations } from "next-intl/server";
 
 export async function AppSidebar() {
   const user = await getUser();
   const username = user.data.user?.user_metadata?.name;
+  const t = await getTranslations("auth");
   return (
-    <Sidebar header={<AppLogo theme="sidebar" />}>
+    <Sidebar>
       <SidebarContent>
         <Menu />
       </SidebarContent>
@@ -44,7 +45,7 @@ export async function AppSidebar() {
               >
                 <DropdownMenuItem>
                   <form className="w-full" action={logout}>
-                    <button className="w-full">Sign out</button>
+                    <button className="w-full">{t("Sign out")}</button>
                   </form>
                 </DropdownMenuItem>
               </DropdownMenuContent>

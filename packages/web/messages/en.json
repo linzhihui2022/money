@@ -1,0 +1,51 @@
+{
+  "hello": "Hello",
+  "layout": {
+    "title": "Money 💰",
+    "description": "Money, Money, Money"
+  },
+  "form": {
+    "Submit": "Submit"
+  },
+  "sr-only": {
+    "Toggle Sidebar": "Toggle Sidebar"
+  },
+  "auth": {
+    "Sign out": "Sign out",
+    "Email": "Email",
+    "Password": "Password",
+    "Sign up": "Sign up",
+    "Sign in": "Sign in",
+    "Name": "Name"
+  },
+  "sidebar": {
+    "Money": "Money 💰",
+    "Home": "Home",
+    "Food list": "Food List",
+    "Cookbook list": "Cookbook List"
+  },
+  "cookbook": {
+    "Add new cookbook": "Add New Cookbook",
+    "Name": "Name",
+    "Food": "Food",
+    "Select food": "Select Food",
+    "Search food": "Search Food",
+    "Not found": "Not Found",
+    "Edit <Cookbook>": "Edit Cookbook"
+  },
+  "food": {
+    "Add new food": "Add New Food",
+    "Name": "Name",
+    "Unit": "Unit",
+    "Type": "Type",
+    "Food": "Food",
+    "Edit <Food>": "Edit Food",
+    "FoodType": {
+      "MEET": "Meat",
+      "VEGETABLE": "Vegetable",
+      "FRUIT": "Fruit",
+      "SEAFOOD": "Seafood",
+      "OTHER": "Other"
+    }
+  }
+}

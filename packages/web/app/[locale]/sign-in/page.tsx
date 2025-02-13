@@ -17,6 +17,7 @@ import { singIn } from "./action";
 import { useToast } from "@/lib/use-toast";
 import { Link } from "@/lib/use-nav";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 export default function LoginPage() {
   const form = useForm<{ email: string; password: string }>({
@@ -31,11 +32,12 @@ export default function LoginPage() {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const { toast } = useToast();
+  const t = useTranslations("auth");
   return (
     <div className="min-h-screen flex justify-center items-start md:items-center p-8">
       <Form {...form}>
         <form
-          className="w-full max-w-xs"
+          className="w-full max-w-md"
           onSubmit={form.handleSubmit(async (data) => {
             startTransition(async () => {
               await singIn(data)
@@ -48,7 +50,9 @@ export default function LoginPage() {
         >
           <Card>
             <CardHeader>
-              <CardTitle className="text-2xl">Login</CardTitle>
+              <CardTitle className="text-2xl text-center">
+                {t("Sign in")}
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
@@ -56,7 +60,7 @@ export default function LoginPage() {
                   control={form.control}
                   name="email"
                   render={({ field }) => (
-                    <InlineFormItem label="Username">
+                    <InlineFormItem label={t("Email")}>
                       <Input {...field} />
                     </InlineFormItem>
                   )}
@@ -65,19 +69,19 @@ export default function LoginPage() {
                   control={form.control}
                   name="password"
                   render={({ field }) => (
-                    <InlineFormItem label="Password">
+                    <InlineFormItem label={t("Password")}>
                       <Input {...field} type="password" />
                     </InlineFormItem>
                   )}
                 />
               </div>
-              <Button asChild variant="link">
-                <Link href="/sign-up">Sign up</Link>
-              </Button>
             </CardContent>
-            <CardFooter>
+            <CardFooter className="space-x-4">
+              <Button asChild variant="outline">
+                <Link href="/sign-up">{t("Sign up")}</Link>
+              </Button>
               <Button disabled={pending} className="w-full">
-                Sign in
+                {t("Sign in")}
               </Button>
             </CardFooter>
           </Card>

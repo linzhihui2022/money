@@ -1,4 +1,4 @@
-import { Food } from "@sb-prisma";
+import { Food } from "@prisma-client";
 import {
   Popover,
   PopoverContent,
@@ -17,6 +17,7 @@ import {
 import { cn } from "@/lib/utils";
 import { FoodTypeCircle } from "@/components/ui/food-type";
 import { useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 
 export function FoodCombobox({
   foods,
@@ -32,6 +33,7 @@ export function FoodCombobox({
     () => foods.find((food) => food.id === value),
     [foods, value],
   );
+  const t = useTranslations("cookbook");
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -41,17 +43,20 @@ export function FoodCombobox({
           role="combobox"
           size="lg"
           aria-expanded={open}
-          className="w-full justify-between px-4"
+          className={cn(
+            "w-full justify-between px-4",
+            !current ? "text-primary/50" : "",
+          )}
         >
-          {current ? `${current.name}(${current.unit})` : "Select food"}
+          {current ? `${current.name}(${current.unit})` : t("Select food")}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-full p-0">
         <Command>
-          <CommandInput placeholder="Search food" />
+          <CommandInput placeholder={t("Search food")} />
           <CommandList>
-            <CommandEmpty>No food found.</CommandEmpty>
+            <CommandEmpty>{t("Not found")}</CommandEmpty>
             <CommandGroup>
               {foods.map((food) => (
                 <CommandItem

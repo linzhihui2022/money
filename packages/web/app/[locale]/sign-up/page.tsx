@@ -16,6 +16,8 @@ import { Form, FormField, InlineFormItem } from "@/components/ui/form";
 import { useToast } from "@/lib/use-toast";
 import { signup } from "./action";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { Link } from "@/lib/use-nav";
 
 export default function LoginPage() {
   const form = useForm<{ email: string; password: string; name: string }>({
@@ -36,11 +38,13 @@ export default function LoginPage() {
   const [pending, startTransition] = useTransition();
   const router = useRouter();
   const { toast } = useToast();
+  const t = useTranslations("auth");
+
   return (
     <div className="min-h-screen flex justify-center items-start md:items-center p-8">
       <Form {...form}>
         <form
-          className="w-full max-w-xs"
+          className="w-full max-w-md"
           onSubmit={form.handleSubmit(async (data) => {
             startTransition(async () => {
               await signup(data)
@@ -53,7 +57,9 @@ export default function LoginPage() {
         >
           <Card>
             <CardHeader>
-              <CardTitle className="text-2xl">Sign up</CardTitle>
+              <CardTitle className="text-2xl text-center">
+                {t("Sign up")}
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
@@ -61,7 +67,7 @@ export default function LoginPage() {
                   control={form.control}
                   name="name"
                   render={({ field }) => (
-                    <InlineFormItem label="Name">
+                    <InlineFormItem label={t("Name")}>
                       <Input {...field} />
                     </InlineFormItem>
                   )}
@@ -70,7 +76,7 @@ export default function LoginPage() {
                   control={form.control}
                   name="email"
                   render={({ field }) => (
-                    <InlineFormItem label="Email">
+                    <InlineFormItem label={t("Email")}>
                       <Input {...field} />
                     </InlineFormItem>
                   )}
@@ -79,16 +85,19 @@ export default function LoginPage() {
                   control={form.control}
                   name="password"
                   render={({ field }) => (
-                    <InlineFormItem label="Password">
+                    <InlineFormItem label={t("Password")}>
                       <Input {...field} type="password" />
                     </InlineFormItem>
                   )}
                 />
               </div>
             </CardContent>
-            <CardFooter>
+            <CardFooter className="space-x-4">
+              <Button asChild variant="outline">
+                <Link href="/sign-in">{t("Sign in")}</Link>
+              </Button>
               <Button disabled={pending} className="w-full">
-                Sign up
+                {t("Sign up")}
               </Button>
             </CardFooter>
           </Card>

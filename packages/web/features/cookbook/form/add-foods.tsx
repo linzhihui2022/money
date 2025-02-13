@@ -1,6 +1,6 @@
 "use client";
 
-import { Food } from "@sb-prisma";
+import { Food } from "@prisma-client";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
@@ -10,6 +10,7 @@ import { Cross1Icon } from "@radix-ui/react-icons";
 import { Badge } from "@/components/ui/badge";
 import { InlineFormItem } from "@/components/ui/form";
 import { FoodCombobox } from "../form/add-food-combobox";
+import { useTranslations } from "next-intl";
 
 export function AddFoods({
   foods,
@@ -22,6 +23,7 @@ export function AddFoods({
 }) {
   const [foodId, setFoodId] = useState(0);
   const [quantity, setQuantity] = useState(0);
+  const t = useTranslations("cookbook");
 
   const foodsMap = useMemo(
     () =>
@@ -33,7 +35,7 @@ export function AddFoods({
   );
   return (
     <InlineFormItem
-      label="Food"
+      label={t("Food")}
       description={
         value.length > 0 ? (
           <div className="-mx-2 -my-1">

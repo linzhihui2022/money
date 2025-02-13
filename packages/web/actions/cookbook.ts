@@ -1,5 +1,6 @@
 "use server";
-import { Cookbook, Food, prisma } from "@sb-prisma";
+import { Cookbook, Food } from "@prisma-client";
+import { prisma } from "@sb-prisma";
 import { revalidateTag } from "next/cache";
 
 export const createCookbook = async (

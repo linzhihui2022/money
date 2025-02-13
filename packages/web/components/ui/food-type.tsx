@@ -1,5 +1,7 @@
-import { FoodType } from "@sb-prisma";
+"use client";
+import { FoodType } from "@prisma-client";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 const colorMap: Record<FoodType, string> = {
   [FoodType.SEAFOOD]: "text-blue-200",
@@ -16,6 +18,7 @@ export function FoodTypeCircle({
   type: FoodType;
   label?: boolean;
 }) {
+  const t = useTranslations("food.FoodType");
   return (
     <span className="inline-flex space-x-1 items-center">
       <svg
@@ -30,7 +33,7 @@ export function FoodTypeCircle({
       >
         <path d="M4 4a16 16 0 0 1 16 16 L4 20 L4 4" fill="currentColor" />
       </svg>
-      {label && <span>{type}</span>}
+      {label && <span>{t(type)}</span>}
     </span>
   );
 }

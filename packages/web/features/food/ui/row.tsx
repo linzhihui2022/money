@@ -1,5 +1,5 @@
 "use client";
-import { Food } from "@sb-prisma";
+import { Food } from "@prisma-client";
 import { TableCell, TableRow } from "@/components/ui/table";
 import UpdateFood from "@food/table/update-food";
 import Delete from "@food/table/delete";

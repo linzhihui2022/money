@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { LoaderCircle } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 const Form = FormProvider;
 
@@ -199,6 +200,7 @@ const SubmitButton = <T extends FieldValues>({
   pending?: boolean;
 }) => {
   const { formState } = useFormContext<T>();
+  const t = useTranslations("form");
   return (
     <div className="pt-4 w-full flex justify-end">
       <Button
@@ -210,7 +212,7 @@ const SubmitButton = <T extends FieldValues>({
         ) : (
           <></>
         )}
-        Submit
+        {t("Submit")}
       </Button>
     </div>
   );

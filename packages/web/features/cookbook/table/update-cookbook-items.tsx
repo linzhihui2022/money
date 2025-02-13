@@ -3,7 +3,7 @@ import { useCookbookRow } from "@cookbook/ui/row";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Cookbook } from "@sb-prisma";
+import { Cookbook } from "@prisma-client";
 import { updateCookbook } from "actions/cookbook";
 import {
   Form,

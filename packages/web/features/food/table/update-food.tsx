@@ -14,8 +14,9 @@ import { updateFood } from "actions/food";
 import CellButton from "@/components/table/cell-button";
 import { z } from "zod";
 import { useFoodRow } from "@food/ui/row";
-import { Food, FoodType } from "@sb-prisma";
+import { Food, FoodType } from "@prisma-client";
 import { FoodTypeSelect } from "@food/form/food-type-select";
+import { useTranslations } from "next-intl";
 
 function UpdateFoodForm({
   setOpen,
@@ -47,6 +48,7 @@ function UpdateFoodForm({
       await updateFood(row.id, data).catch(() => updateRow(row));
     });
   }
+  const t = useTranslations("food");
 
   return (
     <Form {...form}>
@@ -55,7 +57,7 @@ function UpdateFoodForm({
           control={form.control}
           name="name"
           render={({ field }) => (
-            <InlineFormItem label="Name">
+            <InlineFormItem label={t("Name")}>
               <Input {...field} />
             </InlineFormItem>
           )}
@@ -64,7 +66,7 @@ function UpdateFoodForm({
           control={form.control}
           name="unit"
           render={({ field }) => (
-            <InlineFormItem label="Unit">
+            <InlineFormItem label={t("Unit")}>
               <Input {...field} />
             </InlineFormItem>
           )}
@@ -73,7 +75,7 @@ function UpdateFoodForm({
           control={form.control}
           name="type"
           render={({ field }) => (
-            <InlineFormItem label="Type">
+            <InlineFormItem label={t("Type")}>
               <FoodTypeSelect
                 onValueChange={field.onChange}
                 defaultValue={field.value}
@@ -89,9 +91,11 @@ function UpdateFoodForm({
 
 export default function UpdateFood({ children }: PropsWithChildren) {
   const { row } = useFoodRow();
+  const t = useTranslations("food");
+
   return (
     <DrawerDialog
-      title="Edit <Food>"
+      title={t("Edit <Food>")}
       trigger={<CellButton disabled={row.__deleted}>{children}</CellButton>}
       Body={UpdateFoodForm}
     />

@@ -1,0 +1,51 @@
+{
+  "hello": "Hallo",
+  "layout": {
+    "title": "Geld 💰",
+    "description": "Geld, Geld, Geld"
+  },
+  "form": {
+    "Submit": "Verzenden"
+  },
+  "sr-only": {
+    "Toggle Sidebar": "Schakel zijbalk in/uit"
+  },
+  "auth": {
+    "Sign out": "Uitloggen",
+    "Email": "E-mail",
+    "Password": "Wachtwoord",
+    "Sign up": "Registreren",
+    "Sign in": "Inloggen",
+    "Name": "Naam"
+  },
+  "sidebar": {
+    "Money": "Geld 💰",
+    "Home": "Home",
+    "Food list": "Voedsellijst",
+    "Cookbook list": "Kookboeklijst"
+  },
+  "cookbook": {
+    "Add new cookbook": "Nieuw kookboek toevoegen",
+    "Name": "Naam",
+    "Food": "Voedsel",
+    "Select food": "Selecteer voedsel",
+    "Search food": "Zoek voedsel",
+    "Not found": "Niet gevonden",
+    "Edit <Cookbook>": "Bewerk kookboek"
+  },
+  "food": {
+    "Add new food": "Nieuw voedsel toevoegen",
+    "Name": "Naam",
+    "Unit": "Eenheid",
+    "Type": "Type",
+    "Food": "Voedsel",
+    "Edit <Food>": "Bewerk voedsel",
+    "FoodType": {
+      "MEET": "Vlees",
+      "VEGETABLE": "Groente",
+      "FRUIT": "Fruit",
+      "SEAFOOD": "Zeevruchten",
+      "OTHER": "Overig"
+    }
+  }
+}

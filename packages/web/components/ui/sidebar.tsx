@@ -18,6 +18,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useTranslations } from "next-intl";
 
 // const SIDEBAR_COOKIE_NAME = "sidebar:state";
 // const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -292,7 +293,7 @@ const SidebarTrigger = React.forwardRef<
   React.ComponentProps<typeof Button>
 >(({ className, onClick, ...props }, ref) => {
   const { toggleSidebar } = useSidebar();
-
+  const t = useTranslations("sr-only");
   return (
     <Button
       ref={ref}
@@ -307,7 +308,7 @@ const SidebarTrigger = React.forwardRef<
       {...props}
     >
       <PanelLeft />
-      <span className="sr-only">Toggle Sidebar</span>
+      <span className="sr-only">{t("Toggle Sidebar")}</span>
     </Button>
   );
 });

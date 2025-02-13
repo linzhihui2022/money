@@ -15,9 +15,10 @@ import { Plus } from "lucide-react";
 import { ComponentProps, useOptimistic, useTransition } from "react";
 import DrawerDialog from "@/components/ui/drawer-dialog";
 import { createFood } from "actions/food";
-import { Food, FoodType } from "@sb-prisma";
+import { Food, FoodType } from "@prisma-client";
 import { z } from "zod";
 import { FoodTypeSelect } from "@food/form/food-type-select";
+import { useTranslations } from "next-intl";
 
 type FoodFormFields = Pick<Food, "name" | "type" | "unit">;
 function AddFoodForm({
@@ -49,6 +50,8 @@ function AddFoodForm({
       await createFood(data).finally(() => setState(null));
     });
   }
+  const t = useTranslations("food");
+
   return (
     <Form {...form}>
       <form className="w-full space-y-3" onSubmit={form.handleSubmit(onSubmit)}>
@@ -56,7 +59,7 @@ function AddFoodForm({
           control={form.control}
           name="name"
           render={({ field }) => (
-            <InlineFormItem label="Name">
+            <InlineFormItem label={t("Name")}>
               <Input {...field} />
             </InlineFormItem>
           )}
@@ -65,7 +68,7 @@ function AddFoodForm({
           control={form.control}
           name="unit"
           render={({ field }) => (
-            <InlineFormItem label="Unit">
+            <InlineFormItem label={t("Unit")}>
               <Input {...field} />
             </InlineFormItem>
           )}
@@ -74,7 +77,7 @@ function AddFoodForm({
           control={form.control}
           name="type"
           render={({ field }) => (
-            <InlineFormItem label="Type">
+            <InlineFormItem label={t("Type")}>
               <FoodTypeSelect
                 onValueChange={field.onChange}
                 defaultValue={field.value}
@@ -89,13 +92,14 @@ function AddFoodForm({
 }
 
 export function AddFoodDialog() {
+  const t = useTranslations("food");
   return (
     <DrawerDialog
-      title="Add new food"
+      title={t("Add new food")}
       trigger={
         <Button size="icon" variant="ghost">
           <Plus />
-          <span className="sr-only">Add food</span>
+          <span className="sr-only">{t("Add new food")}</span>
         </Button>
       }
       Body={AddFoodForm}

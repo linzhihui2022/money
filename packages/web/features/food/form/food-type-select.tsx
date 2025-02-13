@@ -6,7 +6,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { FoodType } from "@sb-prisma";
+import { FoodType } from "@prisma-client";
 import * as SelectPrimitive from "@radix-ui/react-select";
 import { ComponentPropsWithoutRef } from "react";
 import { FoodTypeCircle } from "@/components/ui/food-type";

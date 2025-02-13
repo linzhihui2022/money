@@ -32,8 +32,8 @@
       "@/lib/*": [
         "lib/*"
       ],
-      "@sb-prisma/*": [
-        "prisma/*"
+      "@prisma-client": [
+        "prisma/client"
       ],
       "@sb-prisma": [
         "prisma/index.ts"

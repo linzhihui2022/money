@@ -1,0 +1,51 @@
+{
+  "hello": "你好",
+  "layout": {
+    "title": "钱啊💰",
+    "description": "钱，钱，钱"
+  },
+  "form": {
+    "Submit": "提 交"
+  },
+  "sr-only": {
+    "Toggle Sidebar": "切换侧边栏"
+  },
+  "auth": {
+    "Sign out": "退出登录",
+    "Email": "邮箱",
+    "Password": "密码",
+    "Sign up": "注册",
+    "Sign in": "登录",
+    "Name": "姓名"
+  },
+  "sidebar": {
+    "Money": "钱啊💰",
+    "Home": "首页",
+    "Food list": "食材表",
+    "Cookbook list": "菜谱表"
+  },
+  "cookbook": {
+    "Add new cookbook": "添加新的菜谱",
+    "Name": "菜谱",
+    "Food": "食材",
+    "Select food": "挑选食材",
+    "Search food": "搜索食材",
+    "Not found": "没有找到",
+    "Edit <Cookbook>": "修改菜谱"
+  },
+  "food": {
+    "Add new food": "添加新的食材",
+    "Name": "食材",
+    "Unit": "单位",
+    "Type": "种类",
+    "Food": "食材",
+    "Edit <Food>": "修改食材",
+    "FoodType": {
+      "MEET": "肉类",
+      "VEGETABLE":"蔬菜",
+      "FRUIT": "水果",
+      "SEAFOOD":"海鲜",
+      "OTHER": "其他"
+    }
+  }
+}

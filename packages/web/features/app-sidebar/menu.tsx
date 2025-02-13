@@ -5,6 +5,7 @@ import {
   SidebarGroupLabel,
 } from "@/components/ui/sidebar";
 import { BillMenuGroup } from "./bill-group";
+import { useTranslations } from "next-intl";
 
 const GroupContainer = ({
   label,
@@ -24,8 +25,9 @@ const GroupContainer = ({
 };
 
 export default function Menu() {
+  const t = useTranslations("sidebar");
   return (
-    <GroupContainer label="Bill">
+    <GroupContainer label={t("Money")}>
       <BillMenuGroup />
     </GroupContainer>
   );

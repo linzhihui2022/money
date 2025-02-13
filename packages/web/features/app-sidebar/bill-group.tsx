@@ -7,9 +7,11 @@ import {
 import Link from "next/link";
 import { Beef, Book, Home } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 export function BillMenuGroup() {
   const pathname = usePathname();
+  const t = useTranslations("sidebar");
 
   return (
     <>
@@ -18,7 +20,7 @@ export function BillMenuGroup() {
           <SidebarMenuButton isActive={pathname === "/"} asChild>
             <Link href="/">
               <Home />
-              <span>Home</span>
+              <span>{t("Home")}</span>
             </Link>
           </SidebarMenuButton>
         </SidebarMenuItem>
@@ -26,7 +28,7 @@ export function BillMenuGroup() {
           <SidebarMenuButton isActive={pathname === "/food"} asChild>
             <Link href="/food">
               <Beef />
-              <span>Food list</span>
+              <span>{t("Food list")}</span>
             </Link>
           </SidebarMenuButton>
         </SidebarMenuItem>
@@ -34,7 +36,7 @@ export function BillMenuGroup() {
           <SidebarMenuButton isActive={pathname === "/cookbook"} asChild>
             <Link href="/cookbook">
               <Book />
-              <span>Cookbook</span>
+              <span>{t("Cookbook list")}</span>
             </Link>
           </SidebarMenuButton>
         </SidebarMenuItem>

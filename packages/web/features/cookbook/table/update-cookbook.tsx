@@ -12,9 +12,10 @@ import { ComponentProps, PropsWithChildren, useTransition } from "react";
 import { Input } from "@/components/ui/input";
 import CellButton from "@/components/table/cell-button";
 import { z } from "zod";
-import { Cookbook } from "@sb-prisma";
+import { Cookbook } from "@prisma-client";
 import { useCookbookRow } from "@cookbook/ui/row";
 import { updateCookbook } from "actions/cookbook";
+import { useTranslations } from "next-intl";
 
 function UpdateCookbookForm({
   setOpen,
@@ -34,6 +35,7 @@ function UpdateCookbookForm({
       await updateCookbook(row.id, data).catch(() => updateRow(row));
     });
   }
+  const t = useTranslations("cookbook");
 
   return (
     <Form {...form}>
@@ -42,7 +44,7 @@ function UpdateCookbookForm({
           control={form.control}
           name="name"
           render={({ field }) => (
-            <InlineFormItem label="Name">
+            <InlineFormItem label={t("Name")}>
               <Input {...field} />
             </InlineFormItem>
           )}
@@ -55,9 +57,10 @@ function UpdateCookbookForm({
 
 export default function UpdateCookbook({ children }: PropsWithChildren) {
   const { row } = useCookbookRow();
+  const t = useTranslations("cookbook");
   return (
     <DrawerDialog
-      title="Edit <Cookbook>"
+      title={t("Edit <Cookbook>")}
       trigger={<CellButton disabled={row.__deleted}>{children}</CellButton>}
       Body={UpdateCookbookForm}
     />
