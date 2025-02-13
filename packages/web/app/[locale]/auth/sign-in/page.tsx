@@ -78,7 +78,7 @@ export default function LoginPage() {
             </CardContent>
             <CardFooter className="space-x-4">
               <Button asChild variant="outline">
-                <Link href="/sign-up">{t("Sign up")}</Link>
+                <Link href="/auth/sign-up">{t("Sign up")}</Link>
               </Button>
               <Button disabled={pending} className="w-full">
                 {t("Sign in")}

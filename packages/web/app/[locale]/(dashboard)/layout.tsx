@@ -13,7 +13,7 @@ export default async function DashboardLayout({
 }) {
   const res = await getUser();
   if (!res.data.user) {
-    redirect("/sign-in");
+    redirect("/auth/sign-in");
   }
   return (
     <TooltipProvider>
