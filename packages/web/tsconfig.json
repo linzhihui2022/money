@@ -31,6 +31,18 @@
       ],
       "@/lib/*": [
         "lib/*"
+      ],
+      "@sb-prisma/*": [
+        "prisma/*"
+      ],
+      "@sb-prisma": [
+        "prisma/index.ts"
+      ],
+      "@cookbook/*": [
+        "features/cookbook/*"
+      ],
+      "@food/*": [
+        "features/food/*"
       ]
     },
     "plugins": [
@@ -46,6 +58,6 @@
     ".next/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules",
+    "node_modules"
   ]
 }

@@ -3,8 +3,8 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import { getCookbooks } from "api/cookbook";
 import { createContext, useContext, useMemo, useOptimistic } from "react";
 import { FoodTypeCircle } from "@/components/ui/food-type";
-import Delete from "@/features/cookbook/table/delete";
-import UpdateCookbook from "@/features/cookbook/table/update-cookbook";
+import Delete from "@cookbook/table/delete";
+import UpdateCookbook from "@cookbook/table/update-cookbook";
 
 type Cookbook = Awaited<ReturnType<typeof getCookbooks>>[number];
 interface OptimisticRow extends Cookbook {

@@ -6,7 +6,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { CookbookRow } from "@/features/cookbook/ui/row";
+import { CookbookRow } from "@cookbook/ui/row";
 
 export default async function CookbookTable() {
   const cookbooks = await getCookbooks();

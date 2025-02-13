@@ -1,8 +1,7 @@
 "use server";
 
 import { revalidateTag } from "next/cache";
-import { prisma } from "../prisma";
-import { Food } from "prisma/client";
+import { Food, prisma } from "@sb-prisma";
 
 export const updateFood = async (
   id: Food["id"],

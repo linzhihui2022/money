@@ -17,7 +17,7 @@ import React from "react";
 import Menu from "@/features/app-sidebar/menu";
 import { AppLogo } from "@/features/layout/ui/AppLogo";
 import { logout } from "actions/auth";
-import { getUser } from "../../api/auth";
+import { getUser } from "api/auth";
 
 export async function AppSidebar() {
   const user = await getUser();

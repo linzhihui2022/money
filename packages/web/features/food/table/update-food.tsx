@@ -13,9 +13,9 @@ import { Input } from "@/components/ui/input";
 import { updateFood } from "actions/food";
 import CellButton from "@/components/table/cell-button";
 import { z } from "zod";
-import { useFoodRow } from "@/features/food/ui/row";
-import { Food, FoodType } from "prisma/client";
-import { FoodTypeSelect } from "@/features/food/form/food-type-select";
+import { useFoodRow } from "@food/ui/row";
+import { Food, FoodType } from "@sb-prisma";
+import { FoodTypeSelect } from "@food/form/food-type-select";
 
 function UpdateFoodForm({
   setOpen,

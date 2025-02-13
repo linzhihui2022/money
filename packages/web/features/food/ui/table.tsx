@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/table";
 
 import { getFoods } from "api/food";
-import { FoodRow } from "@/features/food/ui/row";
+import { FoodRow } from "@food/ui/row";
 
 export default async function FoodTable() {
   const foods = await getFoods();

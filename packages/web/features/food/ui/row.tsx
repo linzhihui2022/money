@@ -1,8 +1,8 @@
 "use client";
-import { Food } from "prisma/client";
+import { Food } from "@sb-prisma";
 import { TableCell, TableRow } from "@/components/ui/table";
-import UpdateFood from "@/features/food/table/update-food";
-import Delete from "@/features/food/table/delete";
+import UpdateFood from "@food/table/update-food";
+import Delete from "@food/table/delete";
 import { createContext, useContext, useMemo, useOptimistic } from "react";
 import { FoodTypeCircle } from "@/components/ui/food-type";
 

@@ -2,7 +2,7 @@
 import DeleteDialog from "@/components/table/delete-dialog";
 import { useTransition } from "react";
 import { deleteCookbook } from "actions/cookbook";
-import { useCookbookRow } from "@/features/cookbook/ui/row";
+import { useCookbookRow } from "@cookbook/ui/row";
 
 export default function Delete() {
   const [, startTransition] = useTransition();

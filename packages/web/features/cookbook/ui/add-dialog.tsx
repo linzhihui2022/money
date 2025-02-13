@@ -2,7 +2,7 @@
 import DrawerDialog from "@/components/ui/drawer-dialog";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { Food } from "prisma/client";
+import { Food } from "@sb-prisma";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";

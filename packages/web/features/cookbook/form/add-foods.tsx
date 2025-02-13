@@ -1,6 +1,6 @@
 "use client";
 
-import { Food } from "prisma/client";
+import { Food } from "@sb-prisma";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";

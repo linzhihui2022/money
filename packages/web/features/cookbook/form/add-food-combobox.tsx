@@ -1,4 +1,4 @@
-import { Food } from "prisma/client";
+import { Food } from "@sb-prisma";
 import {
   Popover,
   PopoverContent,

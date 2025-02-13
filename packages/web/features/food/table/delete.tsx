@@ -2,7 +2,7 @@
 import DeleteDialog from "@/components/table/delete-dialog";
 import { deleteFood } from "actions/food";
 import { useTransition } from "react";
-import { useFoodRow } from "@/features/food/ui/row";
+import { useFoodRow } from "@food/ui/row";
 
 export default function Delete() {
   const [, startTransition] = useTransition();

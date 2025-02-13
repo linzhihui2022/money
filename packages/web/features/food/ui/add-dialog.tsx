@@ -15,9 +15,9 @@ import { Plus } from "lucide-react";
 import { ComponentProps, useOptimistic, useTransition } from "react";
 import DrawerDialog from "@/components/ui/drawer-dialog";
 import { createFood } from "actions/food";
-import { Food, FoodType } from "prisma/client";
+import { Food, FoodType } from "@sb-prisma";
 import { z } from "zod";
-import { FoodTypeSelect } from "@/features/food/form/food-type-select";
+import { FoodTypeSelect } from "@food/form/food-type-select";
 
 type FoodFormFields = Pick<Food, "name" | "type" | "unit">;
 function AddFoodForm({

@@ -1,22 +1,21 @@
-"use client";
+import DrawerDialog from "@/components/ui/drawer-dialog";
+import { useCookbookRow } from "@cookbook/ui/row";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Cookbook } from "@sb-prisma";
+import { updateCookbook } from "actions/cookbook";
 import {
   Form,
   FormField,
   InlineFormItem,
   SubmitButton,
 } from "@/components/ui/form";
-import DrawerDialog from "@/components/ui/drawer-dialog";
-import { ComponentProps, PropsWithChildren, useTransition } from "react";
 import { Input } from "@/components/ui/input";
+import { ComponentProps, PropsWithChildren, useTransition } from "react";
 import CellButton from "@/components/table/cell-button";
-import { z } from "zod";
-import { Cookbook } from "@sb-prisma";
-import { useCookbookRow } from "@cookbook/ui/row";
-import { updateCookbook } from "actions/cookbook";
 
-function UpdateCookbookForm({
+function UpdateCookbookItemsForm({
   setOpen,
 }: ComponentProps<ComponentProps<typeof DrawerDialog>["Body"]>) {
   const { row, updateRow } = useCookbookRow();
@@ -53,13 +52,13 @@ function UpdateCookbookForm({
   );
 }
 
-export default function UpdateCookbook({ children }: PropsWithChildren) {
+export default function UpdateCookbookItems({ children }: PropsWithChildren) {
   const { row } = useCookbookRow();
   return (
     <DrawerDialog
       title="Edit <Cookbook>"
       trigger={<CellButton disabled={row.__deleted}>{children}</CellButton>}
-      Body={UpdateCookbookForm}
+      Body={UpdateCookbookItemsForm}
     />
   );
 }

@@ -15,3 +15,4 @@ function singleton<Value>(name: string, value: () => Value): Value {
 const prisma = singleton("prisma", () => new PrismaClient());
 prisma.$connect();
 export { prisma };
+export * from "./client";

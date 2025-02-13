@@ -1,4 +1,4 @@
-import { FoodType } from "prisma/client";
+import { FoodType } from "@sb-prisma";
 import { cn } from "@/lib/utils";
 
 const colorMap: Record<FoodType, string> = {
