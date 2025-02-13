@@ -1,57 +1,56 @@
 "use client";
 import { useForm } from "react-hook-form";
-
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Input } from "@/components/ui/input";
 import {
   Form,
   FormField,
   InlineFormItem,
   SubmitButton,
 } from "@/components/ui/form";
-
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
-import { ComponentProps, useOptimistic, useTransition } from "react";
 import DrawerDialog from "@/components/ui/drawer-dialog";
-import { createFood } from "actions/food";
-import { Food, FoodType } from "prisma/client";
+import { ComponentProps, PropsWithChildren, useTransition } from "react";
+import { Input } from "@/components/ui/input";
+import { updateFood } from "actions/food";
+import CellButton from "@/components/table/cell-button";
 import { z } from "zod";
+import { useFoodRow } from "@/features/food/ui/row";
+import { Food, FoodType } from "prisma/client";
 import { FoodTypeSelect } from "@/features/food/form/food-type-select";
 
-type FoodFormFields = Pick<Food, "name" | "type" | "unit">;
-function AddFoodForm({
+function UpdateFoodForm({
   setOpen,
 }: ComponentProps<ComponentProps<typeof DrawerDialog>["Body"]>) {
-  const form = useForm<FoodFormFields>({
+  const { row, updateRow } = useFoodRow();
+  const form = useForm({
     resolver: zodResolver(
       z.object({
         name: z.string().min(1),
+        unit: z.string().min(1),
         type: z.enum([
+          FoodType.OTHER,
           FoodType.FRUIT,
-          FoodType.VEGETABLE,
           FoodType.MEET,
           FoodType.SEAFOOD,
-          FoodType.OTHER,
+          FoodType.VEGETABLE,
         ]),
-        unit: z.string().min(1),
       }),
     ),
-    defaultValues: { name: "", type: FoodType.MEET, unit: "g" },
+    defaultValues: { name: row.name, type: row.type, unit: row.unit },
   });
-  const [, setState] = useOptimistic<FoodFormFields | null>(null);
   const [pending, startTransition] = useTransition();
-  async function onSubmit(data: FoodFormFields) {
+
+  async function onSubmit(data: Pick<Food, "name" | "type" | "unit">) {
     setOpen(false);
     form.reset();
     startTransition(async () => {
-      setState(data);
-      await createFood(data).finally(() => setState(null));
+      updateRow((v) => ({ ...v, ...data }));
+      await updateFood(row.id, data).catch(() => updateRow(row));
     });
   }
+
   return (
     <Form {...form}>
-      <form className="w-full space-y-3" onSubmit={form.handleSubmit(onSubmit)}>
+      <form className="space-y-3" onSubmit={form.handleSubmit(onSubmit)}>
         <FormField
           control={form.control}
           name="name"
@@ -88,17 +87,13 @@ function AddFoodForm({
   );
 }
 
-export function AddFoodDialog() {
+export default function UpdateFood({ children }: PropsWithChildren) {
+  const { row } = useFoodRow();
   return (
     <DrawerDialog
-      title="Add new food"
-      trigger={
-        <Button size="icon" variant="ghost">
-          <Plus />
-          <span className="sr-only">Add food</span>
-        </Button>
-      }
-      Body={AddFoodForm}
+      title="Edit <Food>"
+      trigger={<CellButton disabled={row.__deleted}>{children}</CellButton>}
+      Body={UpdateFoodForm}
     />
   );
 }

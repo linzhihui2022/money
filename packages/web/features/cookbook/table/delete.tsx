@@ -1,17 +1,17 @@
 "use client";
 import DeleteDialog from "@/components/table/delete-dialog";
-import { deleteFood } from "actions/food";
 import { useTransition } from "react";
-import { useFoodRow } from "@/features/food/ui/row";
+import { deleteCookbook } from "actions/cookbook";
+import { useCookbookRow } from "@/features/cookbook/ui/row";
 
 export default function Delete() {
   const [, startTransition] = useTransition();
-  const { row, updateRow } = useFoodRow();
+  const { row, updateRow } = useCookbookRow();
   async function onDeleteAction(setOpen: (open: boolean) => void) {
     setOpen(false);
     startTransition(async () => {
       updateRow((v) => ({ ...v, __deleted: true }));
-      await deleteFood(row.id).catch(() =>
+      await deleteCookbook(row.id).catch(() =>
         updateRow((v) => ({ ...v, __deleted: false })),
       );
     });

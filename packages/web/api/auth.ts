@@ -1,6 +1,9 @@
 "use server";
 
-import { supabase } from "@/lib/supabase";
 import { cache } from "react";
+import { createClient } from "@/lib/supabase.server";
 
-export const getUser = cache(async () => supabase().auth.getUser());
+export const getUser = cache(async () => {
+  const supabase = await createClient();
+  return supabase.auth.getUser();
+});

@@ -130,13 +130,13 @@ const FormControl = React.forwardRef<
 FormControl.displayName = "FormControl";
 
 const FormDescription = React.forwardRef<
-  HTMLParagraphElement,
-  React.HTMLAttributes<HTMLParagraphElement>
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => {
   const { formDescriptionId } = useFormField();
 
   return (
-    <p
+    <div
       ref={ref}
       id={formDescriptionId}
       className={cn("text-[0.8rem] text-muted-foreground", className)}
@@ -179,27 +179,33 @@ const InlineFormItem = ({
   description?: ReactNode;
 }>) => {
   return (
-    <FormItem className="grid grid-cols-[64px,1fr] space-y-0 gap-x-3 gap-y-1.5 items-center">
-      <FormLabel className="text-right ">{label}:</FormLabel>
+    <FormItem className="grid sm:grid-cols-[80px,1fr] grid-cols-1 space-y-0 gap-x-3 gap-y-1.5 items-center">
+      <FormLabel className="sm:text-right">{label}:</FormLabel>
       <FormControl>{children}</FormControl>
-      <FormMessage className="col-start-2" />
+      <FormMessage className="sm:col-start-2" />
       {!!description && (
-        <FormDescription className="col-start-2">{description}</FormDescription>
+        <FormDescription className="sm:col-start-2">
+          {description}
+        </FormDescription>
       )}
     </FormItem>
   );
 };
 InlineFormItem.displayName = "InlineFormItem";
 
-const SubmitButton = <T extends FieldValues>() => {
+const SubmitButton = <T extends FieldValues>({
+  pending,
+}: {
+  pending?: boolean;
+}) => {
   const { formState } = useFormContext<T>();
   return (
     <div className="pt-4 w-full flex justify-end">
       <Button
         type="submit"
-        disabled={!formState.isDirty || formState.isSubmitting}
+        disabled={!formState.isDirty || formState.isSubmitting || pending}
       >
-        {formState.isSubmitting ? (
+        {formState.isSubmitting || pending ? (
           <LoaderCircle className="animate-spin" />
         ) : (
           <></>

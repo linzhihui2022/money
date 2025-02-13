@@ -16,15 +16,22 @@ import { Dispatch, SetStateAction, useState } from "react";
 export default function DeleteDialog({
   onDeleteAction,
   name,
+  deleted,
 }: {
   onDeleteAction: (setOpen: Dispatch<SetStateAction<boolean>>) => void;
   name: string;
+  deleted: boolean;
 }) {
   const [open, setOpen] = useState(false);
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
-        <Button variant="link" size="cell" className="hover:text-destructive">
+        <Button
+          data-deleted={deleted ? "yes" : ""}
+          variant="link"
+          size="cell"
+          className="hover:text-destructive"
+        >
           <Trash2 />
         </Button>
       </AlertDialogTrigger>

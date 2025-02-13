@@ -11,12 +11,11 @@ import { Input } from "@/components/ui/input";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useOptimistic, useTransition } from "react";
-import { ActionState, initialState, successState } from "types";
+import { useTransition } from "react";
 import { Form, FormField, InlineFormItem } from "@/components/ui/form";
-import { singUp } from "actions/auth";
-import { useRouter } from "next/navigation";
 import { useToast } from "@/lib/use-toast";
+import { signup } from "./action";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const form = useForm<{ email: string; password: string; name: string }>({
@@ -33,10 +32,8 @@ export default function LoginPage() {
       password: "Lin123456!",
     },
   });
-  const [state, setState] = useOptimistic<
-    ActionState<{ email: string; name: string }>
-  >(initialState({ email: "", name: "" }));
-  const [, startTransition] = useTransition();
+
+  const [pending, startTransition] = useTransition();
   const router = useRouter();
   const { toast } = useToast();
   return (
@@ -46,16 +43,11 @@ export default function LoginPage() {
           className="w-full max-w-xs"
           onSubmit={form.handleSubmit(async (data) => {
             startTransition(async () => {
-              setState(successState({ email: data.email, name: data.name }));
-              const res = await singUp(state, data);
-              switch (res.status) {
-                case "success":
-                  router.push(`/sign-in?email=${res.data.email}`);
-                  break;
-                case "error":
-                  toast({ title: res.error?.message, variant: "destructive" });
-                  break;
-              }
+              await signup(data)
+                .then(() => router.push("/"))
+                .catch((e: Error) => {
+                  toast({ title: e.message, variant: "destructive" });
+                });
             });
           })}
         >
@@ -95,7 +87,9 @@ export default function LoginPage() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button className="w-full">Sign up</Button>
+              <Button disabled={pending} className="w-full">
+                Sign up
+              </Button>
             </CardFooter>
           </Card>
         </form>

@@ -4,3 +4,8 @@ import { twMerge } from "tailwind-merge";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
+
+type FalseType = "" | 0 | false | null | undefined;
+export const typedBoolean = <Value>(
+  value: Value,
+): value is Exclude<Value, FalseType> => Boolean(value);

@@ -1,22 +1,12 @@
 import { Header } from "@/components/ui/header";
-import BillHeader from "@/features/bill/ui/header";
-import { BillList } from "@/features/bill/ui/list";
-import { getQuery } from "@/lib/query";
+import { SkeletonGroup } from "@/components/ui/skeleton";
+import { Suspense } from "react";
 
-export default async function Page({
-  searchParams,
-}: {
-  searchParams: Promise<{ category: string; account: string }>;
-}) {
-  const query = await getQuery({ searchParams });
+export default async function Page() {
   return (
     <>
-      <Header>
-        <BillHeader query={query} />
-      </Header>
-      <div>
-        <BillList query={query} />
-      </div>
+      <Header />
+      <Suspense fallback={<SkeletonGroup />}></Suspense>
     </>
   );
 }

@@ -1,4 +1,4 @@
-"use server";
+import { getCookbooks } from "api/cookbook";
 import {
   Table,
   TableBody,
@@ -6,25 +6,22 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { CookbookRow } from "@/features/cookbook/ui/row";
 
-import { getFoods } from "api/food";
-import { FoodRow } from "@/features/food/ui/row";
-
-export default async function FoodTable() {
-  const foods = await getFoods();
+export default async function CookbookTable() {
+  const cookbooks = await getCookbooks();
   return (
     <Table>
       <TableHeader>
         <TableRow>
           <TableHead>ID</TableHead>
           <TableHead>Name</TableHead>
-          <TableHead>Unit</TableHead>
-          <TableHead>Type</TableHead>
+          <TableHead>Food</TableHead>
           <TableHead></TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        {foods?.map((row) => <FoodRow row={row} key={row.id} />)}
+        {cookbooks?.map((row) => <CookbookRow row={row} key={row.id} />)}
       </TableBody>
     </Table>
   );

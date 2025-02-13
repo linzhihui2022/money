@@ -11,13 +11,12 @@ import { Input } from "@/components/ui/input";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useOptimistic, useTransition } from "react";
-import { ActionState, EmptyObj, initialState, successState } from "types";
+import { useTransition } from "react";
 import { Form, FormField, InlineFormItem } from "@/components/ui/form";
-import { singIn } from "actions/auth";
-import { useRouter } from "next/navigation";
+import { singIn } from "./action";
 import { useToast } from "@/lib/use-toast";
 import { Link } from "@/lib/use-nav";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const form = useForm<{ email: string; password: string }>({
@@ -29,11 +28,8 @@ export default function LoginPage() {
       password: "Lin123456!",
     },
   });
-  const [state, setState] = useOptimistic<ActionState<EmptyObj>>(
-    initialState({}),
-  );
-  const [, startTransition] = useTransition();
   const router = useRouter();
+  const [pending, startTransition] = useTransition();
   const { toast } = useToast();
   return (
     <div className="min-h-screen flex justify-center items-start md:items-center p-8">
@@ -42,16 +38,11 @@ export default function LoginPage() {
           className="w-full max-w-xs"
           onSubmit={form.handleSubmit(async (data) => {
             startTransition(async () => {
-              setState(successState({}));
-              const res = await singIn(state, data);
-              switch (res.status) {
-                case "success":
-                  router.push("/");
-                  break;
-                case "error":
-                  toast({ title: res.error?.message, variant: "destructive" });
-                  break;
-              }
+              await singIn(data)
+                .then(() => router.push("/"))
+                .catch((e: Error) => {
+                  toast({ title: e.message, variant: "destructive" });
+                });
             });
           })}
         >
@@ -85,7 +76,9 @@ export default function LoginPage() {
               </Button>
             </CardContent>
             <CardFooter>
-              <Button className="w-full">Sign in</Button>
+              <Button disabled={pending} className="w-full">
+                Sign in
+              </Button>
             </CardFooter>
           </Card>
         </form>

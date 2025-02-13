@@ -1,3 +1,4 @@
+"use server";
 import React from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/features/app-sidebar";

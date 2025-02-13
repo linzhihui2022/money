@@ -27,13 +27,13 @@ export function DateTime({
   value,
   className,
 }: {
-  value: string;
+  value: Date;
   className?: string;
 }) {
   const display = new Intl.DateTimeFormat("zh", {
-    year: undefined,
-    month: undefined,
-    day: undefined,
+    year: "2-digit",
+    month: "short",
+    day: "2-digit",
     hour: "numeric",
     minute: "numeric",
     second: "numeric",

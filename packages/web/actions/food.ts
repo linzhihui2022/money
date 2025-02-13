@@ -1,58 +1,24 @@
 "use server";
 
-import { Action, FoodItem, EmptyObj, successState } from "types";
-import { api } from "@/lib/api";
 import { revalidateTag } from "next/cache";
+import { prisma } from "../prisma";
+import { Food } from "prisma/client";
 
-export const updateName: Action<
-  EmptyObj,
-  Pick<FoodItem, "name" | "id">
-> = async (_, { id, name }) => {
-  const res = await api({
-    uri: `/food/${id}/name`,
-    method: "PUT",
-    body: { name },
-  });
-  switch (res.status) {
-    case "success":
-      revalidateTag("foods");
-      return successState({});
-    case "error":
-      return res;
-    default:
-      return _;
-  }
-};
-
-export const deleteFood: Action<EmptyObj, Pick<FoodItem, "id">> = async (
-  _,
-  { id },
+export const updateFood = async (
+  id: Food["id"],
+  data: Pick<Food, "name" | "type" | "unit">,
 ) => {
-  const res = await api({ uri: `/food/${id}`, method: "DELETE" });
-  switch (res.status) {
-    case "success":
-      revalidateTag("foods");
-      return successState({});
-    case "error":
-      return res;
-    default:
-      return _;
-  }
+  await prisma.food.update({ where: { id }, data });
+  revalidateTag("foods");
+  revalidateTag("cookbooks");
+};
+export const deleteFood = async (id: Food["id"]) => {
+  await prisma.food.delete({ where: { id } });
+  revalidateTag("foods");
+  revalidateTag("cookbooks");
 };
 
-export const createFood: Action<EmptyObj, FoodItem> = async (_, body) => {
-  const res = await api({
-    uri: `/food`,
-    method: "POST",
-    body,
-  });
-  switch (res.status) {
-    case "success":
-      revalidateTag("foods");
-      return successState({});
-    case "error":
-      return res;
-    default:
-      return _;
-  }
+export const createFood = async (data: Pick<Food, "name" | "type">) => {
+  await prisma.food.create({ data });
+  revalidateTag("foods");
 };

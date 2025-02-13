@@ -1,11 +1,9 @@
-# 忽略构建输出目录
 build/
 dist/
 .next
 
-# 忽略特定文件
 *.min.js
 *.bundle.js
 
-# 忽略特定目录
-node_modules/ 
+node_modules/
+prisma/client

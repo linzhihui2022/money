@@ -1,17 +1,17 @@
-import FoodTable from "@/features/food/ui/table";
 import { Header } from "@/components/ui/header";
 import { SkeletonGroup } from "@/components/ui/skeleton";
 import { Suspense } from "react";
-import FoodHeader from "@/features/food/ui/header";
+import CookbookHeader from "@/features/cookbook/ui/header";
+import CookbookTable from "@/features/cookbook/ui/table";
 
 export default async function Page() {
   return (
     <>
       <Header>
-        <FoodHeader />
+        <CookbookHeader />
       </Header>
       <Suspense fallback={<SkeletonGroup />}>
-        <FoodTable />
+        <CookbookTable />
       </Suspense>
     </>
   );

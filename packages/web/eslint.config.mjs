@@ -10,7 +10,7 @@ import pluginNext from "@next/eslint-plugin-next";
 
 /** @type {import('eslint').Linter.Config[]} */
 export default [
-  { ignores: [".next"] },
+  { ignores: [".next", "prisma/client"] },
   { files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"] },
   { languageOptions: { globals: { ...globals.browser, ...globals.node } } },
   pluginJs.configs.recommended,

@@ -1,5 +1,5 @@
 import { AddFoodDialog } from "./add-dialog";
 
-export default function CategoryHeader() {
+export default function FoodHeader() {
   return <AddFoodDialog />;
 }

@@ -1,33 +1,19 @@
-import { refresh } from "actions/auth";
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest } from "next/server";
+import { updateSession } from "@/lib/supabase.middleware";
 
 export async function middleware(request: NextRequest) {
-  const lastCheck = request.cookies.get("last-check")?.value;
-  const response = NextResponse.next();
-  if (!lastCheck) {
-    response.cookies.set({
-      name: "last-check",
-      value: `${new Date().getTime()}`,
-      maxAge: 60 * 5,
-    });
-    const res = await refresh();
-    if (res?.status === "error") {
-      return NextResponse.redirect(new URL("/login", request.url));
-    }
-  }
-  return response;
+  return await updateSession(request);
 }
 
-// See "Matching Paths" below to learn more
 export const config = {
   matcher: [
     /*
      * Match all request paths except for the ones starting with:
-     * - api (API routes)
      * - _next/static (static files)
      * - _next/image (image optimization files)
-     * - favicon.ico, sitemap.xml, robots.txt (metadata files)
+     * - favicon.ico (favicon file)
+     * Feel free to modify this pattern to include more paths.
      */
-    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
