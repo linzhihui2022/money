@@ -8,3 +8,9 @@ export const getFoods = unstable_cache(
   ["foods"],
   { tags: ["foods"], revalidate: 60 * 5 },
 );
+
+export const getSomeFoods = unstable_cache(
+  async (take = 3) => prisma.food.findMany({ orderBy: { id: "desc" }, take }),
+  ["getSomeFoods"],
+  { tags: ["foods"], revalidate: 60 * 5 },
+);
