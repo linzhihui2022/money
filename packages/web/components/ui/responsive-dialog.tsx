@@ -19,6 +19,7 @@ import {
 import { useMedia } from "react-use";
 import type { ComponentProps, ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 export function ResponsiveDialog({
   title,
@@ -77,10 +78,18 @@ export function ResponsiveDialog({
                 <DialogTitle className={headerAlignClass[headerAlignment]}>
                   {title}
                 </DialogTitle>
-              ) : null}
+              ) : (
+                <VisuallyHidden asChild>
+                  <DialogTitle />
+                </VisuallyHidden>
+              )}
               {description ? (
                 <DialogDescription>{description}</DialogDescription>
-              ) : null}
+              ) : (
+                <VisuallyHidden asChild>
+                  <DialogDescription />
+                </VisuallyHidden>
+              )}
             </DialogHeader>
           ) : null}
 

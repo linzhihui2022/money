@@ -4,14 +4,13 @@ import {
   createContext,
   forwardRef,
   PropsWithChildren,
+  Suspense as ReactSuspense,
   TransitionStartFunction,
   useCallback,
   useContext,
   useTransition,
-  Suspense as ReactSuspense,
 } from "react";
-import { useRouter } from "next/navigation";
-import NextLink from "next/link";
+import { Link as NextLink, useRouter } from "i18n/routing";
 import { Loader2Icon } from "lucide-react";
 
 interface PendingContextValue {

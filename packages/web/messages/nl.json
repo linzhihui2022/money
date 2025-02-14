@@ -8,7 +8,8 @@
     "Submit": "Verzenden"
   },
   "sr-only": {
-    "Toggle Sidebar": "Schakel zijbalk in/uit"
+    "Toggle Sidebar": "Schakel zijbalk in/uit",
+    "Toggle Theme": "Toggle Thema"
   },
   "auth": {
     "Sign out": "Uitloggen",

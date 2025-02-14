@@ -19,6 +19,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useTranslations } from "next-intl";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 // const SIDEBAR_COOKIE_NAME = "sidebar:state";
 // const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -231,7 +232,11 @@ const Sidebar = React.forwardRef<
               <SheetTitle>
                 <SidebarHeader className="h-12">{header}</SidebarHeader>
               </SheetTitle>
-            ) : null}
+            ) : (
+              <VisuallyHidden asChild>
+                <SheetTitle />
+              </VisuallyHidden>
+            )}
             <div className="flex h-full w-full flex-col">{children}</div>
           </SheetContent>
         </Sheet>

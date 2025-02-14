@@ -2,16 +2,18 @@ import { Header } from "@/components/ui/header";
 import { SkeletonGroup } from "@/components/ui/skeleton";
 import { Suspense } from "react";
 import { getSomeCookbooks } from "api/cookbook";
-import { getSomeFoods } from "api/food";
+import { getFoodsType } from "api/food";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getTranslations } from "next-intl/server";
-import { Link } from "../../../i18n/routing";
+import { Link } from "i18n/routing";
 import { LinkIcon } from "lucide-react";
 import { FoodTypeCircle } from "@/components/ui/food-type";
+import { Chart } from "./chart";
 
 export default async function Page() {
   const cookbooks = await getSomeCookbooks();
-  const foods = await getSomeFoods();
+  const foodsType = await getFoodsType();
+
   const t = await getTranslations();
   return (
     <>
@@ -28,12 +30,7 @@ export default async function Page() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {foods.map((food) => (
-                <div key={food.id} className="space-x-1 flex items-center">
-                  <FoodTypeCircle type={food.type} label={false} />
-                  <span>{food.name}</span>
-                </div>
-              ))}
+              <Chart foodsType={foodsType} />
             </CardContent>
           </Card>
           <Card>

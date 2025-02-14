@@ -13,7 +13,7 @@ const CellButton = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         {...props}
       >
-        <span>{children}</span>
+        <span className="inline-flex items-center">{children}</span>
         <Edit className="group-hover:opacity-100 opacity-0" />
       </Button>
     );

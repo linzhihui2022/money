@@ -4,10 +4,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import Link from "next/link";
 import { CalendarDays } from "lucide-react";
 import React from "react";
-import { usePathname } from "next/navigation";
+import { Link, usePathname } from "i18n/routing";
 
 export default function PlanningMenuGroup() {
   const pathname = usePathname();

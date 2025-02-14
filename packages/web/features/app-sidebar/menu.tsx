@@ -16,7 +16,7 @@ const GroupContainer = ({
 }) => {
   return (
     <SidebarGroup>
-      <SidebarGroupLabel className="text-lg font-semibold text-black pb-4 h-[unset]">
+      <SidebarGroupLabel className="text-lg font-semibold  pb-4 h-[unset]">
         {label}
       </SidebarGroupLabel>
       <SidebarGroupContent>{children}</SidebarGroupContent>

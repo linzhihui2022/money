@@ -1,9 +1,10 @@
 "use server";
 
 import { createClient } from "@/lib/supabase.server";
-import { redirect } from "next/navigation";
+import { redirect } from "i18n/routing";
 import { headers } from "next/headers";
 import { Provider } from "@supabase/auth-js/src/lib/types";
+import { getLocale } from "next-intl/server";
 
 export async function singIn(formData: FormData) {
   const provider = (formData.get("provider") as Provider) || "Github";
@@ -18,6 +19,7 @@ export async function singIn(formData: FormData) {
     throw new Error(error.message);
   }
   if (data.url) {
-    redirect(data.url);
+    const locale = await getLocale();
+    redirect({ href: data.url, locale });
   }
 }

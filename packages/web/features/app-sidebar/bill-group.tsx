@@ -4,9 +4,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import Link from "next/link";
 import { Beef, Book, Home } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { Link, usePathname } from "i18n/routing";
 import { useTranslations } from "next-intl";
 
 export function BillMenuGroup() {

@@ -18,11 +18,12 @@ import Menu from "@/features/app-sidebar/menu";
 import { logout } from "actions/auth";
 import { getUser } from "api/auth";
 import { getTranslations } from "next-intl/server";
+import { LocaleToggle } from "@/components/locale-toggle";
 
 export async function AppSidebar() {
   const user = await getUser();
   const username = user.data.user?.user_metadata?.name;
-  const t = await getTranslations("auth");
+  const t = await getTranslations();
   return (
     <Sidebar>
       <SidebarContent>
@@ -30,6 +31,7 @@ export async function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter>
+        <LocaleToggle />
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>
@@ -45,7 +47,7 @@ export async function AppSidebar() {
               >
                 <DropdownMenuItem>
                   <form className="w-full" action={logout}>
-                    <button className="w-full">{t("Sign out")}</button>
+                    <button className="w-full">{t("auth.Sign out")}</button>
                   </form>
                 </DropdownMenuItem>
               </DropdownMenuContent>

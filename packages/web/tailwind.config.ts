@@ -21,6 +21,13 @@ export default {
     },
     extend: {
       colors: {
+        foodtype: {
+          seafood: "hsl(var(--foodtype-seafood))",
+          vegetable: "hsl(var(--foodtype-vegetable))",
+          meet: "hsl(var(--foodtype-meet))",
+          fruit: "hsl(var(--foodtype-fruit))",
+          other: "hsl(var(--foodtype-other))",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

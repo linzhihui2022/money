@@ -8,7 +8,8 @@
     "Submit": "提 交"
   },
   "sr-only": {
-    "Toggle Sidebar": "切换侧边栏"
+    "Toggle Sidebar": "切换侧边栏",
+    "Toggle Theme": "切换主题"
   },
   "auth": {
     "Sign out": "退出登录",

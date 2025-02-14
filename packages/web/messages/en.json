@@ -8,7 +8,8 @@
     "Submit": "Submit"
   },
   "sr-only": {
-    "Toggle Sidebar": "Toggle Sidebar"
+    "Toggle Sidebar": "Toggle Sidebar",
+    "Toggle Theme": "切换主题"
   },
   "auth": {
     "Sign out": "Sign out",
@@ -30,7 +31,7 @@
     "Search food": "Search Food",
     "Not found": "Not Found",
     "Edit <Cookbook>": "Edit Cookbook",
-    "Edit <CookbookItems>": "Edit <CookbookItems>"
+    "Edit <CookbookItems>": "Edit CookbookItems"
   },
   "food": {
     "Add new food": "Add New Food",

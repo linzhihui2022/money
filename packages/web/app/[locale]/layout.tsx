@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { PendingProvider } from "@/lib/use-nav";
 import { getMessages, getTranslations } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
+import { ThemeProvider } from "@/components/theme-provider";
 
 export async function generateMetadata({
   params,
@@ -28,14 +29,21 @@ export default async function RootLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale}>
+    <html lang={locale} suppressHydrationWarning>
       <body className="flex min-h-screen w-full flex-col">
-        <NextIntlClientProvider messages={messages}>
-          <PendingProvider>
-            {children}
-            <Toaster />
-          </PendingProvider>
-        </NextIntlClientProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <NextIntlClientProvider messages={messages}>
+            <PendingProvider>
+              {children}
+              <Toaster />
+            </PendingProvider>
+          </NextIntlClientProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

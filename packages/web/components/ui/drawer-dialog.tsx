@@ -20,6 +20,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Dispatch, FC, ReactNode, SetStateAction, useState } from "react";
 import { useIsMobile } from "../hooks/use-mobile";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 export default function DrawerDialog({
   trigger,
@@ -42,7 +43,13 @@ export default function DrawerDialog({
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
-            <DialogDescription>{description}</DialogDescription>
+            {description ? (
+              <DialogDescription>{description}</DialogDescription>
+            ) : (
+              <VisuallyHidden asChild>
+                <DialogDescription />
+              </VisuallyHidden>
+            )}
           </DialogHeader>
           <Body open={open} setOpen={setOpen} />
         </DialogContent>
