@@ -196,9 +196,10 @@ InlineFormItem.displayName = "InlineFormItem";
 
 const SubmitButton = <T extends FieldValues>({
   pending,
-}: {
+  children,
+}: PropsWithChildren<{
   pending?: boolean;
-}) => {
+}>) => {
   const { formState } = useFormContext<T>();
   const t = useTranslations("form");
   return (
@@ -212,7 +213,7 @@ const SubmitButton = <T extends FieldValues>({
         ) : (
           <></>
         )}
-        {t("Submit")}
+        {children || t("Submit")}
       </Button>
     </div>
   );

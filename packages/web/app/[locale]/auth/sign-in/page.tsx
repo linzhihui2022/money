@@ -1,13 +1,16 @@
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { singIn } from "./action";
 import { getTranslations } from "next-intl/server";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 
 const errorMsg = async (code: string) => {
   const t = await getTranslations("auth");
@@ -31,9 +34,9 @@ export default async function LoginPage(props: {
     <div className="min-h-screen flex justify-center items-start md:items-center p-8">
       <form
         className="w-full max-w-sm"
-        onSubmit={async () => {
+        action={async (formData) => {
           "use server";
-          await singIn();
+          await singIn(formData);
         }}
       >
         <Card>
@@ -46,8 +49,16 @@ export default async function LoginPage(props: {
             ) : null}
           </CardHeader>
           <CardContent>
-            <Button className="w-full">{t("Sign in")}</Button>
+            <RadioGroup defaultValue="github" name="provider">
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="github" id="r1" />
+                <Label htmlFor="r1">Github</Label>
+              </div>
+            </RadioGroup>
           </CardContent>
+          <CardFooter>
+            <Button className="w-full">{t("Sign in")}</Button>
+          </CardFooter>
         </Card>
       </form>
     </div>

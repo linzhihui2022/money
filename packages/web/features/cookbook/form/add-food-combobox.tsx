@@ -48,7 +48,14 @@ export function FoodCombobox({
             !current ? "text-primary/50" : "",
           )}
         >
-          {current ? `${current.name}(${current.unit})` : t("Select food")}
+          {current ? (
+            <span className="inline-flex space-x-1">
+              <FoodTypeCircle type={current.type} label={false} />
+              <span>{`${current.name}(${current.unit})`}</span>
+            </span>
+          ) : (
+            t("Select food")
+          )}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>

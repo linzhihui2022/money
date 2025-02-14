@@ -12,6 +12,7 @@ export const getCookbooks = unstable_cache(
         name: true,
         updated_at: true,
         items: {
+          orderBy: { id: "desc" },
           select: {
             id: true,
             food: true,
