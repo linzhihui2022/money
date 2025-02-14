@@ -29,7 +29,8 @@
     "Select food": "Selecteer voedsel",
     "Search food": "Zoek voedsel",
     "Not found": "Niet gevonden",
-    "Edit <Cookbook>": "Bewerk kookboek"
+    "Edit <Cookbook>": "Bewerk kookboek",
+    "Edit <CookbookItems>": "Wijzig receptingrediënten"
   },
   "food": {
     "Add new food": "Nieuw voedsel toevoegen",

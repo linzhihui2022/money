@@ -29,7 +29,8 @@
     "Select food": "挑选食材",
     "Search food": "搜索食材",
     "Not found": "没有找到",
-    "Edit <Cookbook>": "修改菜谱"
+    "Edit <Cookbook>": "修改菜谱",
+    "Edit <CookbookItems>": "修改菜谱食材"
   },
   "food": {
     "Add new food": "添加新的食材",

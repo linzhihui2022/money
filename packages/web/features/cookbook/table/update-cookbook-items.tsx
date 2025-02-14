@@ -17,6 +17,7 @@ import {
 } from "actions/cookbook";
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
+import { useTranslations } from "next-intl";
 
 function NewCookbookItemForm() {
   const [, startTransition] = useTransition();
@@ -204,9 +205,10 @@ function UpdateCookbookItemsForm() {
 
 export default function UpdateCookbookItems({ children }: PropsWithChildren) {
   const { row } = useCookbookRow();
+  const t = useTranslations("cookbook");
   return (
     <DrawerDialog
-      title="Edit <CookbookItems>"
+      title={t("Edit <CookbookItems>")}
       trigger={<CellButton disabled={row.__deleted}>{children}</CellButton>}
       Body={UpdateCookbookItemsForm}
     />

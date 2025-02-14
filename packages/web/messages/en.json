@@ -29,7 +29,8 @@
     "Select food": "Select Food",
     "Search food": "Search Food",
     "Not found": "Not Found",
-    "Edit <Cookbook>": "Edit Cookbook"
+    "Edit <Cookbook>": "Edit Cookbook",
+    "Edit <CookbookItems>": "Edit <CookbookItems>"
   },
   "food": {
     "Add new food": "Add New Food",
