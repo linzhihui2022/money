@@ -173,19 +173,19 @@ export const CookbookContentSteps = ({
             transition={{ type: "spring", damping: 20, stiffness: 300 }}
             layout
             key={step.key}
-            className="grid grid-cols-12 gap-2"
+            className="space-y-2"
           >
-            <div className="col-span-7">
-              <PhaseSelect
-                value={step.phase}
-                onValueChange={(v) => {
-                  const _steps = [...value];
-                  _steps[index].phase = v as CookbookStepPhase;
-                  setValueAction([..._steps]);
-                }}
-              />
-            </div>
-            <div className="col-span-5">
+            <div className="flex justify-between space-x-2">
+              <div className="min-w-[200px]">
+                <PhaseSelect
+                  value={step.phase}
+                  onValueChange={(v) => {
+                    const _steps = [...value];
+                    _steps[index].phase = v as CookbookStepPhase;
+                    setValueAction([..._steps]);
+                  }}
+                />
+              </div>
               <ButtonGroup
                 value={value}
                 setValueAction={setValueAction}
@@ -193,16 +193,14 @@ export const CookbookContentSteps = ({
                 index={index}
               />
             </div>
-            <div className="col-span-12">
-              <Textarea
-                value={step.content}
-                onChange={(e) => {
-                  const _steps = [...value];
-                  _steps[index].content = e.target.value;
-                  setValueAction([..._steps]);
-                }}
-              />
-            </div>
+            <Textarea
+              value={step.content}
+              onChange={(e) => {
+                const _steps = [...value];
+                _steps[index].content = e.target.value;
+                setValueAction([..._steps]);
+              }}
+            />
           </motion.li>
         ))}
       </ul>

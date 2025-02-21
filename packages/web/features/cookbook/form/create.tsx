@@ -18,6 +18,7 @@ import { useTranslations } from "next-intl";
 import AiCookbook from "@cookbook/table/ai-cookbook";
 import { CookbookStepPhase } from "ai/type";
 import { CookbookContentSteps } from "@cookbook/form/cookbook-content-steps";
+import { useRouter } from "../../../i18n/routing";
 
 const formSchema = z.object({
   name: z.string().min(1),
@@ -85,16 +86,19 @@ export function CreateCookbook({ foods }: { foods: Food[] }) {
   });
 
   const [pending, startTransition] = useTransition();
+  const router = useRouter();
   async function onSubmit(data: FormFields) {
-    console.log({ data });
-    startTransition(async () => await createCookbook(data.name, data.items));
+    startTransition(async () => {
+      await createCookbook(data.name, data.items, data.content);
+      router.push("/cookbook");
+    });
   }
   const t = useTranslations("cookbook");
 
   return (
     <Form {...form}>
       <form
-        className="space-y-4 w-full max-w-[600px] pb-4"
+        className="space-y-4 w-full px-2 max-w-[600px] pb-4"
         onSubmit={form.handleSubmit(onSubmit)}
       >
         <FormTitle>{t("Add new cookbook")}</FormTitle>

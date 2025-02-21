@@ -180,7 +180,7 @@ const InlineFormItem = ({
   description?: ReactNode;
 }>) => {
   return (
-    <FormItem className="grid px-2 grid-cols-1 gap-x-3 gap-y-1.5 items-center">
+    <FormItem className="grid grid-cols-1 gap-x-3 gap-y-1.5 items-center">
       <FormLabel>{label}:</FormLabel>
       <FormControl>{children}</FormControl>
       <FormMessage />

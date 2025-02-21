@@ -3,9 +3,14 @@ import { useCookbookRow } from "@cookbook/ui/row";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Form, FormField } from "@/components/ui/form";
+import { Form, FormField, InlineFormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { PropsWithChildren, useTransition } from "react";
+import {
+  ComponentProps,
+  PropsWithChildren,
+  useState,
+  useTransition,
+} from "react";
 import CellButton from "@/components/table/cell-button";
 import { FoodCombobox } from "@cookbook/form/add-food-combobox";
 import { Button } from "@/components/ui/button";
@@ -13,11 +18,22 @@ import { Plus, Save, Trash2 } from "lucide-react";
 import {
   createCookbookItem,
   deleteCookbookItem,
+  updateCookbookContent,
   updateCookbookItem,
 } from "actions/cookbook";
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 import { useTranslations } from "next-intl";
+import {
+  StepperContent,
+  StepperList,
+  StepperRoot,
+  StepperTrigger,
+  useStepper,
+} from "@/components/ui/stepper";
+import { CookbookStepPhase } from "ai/type";
+import AiCookbook from "@cookbook/table/ai-cookbook";
+import { CookbookContentSteps } from "@cookbook/form/cookbook-content-steps";
 
 function NewCookbookItemForm() {
   const [, startTransition] = useTransition();
@@ -189,15 +205,168 @@ function UpdateCookbookItemForm({
   );
 }
 
-function UpdateCookbookItemsForm() {
-  const { row } = useCookbookRow();
+const formSchema = z.object({
+  content: z.object({
+    foods: z.array(z.string().min(1)),
+    tool: z.array(z.string().min(1)),
+    steps: z
+      .array(
+        z.object({
+          content: z.string().min(1),
+          phase: z.enum([
+            CookbookStepPhase.PROGRESS,
+            CookbookStepPhase.PREPARE,
+            CookbookStepPhase.DONE,
+          ]),
+          key: z.string().uuid(),
+        }),
+      )
+      .min(1),
+  }),
+});
+type FormFields = z.infer<typeof formSchema>;
+
+function ContentStep({
+  setOpen,
+}: ComponentProps<ComponentProps<typeof DrawerDialog>["Body"]>) {
+  const { row, foods, updateRow } = useCookbookRow();
+  const { onPrev } = useStepper();
+  const form = useForm<FormFields>({
+    resolver: zodResolver(formSchema),
+    defaultValues: { content: row.content },
+  });
+  const [pending, startTransition] = useTransition();
+  async function onSubmit(data: FormFields) {
+    setOpen(false);
+    form.reset();
+    startTransition(async () => {
+      updateRow((v) => ({ ...v, ...data }));
+      await updateCookbookContent(row.id, data).catch(() => updateRow(row));
+    });
+  }
+  const t = useTranslations("cookbook");
+  const [res, setRes] = useState<FormFields["content"]>({
+    steps: [],
+    foods: [],
+    tool: [],
+  });
   return (
-    <div className="space-y-3">
+    <Form {...form}>
+      <form
+        className="space-y-3 max-h-80 overflow-y-auto"
+        onSubmit={form.handleSubmit(onSubmit)}
+      >
+        <AiCookbook
+          cookbook={row.name}
+          foods={row.items.map(({ quantity, food }) => ({
+            quantity,
+            ...foods.find((i) => i.id === food.id)!,
+          }))}
+          content={res}
+          setContent={(res) => {
+            if (!res) return;
+            setRes(res);
+            form.setValue("content", {
+              foods: res.foods,
+              tool: res.tool,
+              steps: res.steps,
+            });
+          }}
+        />
+        <FormField
+          control={form.control}
+          name="content.foods"
+          render={({ field }) => (
+            <InlineFormItem label={t("Food")}>
+              <Input
+                {...field}
+                value={field.value.join(",")}
+                onChange={(v) => field.onChange(v.target.value.split(","))}
+              />
+            </InlineFormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="content.tool"
+          render={({ field }) => (
+            <InlineFormItem label={t("Tool")}>
+              <Input
+                {...field}
+                value={field.value.join(",")}
+                onChange={(v) => field.onChange(v.target.value.split(","))}
+              />
+            </InlineFormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="content.steps"
+          render={({ field }) => (
+            <InlineFormItem label={t("Steps")}>
+              <CookbookContentSteps
+                value={field.value}
+                setValueAction={field.onChange}
+              />
+            </InlineFormItem>
+          )}
+        />
+        <div className="flex flex-col md:justify-end md:flex-row items-stretch md:space-y-0 md:space-x-2 space-y-3 pt-6 md:pt-3">
+          <Button type="button" variant="outline" onClick={() => onPrev()}>
+            Prev
+          </Button>
+          <Button type="submit" disabled={pending}>
+            Submit
+          </Button>
+        </div>
+      </form>
+    </Form>
+  );
+}
+function ItemsStep({
+  setOpen,
+}: ComponentProps<ComponentProps<typeof DrawerDialog>["Body"]>) {
+  const { row } = useCookbookRow();
+  const { onNext } = useStepper();
+  return (
+    <div className="space-y-3 max-h-80 overflow-y-auto">
       <NewCookbookItemForm />
       <Separator />
       {row.items.map((item) => (
         <UpdateCookbookItemForm item={item} key={item.id} />
       ))}
+      <div className="flex justify-end md:space-x-2 pt-6 md:pt-3">
+        <Button
+          className="hidden md:block"
+          variant="outline"
+          onClick={() => setOpen(false)}
+        >
+          Cancel
+        </Button>
+        <Button className="w-full md:w-auto" onClick={() => onNext()}>
+          Next
+        </Button>
+      </div>
+    </div>
+  );
+}
+function UpdateCookbookItemsForm(
+  props: ComponentProps<ComponentProps<typeof DrawerDialog>["Body"]>,
+) {
+  return (
+    <div className="space-y-3 pt-3">
+      <StepperRoot defaultValue={1}>
+        <StepperList>
+          <StepperTrigger value={1}>1</StepperTrigger>
+          <StepperTrigger value={2}>2</StepperTrigger>
+        </StepperList>
+        <StepperContent value={1}>
+          <ItemsStep {...props} />
+        </StepperContent>
+        <StepperContent value={2}>
+          <ContentStep {...props} />
+        </StepperContent>
+      </StepperRoot>
     </div>
   );
 }

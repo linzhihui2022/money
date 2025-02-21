@@ -31,7 +31,8 @@ model Cookbook {
 
   name  String
   items CookbookItem[]
-
+  /// [CookbookContentType]
+  content Json @default("{ \"foods\": [], \"tool\": [], \"steps\": [] }")
 }
 
 model CookbookItem {

@@ -35,6 +35,7 @@
   },
   "cookbook": {
     "Add new cookbook": "添加新的菜谱",
+    "Update cookbook {cookbook}": "更新菜谱《{cookbook}》",
     "Name": "菜谱",
     "Items": "主食材",
     "Food": "食材",

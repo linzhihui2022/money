@@ -10,8 +10,9 @@ import {
 } from "react";
 import { FoodTypeCircle } from "@/components/ui/food-type";
 import Delete from "@cookbook/table/delete";
-import UpdateCookbook from "@cookbook/table/update-cookbook";
 import { Food } from "@prisma-client";
+import UpdateCookbookName from "@cookbook/table/update-cookbook-name";
+import UpdateCookbookItems from "@cookbook/table/update-cookbook-items";
 
 type Cookbook = Awaited<ReturnType<typeof getCookbooks>>[number];
 type CookbookItem = Cookbook["items"][number];
@@ -59,24 +60,26 @@ export const CookbookRow = ({
       <TableRow className="has-[[data-deleted=yes]]:hidden">
         <TableCell>{row.id}</TableCell>
         <TableCell>
-          <UpdateCookbook>{row.name}</UpdateCookbook>
+          <UpdateCookbookName>{row.name}</UpdateCookbookName>
         </TableCell>
         <TableCell>
-          <span className="flex flex-wrap">
-            {row.items
-              .filter((i) => !i.__deleted)
-              .map((item) => (
-                <Fragment key={item.id}>
-                  <span className="flex space-x-1 pr-1">
-                    <FoodTypeCircle label={false} type={item.food.type} />
-                    <span>
-                      {item.food.name} {item.quantity}
-                      {item.food.unit}
+          <UpdateCookbookItems>
+            <span className="flex flex-wrap">
+              {row.items
+                .filter((i) => !i.__deleted)
+                .map((item) => (
+                  <Fragment key={item.id}>
+                    <span className="flex space-x-1 pr-1">
+                      <FoodTypeCircle label={false} type={item.food.type} />
+                      <span>
+                        {item.food.name} {item.quantity}
+                        {item.food.unit}
+                      </span>
                     </span>
-                  </span>
-                </Fragment>
-              ))}
-          </span>
+                  </Fragment>
+                ))}
+            </span>
+          </UpdateCookbookItems>
         </TableCell>
         <TableCell>
           <Delete />

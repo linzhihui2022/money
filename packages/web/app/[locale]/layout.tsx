@@ -5,6 +5,7 @@ import { PendingProvider } from "@/lib/use-nav";
 import { getMessages, getTranslations } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
 import { ThemeProvider } from "@/components/theme-provider";
+import Head from "next/head";
 
 export async function generateMetadata({
   params,
@@ -30,6 +31,12 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} suppressHydrationWarning>
+      <Head>
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+        />
+      </Head>
       <body>
         <ThemeProvider
           attribute="class"

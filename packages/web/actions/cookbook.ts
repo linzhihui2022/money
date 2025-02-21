@@ -10,10 +10,12 @@ import { v4 } from "uuid";
 export const createCookbook = async (
   name: string,
   items: { quantity: number; food: number }[],
+  content: CookbookContent,
 ) => {
   await prisma.cookbook.create({
     data: {
       name,
+      content,
       items: {
         create: items.map((i) => ({
           quantity: i.quantity,
@@ -30,9 +32,17 @@ export const deleteCookbook = async (id: number) => {
   revalidateTag("cookbooks");
 };
 
-export const updateCookbook = async (
+export const updateCookbookName = async (
   id: Food["id"],
   data: Pick<Cookbook, "name">,
+) => {
+  await prisma.cookbook.update({ where: { id }, data });
+  revalidateTag("cookbooks");
+};
+
+export const updateCookbookContent = async (
+  id: Food["id"],
+  data: Pick<Cookbook, "content">,
 ) => {
   await prisma.cookbook.update({ where: { id }, data });
   revalidateTag("cookbooks");
