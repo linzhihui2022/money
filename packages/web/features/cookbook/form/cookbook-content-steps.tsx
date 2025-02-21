@@ -167,7 +167,7 @@ export const CookbookContentSteps = ({
   }
   return (
     <div className="space-y-2">
-      <ul className="flex flex-col space-y-2">
+      <ul className="flex flex-col space-y-2 overflow-y-auto">
         {value.map((step, index) => (
           <motion.li
             transition={{ type: "spring", damping: 20, stiffness: 300 }}

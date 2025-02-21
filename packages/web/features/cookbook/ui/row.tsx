@@ -13,6 +13,7 @@ import Delete from "@cookbook/table/delete";
 import { Food } from "@prisma-client";
 import UpdateCookbookName from "@cookbook/table/update-cookbook-name";
 import UpdateCookbookItems from "@cookbook/table/update-cookbook-items";
+import UpdateCookbookContent from "@cookbook/table/update-cookbook-content";
 
 type Cookbook = Awaited<ReturnType<typeof getCookbooks>>[number];
 type CookbookItem = Cookbook["items"][number];
@@ -80,6 +81,13 @@ export const CookbookRow = ({
                 ))}
             </span>
           </UpdateCookbookItems>
+        </TableCell>
+        <TableCell>
+          <UpdateCookbookContent>
+            {row.content.steps.length
+              ? `${row.content.steps?.at(0)?.content?.slice(0, 10)}...`
+              : ""}
+          </UpdateCookbookContent>
         </TableCell>
         <TableCell>
           <Delete />

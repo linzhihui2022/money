@@ -22,6 +22,7 @@ export default async function CookbookTable() {
           <TableHead>ID</TableHead>
           <TableHead>{t("Name")}</TableHead>
           <TableHead>{t("Food")}</TableHead>
+          <TableHead>{t("Content")}</TableHead>
           <TableHead />
         </TableRow>
       </TableHeader>
