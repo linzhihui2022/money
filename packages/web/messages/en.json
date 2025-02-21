@@ -4,12 +4,22 @@
     "title": "Money 💰",
     "description": "Money, Money, Money"
   },
+  "ai": {
+    "Use {model} usage {usagePrice}": "Use {model} usage {usagePrice} Yuan"
+  },
   "form": {
-    "Submit": "Submit"
+    "Submit": "Submit",
+    "Are you absolutely sure to remove {name}?": "Are you absolutely sure to remove {name}?",
+    "This action cannot be undone<Dot> This will permanently delete and remove your data<Dot>": "This action cannot be undone. This will permanently delete and remove your data.",
+    "Delete": "Delete",
+    "Cancel": "Cancel"
   },
   "sr-only": {
     "Toggle Sidebar": "Toggle Sidebar",
-    "Toggle Theme": "切换主题"
+    "Toggle Theme": "Toggle Theme",
+    "Move up": "Move up",
+    "Move down": "Move down",
+    "Delete": "Delete"
   },
   "auth": {
     "Sign out": "Sign out",
@@ -26,12 +36,24 @@
   "cookbook": {
     "Add new cookbook": "Add New Cookbook",
     "Name": "Name",
+    "Items": "Items",
     "Food": "Food",
+    "Flow": "Flow",
+    "Tool": "Tool",
+    "Steps": "Steps",
+    "Content": "Content",
+    "Phase": {
+      "PREPARE": "PREPARE",
+      "PROGRESS": "PROGRESS",
+      "DONE": "DONE"
+    },
     "Select food": "Select Food",
     "Search food": "Search Food",
     "Not found": "Not Found",
     "Edit <Cookbook>": "Edit Cookbook",
-    "Edit <CookbookItems>": "Edit CookbookItems"
+    "Edit <CookbookItems>": "Edit CookbookItems",
+    "Please use {foods} to help me generate a cookbook for {cookbook}": "Please use {foods} to help me generate a cookbook for {cookbook}",
+    "Generating cookbook": "Generating cookbook..."
   },
   "food": {
     "Add new food": "Add New Food",

@@ -11,7 +11,6 @@ import {
 import { FoodTypeCircle } from "@/components/ui/food-type";
 import Delete from "@cookbook/table/delete";
 import UpdateCookbook from "@cookbook/table/update-cookbook";
-import UpdateCookbookItems from "@cookbook/table/update-cookbook-items";
 import { Food } from "@prisma-client";
 
 type Cookbook = Awaited<ReturnType<typeof getCookbooks>>[number];
@@ -63,23 +62,21 @@ export const CookbookRow = ({
           <UpdateCookbook>{row.name}</UpdateCookbook>
         </TableCell>
         <TableCell>
-          <UpdateCookbookItems>
-            <span className="flex flex-wrap">
-              {row.items
-                .filter((i) => !i.__deleted)
-                .map((item) => (
-                  <Fragment key={item.id}>
-                    <span className="flex space-x-1 pr-1">
-                      <FoodTypeCircle label={false} type={item.food.type} />
-                      <span>
-                        {item.food.name} {item.quantity}
-                        {item.food.unit}
-                      </span>
+          <span className="flex flex-wrap">
+            {row.items
+              .filter((i) => !i.__deleted)
+              .map((item) => (
+                <Fragment key={item.id}>
+                  <span className="flex space-x-1 pr-1">
+                    <FoodTypeCircle label={false} type={item.food.type} />
+                    <span>
+                      {item.food.name} {item.quantity}
+                      {item.food.unit}
                     </span>
-                  </Fragment>
-                ))}
-            </span>
-          </UpdateCookbookItems>
+                  </span>
+                </Fragment>
+              ))}
+          </span>
         </TableCell>
         <TableCell>
           <Delete />

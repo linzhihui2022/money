@@ -23,7 +23,7 @@ export default async function DashboardLayout({
         <main className="w-full h-dvh size-full flex flex-row">
           <AppSidebar />
           <div className="flex-1 h-full px-3">
-            <div className="flex flex-col size-full overflow-y-auto no-scrollbar space-y-3">
+            <div className="flex flex-col size-full no-scrollbar pb-20 space-y-3">
               {children}
             </div>
           </div>

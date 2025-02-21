@@ -154,6 +154,10 @@ input[type="search"]::-ms-clear {
     --foodtype-other: 17 55% 24%;
     --foodtype-fruit: 43 74% 66%;
     --foodtype-seafood: 210 98% 78%;
+
+    --step-prepare: 210 98% 78%;
+    --step-progress: 43 74% 66%;
+    --step-done: 17 255% 24%;
   }
 
   .dark {
@@ -162,5 +166,9 @@ input[type="search"]::-ms-clear {
     --foodtype-other: 17 55% 24%;
     --foodtype-fruit: 43 74% 66%;
     --foodtype-seafood: 210 98% 78%;
+
+    --step-prepare: 210 98% 78%;
+    --step-progress: 43 74% 66%;
+    --step-done: 17 255% 24%;
   }
 }

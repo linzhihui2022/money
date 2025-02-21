@@ -28,6 +28,11 @@ export default {
           fruit: "hsl(var(--foodtype-fruit))",
           other: "hsl(var(--foodtype-other))",
         },
+        step: {
+          prepare: "hsl(var(--step-prepare))",
+          progress: "hsl(var(--step-progress))",
+          done: "hsl(var(--step-done))",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

@@ -2,6 +2,10 @@
 import { Cookbook, CookbookItem, Food } from "@prisma-client";
 import { prisma } from "@sb-prisma";
 import { revalidateTag } from "next/cache";
+import { AI } from "../ai/help";
+import { CookbookContent, DeepseekModel, KimiModel } from "../ai/type";
+import { cookbookPrompt } from "../ai/prompt";
+import { v4 } from "uuid";
 
 export const createCookbook = async (
   name: string,
@@ -66,3 +70,15 @@ export const createCookbookItem = async (
   });
   revalidateTag("cookbooks");
 };
+
+export const aiCookbook = async (
+  model: KimiModel | DeepseekModel,
+  cookbook: string,
+  foods: { name: string; unit: string; quantity: number }[],
+) =>
+  new AI(model)
+    .fetch<CookbookContent>(cookbookPrompt, JSON.stringify({ foods, cookbook }))
+    .then(({ data, price }) => ({
+      price,
+      data: { ...data, steps: data.steps.map((i) => ({ ...i, key: v4() })) },
+    }));

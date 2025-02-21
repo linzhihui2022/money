@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Dispatch, SetStateAction, useState } from "react";
 
 export default function DeleteDialog({
@@ -23,6 +24,7 @@ export default function DeleteDialog({
   deleted: boolean;
 }) {
   const [open, setOpen] = useState(false);
+  const t = useTranslations("form");
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
@@ -38,18 +40,19 @@ export default function DeleteDialog({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
-            Are you absolutely sure to remove {name}?
+            {t("Are you absolutely sure to remove {name}?", { name })}
           </AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete and
-            remove your data.
+            {t(
+              "This action cannot be undone<Dot> This will permanently delete and remove your data<Dot>",
+            )}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <Button variant="destructive" onClick={() => onDeleteAction(setOpen)}>
-            Delete
+            {t("Delete")}
           </Button>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel>{t("Cancel")}</AlertDialogCancel>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

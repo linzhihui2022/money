@@ -180,20 +180,24 @@ const InlineFormItem = ({
   description?: ReactNode;
 }>) => {
   return (
-    <FormItem className="grid sm:grid-cols-[80px,1fr] grid-cols-1 space-y-0 gap-x-3 gap-y-1.5 items-center">
-      <FormLabel className="sm:text-right">{label}:</FormLabel>
+    <FormItem className="grid px-2 grid-cols-1 gap-x-3 gap-y-1.5 items-center">
+      <FormLabel>{label}:</FormLabel>
       <FormControl>{children}</FormControl>
-      <FormMessage className="sm:col-start-2" />
-      {!!description && (
-        <FormDescription className="sm:col-start-2">
-          {description}
-        </FormDescription>
-      )}
+      <FormMessage />
+      {!!description && <FormDescription>{description}</FormDescription>}
     </FormItem>
   );
 };
 InlineFormItem.displayName = "InlineFormItem";
-
+const FormTitle = ({
+  children,
+  className,
+  ...props
+}: PropsWithChildren<React.HtmlHTMLAttributes<HTMLHeadingElement>>) => (
+  <h3 className={cn("text-xl font-bold text-center", className)} {...props}>
+    {children}
+  </h3>
+);
 const SubmitButton = <T extends FieldValues>({
   pending,
   children,
@@ -229,4 +233,5 @@ export {
   FormField,
   InlineFormItem,
   SubmitButton,
+  FormTitle,
 };

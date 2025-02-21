@@ -191,7 +191,6 @@ function UpdateCookbookItemForm({
 
 function UpdateCookbookItemsForm() {
   const { row } = useCookbookRow();
-
   return (
     <div className="space-y-3">
       <NewCookbookItemForm />

@@ -4,12 +4,22 @@
     "title": "钱啊💰",
     "description": "钱，钱，钱"
   },
+  "ai": {
+    "Use {model} usage {usagePrice}": "本次使用{model}消耗{usagePrice}元"
+  },
   "form": {
-    "Submit": "提 交"
+    "Submit": "提交",
+    "Are you absolutely sure to remove {name}?": "你确定要删除 {name} 吗?",
+    "This action cannot be undone<Dot> This will permanently delete and remove your data<Dot>": "此操作无法撤销。此操作将永久删除和删除您的数据。",
+    "Delete": "删除",
+    "Cancel": "取消"
   },
   "sr-only": {
     "Toggle Sidebar": "切换侧边栏",
-    "Toggle Theme": "切换主题"
+    "Toggle Theme": "切换主题",
+    "Move up": "上移",
+    "Move down": "下移",
+    "Delete": "删除"
   },
   "auth": {
     "Sign out": "退出登录",
@@ -26,12 +36,24 @@
   "cookbook": {
     "Add new cookbook": "添加新的菜谱",
     "Name": "菜谱",
+    "Items": "主食材",
     "Food": "食材",
+    "Flow": "流程",
+    "Tool": "工具",
+    "Steps": "步骤",
+    "Content": "内容",
+    "Phase": {
+      "PREPARE": "准备",
+      "PROGRESS": "过程",
+      "DONE": "结束"
+    },
     "Select food": "挑选食材",
     "Search food": "搜索食材",
     "Not found": "没有找到",
     "Edit <Cookbook>": "修改菜谱",
-    "Edit <CookbookItems>": "修改菜谱食材"
+    "Edit <CookbookItems>": "修改菜谱食材",
+    "Please use {foods} to help me generate a cookbook for {cookbook}": "请使用 {foods} 来帮我为 {cookbook} 生成菜谱",
+    "Generating cookbook": "生成菜谱中..."
   },
   "food": {
     "Add new food": "添加新的食材",

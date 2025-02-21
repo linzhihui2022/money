@@ -18,7 +18,14 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
-import { Dispatch, FC, ReactNode, SetStateAction, useState } from "react";
+import {
+  Dispatch,
+  FC,
+  ReactNode,
+  SetStateAction,
+  useEffect,
+  useState,
+} from "react";
 import { useIsMobile } from "../hooks/use-mobile";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
@@ -27,14 +34,19 @@ export default function DrawerDialog({
   Body,
   title,
   description,
+  open: _open,
 }: {
   trigger: ReactNode;
   title: ReactNode;
   description?: ReactNode;
   Body: FC<{ open: boolean; setOpen: Dispatch<SetStateAction<boolean>> }>;
+  open?: boolean;
 }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState<boolean>(_open || false);
   const isMobile = useIsMobile();
+  useEffect(() => {
+    setOpen(_open || false);
+  }, [_open]);
 
   if (!isMobile) {
     return (

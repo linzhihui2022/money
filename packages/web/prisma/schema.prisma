@@ -31,6 +31,7 @@ model Cookbook {
 
   name  String
   items CookbookItem[]
+
 }
 
 model CookbookItem {
