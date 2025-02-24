@@ -117,7 +117,7 @@ export function UpdateCookbook({
           })),
         },
       });
-      router.push("/cookbook");
+      router.push("/admin/cookbook");
     });
   }
   const name = form.watch("name");

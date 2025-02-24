@@ -1,5 +1,4 @@
 import { ReactNode } from "react";
-import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { PendingProvider } from "@/lib/use-nav";
 import { getMessages, getTranslations } from "next-intl/server";

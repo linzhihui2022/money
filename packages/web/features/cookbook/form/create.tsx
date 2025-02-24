@@ -60,7 +60,7 @@ export function CreateCookbook({ foods }: { foods: Food[] }) {
   async function onSubmit(data: FormFields) {
     startTransition(async () => {
       await createCookbook(data.name, data.items, data.content);
-      router.push("/cookbook");
+      router.push("/admin/cookbook");
     });
   }
   const t = useTranslations("cookbook");

@@ -22,7 +22,7 @@ export default async function CookbookList() {
           <Card className="h-full relative hover:shadow-xl hover:-translate-y-1 transition-transform">
             <CardHeader>
               <CardTitle>
-                <Link href={`/cookbook/${cookbook.id}`}>
+                <Link href={`/admin/cookbook/${cookbook.id}`}>
                   {cookbook.name}
                   <span className="absolute inset-0" />
                 </Link>

@@ -21,7 +21,7 @@ export default async function Page() {
           <CardHeader>
             <CardTitle className="flex space-x-2 items-center">
               <span>{t("food.Name")}</span>
-              <Link href="/food">
+              <Link href="/admin/food">
                 <LinkIcon className="size-4" />
               </Link>
             </CardTitle>
@@ -34,7 +34,7 @@ export default async function Page() {
           <CardHeader>
             <CardTitle className="flex space-x-2 items-center">
               <span>{t("cookbook.Name")}</span>
-              <Link href="/cookbook">
+              <Link href="/admin/cookbook">
                 <LinkIcon className="size-4" />
               </Link>
             </CardTitle>

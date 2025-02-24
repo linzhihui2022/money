@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { redirect } from "i18n/routing";
 import { getUser } from "api/auth";
 import { getLocale } from "next-intl/server";
+import "./globals.css";
 
 export default async function DashboardLayout({
   children,

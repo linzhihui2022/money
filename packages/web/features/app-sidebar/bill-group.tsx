@@ -16,24 +16,24 @@ export function BillMenuGroup() {
     <>
       <SidebarMenu>
         <SidebarMenuItem>
-          <SidebarMenuButton isActive={pathname === "/"} asChild>
-            <Link href="/">
+          <SidebarMenuButton isActive={pathname === "/admin"} asChild>
+            <Link href="/admin">
               <Home />
               <span>{t("Home")}</span>
             </Link>
           </SidebarMenuButton>
         </SidebarMenuItem>
         <SidebarMenuItem>
-          <SidebarMenuButton isActive={pathname === "/food"} asChild>
-            <Link href="/food">
+          <SidebarMenuButton isActive={pathname === "/admin/food"} asChild>
+            <Link href="/admin/food">
               <Beef />
               <span>{t("Food list")}</span>
             </Link>
           </SidebarMenuButton>
         </SidebarMenuItem>
         <SidebarMenuItem>
-          <SidebarMenuButton isActive={pathname === "/cookbook"} asChild>
-            <Link href="/cookbook">
+          <SidebarMenuButton isActive={pathname === "/admin/cookbook"} asChild>
+            <Link href="/admin/cookbook">
               <Book />
               <span>{t("Cookbook list")}</span>
             </Link>

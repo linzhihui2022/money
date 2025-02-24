@@ -9,7 +9,7 @@ export default async function Page() {
   return (
     <Header>
       <Button size="icon" variant="ghost" asChild>
-        <Link href="/cookbook/create">
+        <Link href="/admin/cookbook/create">
           <Plus />
           <span className="sr-only">{t("Add new cookbook")}</span>
         </Link>

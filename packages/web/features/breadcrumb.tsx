@@ -26,7 +26,7 @@ export default function Breadcrumb({
     <BreadcrumbRoot>
       <BreadcrumbList>
         <BreadcrumbItem>
-          <BreadcrumbLink href="/">Bill</BreadcrumbLink>
+          <BreadcrumbLink href="/admin">Bill</BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator />
         <BreadcrumbItem>

@@ -10,7 +10,7 @@ export default async function Page() {
   return (
     <Header>
       <Button size="icon" variant="ghost" asChild>
-        <Link href="/cookbook">
+        <Link href="/admin/cookbook">
           <Book />
           <span className="sr-only">{t("Cookbook list")}</span>
         </Link>

@@ -11,7 +11,7 @@ export default function Delete({ id }: { id: string }) {
     setOpen(false);
     startTransition(async () => {
       deleteCookbook(+id).then(() => {
-        router.push(`/cookbook`);
+        router.push(`/admin/cookbook`);
       });
     });
   }
