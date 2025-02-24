@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/card";
 import { singIn } from "./action";
 import { getTranslations } from "next-intl/server";
-
+import "../../globals.css";
 import { Button } from "@/components/ui/button";
 import { LocaleToggle } from "@/components/locale-toggle";
 import { ModeToggle } from "@/components/theme-toggle";

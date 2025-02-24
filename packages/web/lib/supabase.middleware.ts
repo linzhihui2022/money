@@ -40,7 +40,7 @@ export async function updateSession(
   if (locales.includes(pathname.at(0) as (typeof locales)[number])) {
     pathname.shift();
   }
-  if (pathname.at(0) === "auth") {
+  if (pathname.at(0) !== "admin") {
     return supabaseResponse;
   }
 
