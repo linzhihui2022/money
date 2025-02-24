@@ -8,7 +8,7 @@ import { HomeIcon } from "lucide-react";
 
 export function Header({ children }: PropsWithChildren) {
   return (
-    <header className="border-b sticky top-0 z-10 bg-background py-3 h-15 shrink-0 overflow-hidden flex items-center">
+    <header className="border-b sticky top-0 z-10 bg-background py-3 shrink-0 overflow-hidden flex items-center -mx-3 px-3">
       <Button asChild variant="ghost" size="icon">
         <Link href="/">
           <HomeIcon />

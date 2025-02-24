@@ -1,5 +1,5 @@
 "use server";
-import { Cookbook, CookbookItem, Food } from "@prisma-client";
+import { Cookbook, CookbookItem, Food, Prisma } from "@prisma-client";
 import { prisma } from "@sb-prisma";
 import { revalidateTag } from "next/cache";
 import { AI } from "../ai/help";
@@ -32,9 +32,9 @@ export const deleteCookbook = async (id: number) => {
   revalidateTag("cookbooks");
 };
 
-export const updateCookbookName = async (
+export const updateCookbook = async (
   id: Food["id"],
-  data: Pick<Cookbook, "name">,
+  data: Prisma.CookbookUpdateArgs["data"],
 ) => {
   await prisma.cookbook.update({ where: { id }, data });
   revalidateTag("cookbooks");
@@ -44,7 +44,10 @@ export const updateCookbookContent = async (
   id: Food["id"],
   data: Pick<Cookbook, "content">,
 ) => {
-  await prisma.cookbook.update({ where: { id }, data });
+  await prisma.cookbook.update({
+    where: { id },
+    data,
+  });
   revalidateTag("cookbooks");
 };
 

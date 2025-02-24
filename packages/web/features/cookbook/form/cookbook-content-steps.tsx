@@ -167,7 +167,7 @@ export const CookbookContentSteps = ({
   }
   return (
     <div className="space-y-2">
-      <ul className="flex flex-col space-y-2 overflow-y-auto">
+      <ul className="flex flex-col space-y-2">
         {value.map((step, index) => (
           <motion.li
             transition={{ type: "spring", damping: 20, stiffness: 300 }}
@@ -208,7 +208,7 @@ export const CookbookContentSteps = ({
         <Button
           className="w-full"
           type="button"
-          variant="secondary"
+          variant="outline"
           onClick={() => {
             const _steps = [...value];
             setValueAction([

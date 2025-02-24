@@ -9,8 +9,10 @@ import { getLocale } from "next-intl/server";
 
 export default async function DashboardLayout({
   children,
+  header,
 }: {
   children: React.ReactNode;
+  header: React.ReactNode;
 }) {
   const res = await getUser();
   if (!res.data.user) {
@@ -20,12 +22,14 @@ export default async function DashboardLayout({
   return (
     <TooltipProvider>
       <SidebarProvider>
-        <main className="w-full h-dvh size-full flex flex-row">
+        <main className="w-full flex flex-row">
           <AppSidebar />
-          <div className="flex-1 h-full px-3">
-            <div className="flex flex-col size-full no-scrollbar pb-20 space-y-3">
-              {children}
-            </div>
+          <div className="flex flex-col min-h-dvh no-scrollbar space-y-3 px-3 @container container">
+            {header}
+            <div className="flex-1">{children}</div>
+            <footer className="h-15 shrink-0 text-center py-4 text-xs">
+              Power By Lychee, lychee@rb2.nl
+            </footer>
           </div>
         </main>
       </SidebarProvider>

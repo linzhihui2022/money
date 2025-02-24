@@ -1,9 +1,5 @@
 "use client";
-import { Food } from "@prisma-client";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { createCookbook } from "actions/cookbook";
+
 import {
   Form,
   FormField,
@@ -12,12 +8,18 @@ import {
   SubmitButton,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useTransition } from "react";
-import { AddFoods, FoodsDescription } from "./add-foods";
-import { useTranslations } from "next-intl";
-import AiCookbook from "@cookbook/table/ai-cookbook";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Food } from "@prisma-client";
 import { CookbookStepPhase } from "ai/type";
-import { CookbookContentSteps } from "@cookbook/form/cookbook-content-steps";
+import { getCookbook } from "api/cookbook";
+import { useTranslations } from "next-intl";
+import { useTransition } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import AiCookbook from "../table/ai-cookbook";
+import { CookbookContentSteps } from "./cookbook-content-steps";
+import { AddFoods, FoodsDescription } from "./add-foods";
+import { updateCookbook } from "actions/cookbook";
 import { useRouter } from "i18n/routing";
 
 const formSchema = z.object({
@@ -45,25 +47,79 @@ const formSchema = z.object({
 });
 type FormFields = z.infer<typeof formSchema>;
 
-export function CreateCookbook({ foods }: { foods: Food[] }) {
+export function UpdateCookbook({
+  foods,
+  cookbook,
+}: {
+  foods: Food[];
+  cookbook: Awaited<ReturnType<typeof getCookbook>>;
+}) {
   const form = useForm<FormFields>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      items: [],
-      content: { foods: [], tool: [], steps: [] },
+      name: cookbook.name,
+      items: cookbook.items.map(({ quantity, food }) => ({
+        quantity,
+        food: food.id,
+      })),
+      content: cookbook.content,
     },
   });
 
   const [pending, startTransition] = useTransition();
   const router = useRouter();
+
+  const t = useTranslations("cookbook");
   async function onSubmit(data: FormFields) {
     startTransition(async () => {
-      await createCookbook(data.name, data.items, data.content);
+      const itemsActions: {
+        update: { id: number; quantity: number }[];
+        delete: { id: number }[];
+        create: { quantity: number; food: number }[];
+      } = {
+        update: [],
+        delete: [],
+        create: [],
+      };
+      const oldItemsMap = cookbook.items.reduce<
+        Record<string, (typeof cookbook)["items"][number]>
+      >((pre, cur) => {
+        pre[cur.food.id] = cur;
+        return pre;
+      }, {});
+      data.items.forEach(({ quantity, food }) => {
+        const old = oldItemsMap[food];
+        if (old) {
+          itemsActions.update.push({ id: old.id, quantity });
+        } else {
+          itemsActions.create.push({ food, quantity });
+        }
+      });
+      cookbook.items.forEach((item) => {
+        if (!data.items.find((newItem) => newItem.food === item.food.id)) {
+          itemsActions.delete.push({ id: item.id });
+        }
+      });
+      await updateCookbook(cookbook.id, {
+        name: data.name,
+        content: data.content,
+        items: {
+          createMany: {
+            data: itemsActions.create.map(({ food, quantity }) => ({
+              foodId: food,
+              quantity,
+            })),
+          },
+          deleteMany: itemsActions.delete.map(({ id }) => ({ id })),
+          updateMany: itemsActions.update.map(({ id, quantity }) => ({
+            where: { id },
+            data: { quantity },
+          })),
+        },
+      });
       router.push("/cookbook");
     });
   }
-  const t = useTranslations("cookbook");
   const name = form.watch("name");
   const items = form.watch("items");
   const content = form.watch("content");
@@ -74,7 +130,7 @@ export function CreateCookbook({ foods }: { foods: Food[] }) {
         className="space-y-3 py-3 max-w-lg mx-auto"
         onSubmit={form.handleSubmit(onSubmit)}
       >
-        <FormTitle>{t("Add new cookbook")}</FormTitle>
+        <FormTitle>{cookbook.name}</FormTitle>
         <FormField
           control={form.control}
           name="name"
@@ -115,11 +171,15 @@ export function CreateCookbook({ foods }: { foods: Food[] }) {
           content={content}
           setContent={(res) => {
             if (!res) return;
-            form.setValue("content", {
-              foods: res.foods,
-              tool: res.tool,
-              steps: res.steps,
-            });
+            form.setValue(
+              "content",
+              {
+                foods: res.foods,
+                tool: res.tool,
+                steps: res.steps,
+              },
+              { shouldDirty: true },
+            );
           }}
         >
           <FormField
@@ -161,6 +221,7 @@ export function CreateCookbook({ foods }: { foods: Food[] }) {
             )}
           />
         </AiCookbook>
+
         <SubmitButton pending={pending} />
       </form>
     </Form>

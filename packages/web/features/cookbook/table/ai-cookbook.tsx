@@ -1,29 +1,25 @@
-import { Bot, Dot } from "lucide-react";
+import { Bot, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useMemo, useState, useTransition } from "react";
+import { PropsWithChildren, useMemo, useState, useTransition } from "react";
 import { aiCookbook } from "actions/cookbook";
 import { CookbookContent, DeepseekModel, KimiModel } from "ai/type";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+
 import { useTranslations } from "next-intl";
+import { AiSeesion } from "../ui/AiSession";
+import { cn } from "@/lib/utils";
 
 export default function AiCookbook({
   setContent,
   foods,
   cookbook,
   content,
-}: {
+  children,
+}: PropsWithChildren<{
   setContent: (v: CookbookContent) => void;
   content: CookbookContent;
   foods: { quantity: number; name: string; unit: string }[];
   cookbook: string;
-}) {
+}>) {
   const [pending, startTransition] = useTransition();
   const [model, setModel] = useState<KimiModel | DeepseekModel>();
   const t = useTranslations();
@@ -38,6 +34,7 @@ export default function AiCookbook({
       ),
     [t, foods, cookbook],
   );
+  const [edit, setEdit] = useState(false);
   const [usagePrice, setUsagePrice] = useState<number>(0);
   async function onSubmit(model: KimiModel | DeepseekModel) {
     setModel(model);
@@ -46,6 +43,7 @@ export default function AiCookbook({
         .then((res) => {
           setUsagePrice(res.price);
           setContent(res.data);
+          setEdit(false);
         })
         .catch((e) => {
           console.log(cookbook, foods);
@@ -85,44 +83,48 @@ export default function AiCookbook({
           </>
         ) : content.steps.length ? (
           <>
-            <div className="text-end border px-4 py-4 rounded-lg self-end bg-secondary max-w-[80%]">
-              {userSession}
-            </div>
-            <div className="space-y-4 border px-4 rounded-lg bg-secondary max-w-[80%]">
-              <Accordion type="single" collapsible>
-                <AccordionItem value="item-1">
-                  <AccordionTrigger>
-                    {t("ai.Use {model} usage {usagePrice}", {
-                      model,
-                      usagePrice,
-                    })}
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <div className="space-y-4">
-                      <Badge>{t("cookbook.Food")}</Badge>
-                      <div>{content.foods.join(", ")}</div>
-                      <Badge>{t("cookbook.Tool")}</Badge>
-                      <div>{content.tool.join(", ")}</div>
-                      <Badge>{t("cookbook.Steps")}</Badge>
-                      <div className="space-y-1">
-                        {content.steps.map((step, index) => (
-                          <div key={index} className="flex space-x-1">
-                            <Dot
-                              className={cn("size-5 shrink-0", {
-                                "text-step-prepare": step.phase === "PREPARE",
-                                "text-step-progress": step.phase === "PROGRESS",
-                                "text-step-done": step.phase === "DONE",
-                              })}
-                            />
-                            <span>{step.content}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-            </div>
+            {edit ? (
+              <>
+                {children}
+                <Button
+                  variant="secondary"
+                  className="w-full"
+                  type="button"
+                  onClick={() => setEdit((v) => !v)}
+                >
+                  <Bot />
+                </Button>
+              </>
+            ) : (
+              <>
+                <div className="text-end border px-4 py-4 rounded-lg self-end bg-secondary max-w-[80%]">
+                  {userSession}
+                </div>
+                <div className="space-y-4 border p-4 rounded-lg bg-secondary max-w-[80%] relative group">
+                  {!!usagePrice && (
+                    <span>
+                      {t("ai.Use {model} usage {usagePrice}", {
+                        model,
+                        usagePrice,
+                      })}
+                    </span>
+                  )}
+                  <AiSeesion content={content} />
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className={cn(
+                      "absolute bottom-0 right-0 hidden group-hover:inline-flex",
+                      { "inline-flex": edit },
+                    )}
+                    type="button"
+                    onClick={() => setEdit((v) => !v)}
+                  >
+                    <Edit />
+                  </Button>
+                </div>
+              </>
+            )}
           </>
         ) : (
           <></>

@@ -2,25 +2,18 @@
 import DeleteDialog from "@/components/table/delete-dialog";
 import { useTransition } from "react";
 import { deleteCookbook } from "actions/cookbook";
-import { useCookbookRow } from "@cookbook/ui/row";
+import { useRouter } from "i18n/routing";
 
-export default function Delete() {
+export default function Delete({ id }: { id: string }) {
   const [, startTransition] = useTransition();
-  const { row, updateRow } = useCookbookRow();
+  const router = useRouter();
   async function onDeleteAction(setOpen: (open: boolean) => void) {
     setOpen(false);
     startTransition(async () => {
-      updateRow((v) => ({ ...v, __deleted: true }));
-      await deleteCookbook(row.id).catch(() =>
-        updateRow((v) => ({ ...v, __deleted: false })),
-      );
+      deleteCookbook(+id).then(() => {
+        router.push(`/cookbook`);
+      });
     });
   }
-  return (
-    <DeleteDialog
-      deleted={row.__deleted}
-      onDeleteAction={onDeleteAction}
-      name={row.name}
-    />
-  );
+  return <DeleteDialog onDeleteAction={onDeleteAction} name={id + ""} />;
 }

@@ -21,7 +21,7 @@ export default function DeleteDialog({
 }: {
   onDeleteAction: (setOpen: Dispatch<SetStateAction<boolean>>) => void;
   name: string;
-  deleted: boolean;
+  deleted?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const t = useTranslations("form");
@@ -31,7 +31,7 @@ export default function DeleteDialog({
         <Button
           data-deleted={deleted ? "yes" : ""}
           variant="link"
-          size="cell"
+          size="icon"
           className="hover:text-destructive"
         >
           <Trash2 />

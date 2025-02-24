@@ -14,12 +14,16 @@ export default {
   theme: {
     container: {
       center: true,
-      padding: "2rem",
+      padding: "0",
       screens: {
         "2xl": "1400px",
       },
     },
     extend: {
+      containers: {
+        "8xl": "100rem",
+        "9xl": "120rem",
+      },
       colors: {
         foodtype: {
           seafood: "hsl(var(--foodtype-seafood))",
@@ -113,6 +117,11 @@ export default {
       },
     },
   },
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  plugins: [require("tailwindcss-animate")],
+
+  plugins: [
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    require("tailwindcss-animate"),
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    require("@tailwindcss/container-queries"),
+  ],
 } satisfies Config;
