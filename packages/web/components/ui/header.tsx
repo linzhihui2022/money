@@ -3,7 +3,7 @@ import { SidebarTrigger } from "./sidebar";
 import { Separator } from "./separator";
 import { ModeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
-import { Link } from "i18n/routing";
+import Link from "next/link";
 import { HomeIcon } from "lucide-react";
 
 export function Header({ children }: PropsWithChildren) {

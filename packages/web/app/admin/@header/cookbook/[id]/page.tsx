@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/ui/header";
 import Delete from "@/features/cookbook/table/delete";
-import { Link } from "i18n/routing";
 import { Book } from "lucide-react";
 import { getTranslations } from "next-intl/server";
+import Link from "next/link";
 
 export default async function Page({
   params,

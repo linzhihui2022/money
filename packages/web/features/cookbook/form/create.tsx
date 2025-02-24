@@ -18,7 +18,7 @@ import { useTranslations } from "next-intl";
 import AiCookbook from "@cookbook/table/ai-cookbook";
 import { CookbookStepPhase } from "ai/type";
 import { CookbookContentSteps } from "@cookbook/form/cookbook-content-steps";
-import { useRouter } from "i18n/routing";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   name: z.string().min(1),

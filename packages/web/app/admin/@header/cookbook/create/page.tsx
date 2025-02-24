@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/ui/header";
-import { Link } from "i18n/routing";
+import Link from "next/link";
 import { Book } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 

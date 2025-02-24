@@ -1,27 +1,36 @@
 "use client";
 import { useLocale } from "next-intl";
 import { locales } from "i18n/locales";
-import { Link, usePathname } from "i18n/routing";
-import { cn } from "@/lib/utils";
-import { Fragment } from "react";
+import { Fragment, useTransition } from "react";
 import { Separator } from "./ui/separator";
+import { Button } from "@/components/ui/button";
+import { setUserLocale } from "../i18n/cookies";
 
 export const LocaleToggle = () => {
   const currentLocale = useLocale();
-  const currentPath = usePathname();
+
+  const [, startTransition] = useTransition();
+  function onChange(value: (typeof locales)[number]) {
+    startTransition(() => {
+      setUserLocale(value);
+    });
+  }
+
   return (
     <div className="flex p-2">
       {locales.map((locale) => (
         <Fragment key={locale}>
-          <Link
-            className={cn("uppercase text-xs text-primary/80", {
-              "text-primary font-bold": currentLocale === locale,
-            })}
-            locale={locale}
-            href={`/${currentPath}`}
+          <Button
+            variant={currentLocale === locale ? "secondary" : "ghost"}
+            disabled={currentLocale === locale}
+            size="sm"
+            className="uppercase"
+            onClick={() => {
+              onChange(locale);
+            }}
           >
             {locale}
-          </Link>
+          </Button>
           <Separator orientation="vertical" className="mx-2 last:hidden" />
         </Fragment>
       ))}

@@ -5,9 +5,9 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { Beef, Book, Home } from "lucide-react";
-import { Link, usePathname } from "i18n/routing";
 import { useTranslations } from "next-intl";
-
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 export function BillMenuGroup() {
   const pathname = usePathname();
   const t = useTranslations("sidebar");

@@ -10,9 +10,9 @@ import {
   useContext,
   useTransition,
 } from "react";
-import { Link as NextLink, useRouter } from "i18n/routing";
 import { Loader2Icon } from "lucide-react";
-
+import NextLink from "next/link";
+import { useRouter } from "next/navigation";
 interface PendingContextValue {
   isPending: boolean;
   startTransition: TransitionStartFunction;

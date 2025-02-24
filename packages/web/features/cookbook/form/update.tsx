@@ -20,7 +20,7 @@ import AiCookbook from "../table/ai-cookbook";
 import { CookbookContentSteps } from "./cookbook-content-steps";
 import { AddFoods, FoodsDescription } from "./add-foods";
 import { updateCookbook } from "actions/cookbook";
-import { useRouter } from "i18n/routing";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   name: z.string().min(1),

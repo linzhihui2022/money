@@ -6,7 +6,8 @@ import {
 } from "@/components/ui/sidebar";
 import { CalendarDays } from "lucide-react";
 import React from "react";
-import { Link, usePathname } from "i18n/routing";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 export default function PlanningMenuGroup() {
   const pathname = usePathname();

@@ -3,10 +3,9 @@ import React from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/features/app-sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { redirect } from "i18n/routing";
 import { getUser } from "api/auth";
-import { getLocale } from "next-intl/server";
 import "./globals.css";
+import { redirect } from "next/navigation";
 
 export default async function DashboardLayout({
   children,
@@ -17,8 +16,7 @@ export default async function DashboardLayout({
 }) {
   const res = await getUser();
   if (!res.data.user) {
-    const locale = await getLocale();
-    redirect({ href: "/auth/sign-in", locale });
+    redirect("/auth/sign-in");
   }
   return (
     <TooltipProvider>

@@ -2,7 +2,7 @@
 import DeleteDialog from "@/components/table/delete-dialog";
 import { useTransition } from "react";
 import { deleteCookbook } from "actions/cookbook";
-import { useRouter } from "i18n/routing";
+import { useRouter } from "next/navigation";
 
 export default function Delete({ id }: { id: string }) {
   const [, startTransition] = useTransition();

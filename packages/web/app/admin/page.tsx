@@ -4,7 +4,7 @@ import { getSomeCookbooks } from "api/cookbook";
 import { getFoodsType } from "api/food";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getTranslations } from "next-intl/server";
-import { Link } from "i18n/routing";
+import Link from "next/link";
 import { LinkIcon } from "lucide-react";
 import { FoodTypeCircle } from "@/components/ui/food-type";
 import { Chart } from "./chart";

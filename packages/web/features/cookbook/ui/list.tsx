@@ -9,7 +9,7 @@ import { FoodTypeCircle } from "@/components/ui/food-type";
 import { getCookbooks } from "api/cookbook";
 import { getFoods } from "api/food";
 import { AiSeesion } from "./AiSession";
-import { Link } from "i18n/routing";
+import Link from "next/link";
 
 export default async function CookbookList() {
   const cookbooks = await getCookbooks();

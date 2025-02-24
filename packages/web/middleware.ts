@@ -1,12 +1,10 @@
-import { type NextRequest } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { updateSession } from "@/lib/supabase.middleware";
-import createMiddleware from "next-intl/middleware";
-import { routing } from "./i18n/routing";
 
 export async function middleware(request: NextRequest) {
   const url = new URL(request.url);
   const origin = url.origin;
-  const response = createMiddleware(routing)(request);
+  const response = NextResponse.next({ request });
   response.headers.set("x-origin", origin);
   return await updateSession(request, response);
 }
