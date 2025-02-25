@@ -50,9 +50,9 @@ export class AI {
       }
       case KimiModel["moonshot-v1-8k"]: {
         const url = process.env.MOONSHOT_URL;
-        if (!url) throw new Error("DeepseekModel requires a url");
+        if (!url) throw new Error("KimiModel requires a url");
         const key = process.env.MOONSHOT_API;
-        if (!key) throw new Error("DeepseekModel requires a key");
+        if (!key) throw new Error("KimiModel requires a key");
         this.url = url;
         this.key = key;
         return this;
