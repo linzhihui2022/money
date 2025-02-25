@@ -22,3 +22,17 @@ export const createFood = async (data: Pick<Food, "name" | "type">) => {
   await prisma.food.create({ data });
   revalidateTag("foods");
 };
+
+export const updateFoodsStock = async (
+  data: { id: Food["id"]; stockIncrement: number }[],
+) => {
+  await prisma.$transaction(
+    data.map(({ id, stockIncrement }) => {
+      return prisma.food.update({
+        where: { id },
+        data: { stock: { increment: stockIncrement } },
+      });
+    }),
+  );
+  revalidateTag("foods");
+};

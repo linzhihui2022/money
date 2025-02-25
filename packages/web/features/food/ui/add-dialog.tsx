@@ -20,7 +20,7 @@ import { z } from "zod";
 import { FoodTypeSelect } from "@food/form/food-type-select";
 import { useTranslations } from "next-intl";
 
-type FoodFormFields = Pick<Food, "name" | "type" | "unit">;
+type FoodFormFields = Pick<Food, "name" | "type" | "unit" | "stock">;
 function AddFoodForm({
   setOpen,
 }: ComponentProps<ComponentProps<typeof DrawerDialog>["Body"]>) {
@@ -36,9 +36,10 @@ function AddFoodForm({
           FoodType.OTHER,
         ]),
         unit: z.string().min(1),
+        stock: z.coerce.number().min(0),
       }),
     ),
-    defaultValues: { name: "", type: FoodType.MEET, unit: "g" },
+    defaultValues: { name: "", type: FoodType.MEET, unit: "g", stock: 0 },
   });
   const [, setState] = useOptimistic<FoodFormFields | null>(null);
   const [pending, startTransition] = useTransition();
@@ -61,6 +62,15 @@ function AddFoodForm({
           render={({ field }) => (
             <InlineFormItem label={t("Name")}>
               <Input {...field} />
+            </InlineFormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="stock"
+          render={({ field }) => (
+            <InlineFormItem label={t("Stock")}>
+              <Input {...field} type="number" />
             </InlineFormItem>
           )}
         />

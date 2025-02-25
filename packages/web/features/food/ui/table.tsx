@@ -19,8 +19,8 @@ export default async function FoodTable() {
         <TableRow>
           <TableHead>ID</TableHead>
           <TableHead>{t("Name")}</TableHead>
-          <TableHead>{t("Unit")}</TableHead>
           <TableHead>{t("Type")}</TableHead>
+          <TableHead>{`${t("Stock")}/${t("Unit")}`}</TableHead>
           <TableHead></TableHead>
         </TableRow>
       </TableHeader>

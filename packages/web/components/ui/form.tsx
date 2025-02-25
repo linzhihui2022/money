@@ -201,14 +201,17 @@ const FormTitle = ({
 const SubmitButton = <T extends FieldValues>({
   pending,
   children,
+  position = "end",
 }: PropsWithChildren<{
   pending?: boolean;
+  position?: "end" | "full";
 }>) => {
   const { formState } = useFormContext<T>();
   const t = useTranslations("form");
   return (
-    <div className="pt-4 w-full flex justify-end">
+    <div className={cn("w-full flex", { "justify-end": position === "end" })}>
       <Button
+        className={cn({ "w-full": position === "full" })}
         type="submit"
         disabled={!formState.isDirty || formState.isSubmitting || pending}
       >

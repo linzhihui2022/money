@@ -58,10 +58,12 @@
   },
   "food": {
     "Add new food": "添加新的食材",
+    "Restock foods": "添加库存",
     "Name": "食材",
     "Unit": "单位",
     "Type": "种类",
     "Food": "食材",
+    "Stock": "库存",
     "Edit <Food>": "修改食材",
     "FoodType": {
       "MEET": "肉类",

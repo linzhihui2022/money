@@ -27,6 +27,7 @@ function UpdateFoodForm({
       z.object({
         name: z.string().min(1),
         unit: z.string().min(1),
+        stock: z.coerce.number().min(0),
         type: z.enum([
           FoodType.OTHER,
           FoodType.FRUIT,
@@ -36,11 +37,13 @@ function UpdateFoodForm({
         ]),
       }),
     ),
-    defaultValues: { name: row.name, type: row.type, unit: row.unit },
+    defaultValues: { ...row },
   });
   const [pending, startTransition] = useTransition();
 
-  async function onSubmit(data: Pick<Food, "name" | "type" | "unit">) {
+  async function onSubmit(
+    data: Pick<Food, "name" | "type" | "unit" | "stock">,
+  ) {
     setOpen(false);
     form.reset();
     startTransition(async () => {
@@ -59,6 +62,15 @@ function UpdateFoodForm({
           render={({ field }) => (
             <InlineFormItem label={t("Name")}>
               <Input {...field} />
+            </InlineFormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="stock"
+          render={({ field }) => (
+            <InlineFormItem label={t("Stock")}>
+              <Input {...field} type="number" />
             </InlineFormItem>
           )}
         />

@@ -51,7 +51,8 @@ export function FoodCombobox({
           {current ? (
             <span className="inline-flex space-x-1">
               <FoodTypeCircle type={current.type} label={false} />
-              <span>{`${current.name}(${current.unit})`}</span>
+              <span>{`${current.name}`}</span>
+              <span className="italic text-primary/50">{`${current.stock}(${current.unit})`}</span>
             </span>
           ) : (
             t("Select food")

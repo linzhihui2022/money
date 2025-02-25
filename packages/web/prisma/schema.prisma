@@ -29,10 +29,10 @@ model Cookbook {
   created_at DateTime @default(now()) @db.Timestamptz(6)
   updated_at DateTime @default(now()) @updatedAt @db.Timestamptz(6)
 
-  name  String
-  items CookbookItem[]
+  name    String
+  items   CookbookItem[]
   /// [CookbookContentType]
-  content Json @default("{ \"foods\": [], \"tool\": [], \"steps\": [] }")
+  content Json           @default("{ \"foods\": [], \"tool\": [], \"steps\": [] }")
 }
 
 model CookbookItem {
@@ -55,5 +55,24 @@ model Food {
   name         String
   type         FoodType       @default(OTHER)
   unit         String         @default("g")
+  stock        Int            @default(0)
   cookbookItem CookbookItem[]
+}
+
+model Task {
+  id         Int         @id @default(autoincrement())
+  created_at DateTime    @default(now()) @db.Timestamptz(6)
+  updated_at DateTime    @default(now()) @updatedAt @db.Timestamptz(6)
+  TaskImage  TaskImage[]
+  date       DateTime?
+  archive    Boolean     @default(false)
+}
+
+model TaskImage {
+  id         Int      @id @default(autoincrement())
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+  task       Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  taskId     Int
+  url        String
 }
