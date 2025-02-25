@@ -176,12 +176,12 @@ const InlineFormItem = ({
   children,
   description,
 }: PropsWithChildren<{
-  label: ReactNode;
+  label?: ReactNode;
   description?: ReactNode;
 }>) => {
   return (
     <FormItem className="grid grid-cols-1 gap-x-3 gap-y-1.5 items-center">
-      <FormLabel>{label}:</FormLabel>
+      {!!label && <FormLabel>{label}:</FormLabel>}
       <FormControl>{children}</FormControl>
       <FormMessage />
       {!!description && <FormDescription>{description}</FormDescription>}

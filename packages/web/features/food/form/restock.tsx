@@ -2,6 +2,7 @@
 import {
   Form,
   FormField,
+  FormTitle,
   InlineFormItem,
   SubmitButton,
 } from "@/components/ui/form";
@@ -57,12 +58,12 @@ export default function RestockPage({ foods }: { foods: Food[] }) {
         className="space-y-3 py-3 max-w-lg mx-auto"
         onSubmit={form.handleSubmit(onSubmit)}
       >
+        <FormTitle>{t("Restock foods")}</FormTitle>
         <FormField
           control={form.control}
           name="foods"
           render={({ field }) => (
             <InlineFormItem
-              label={t("Stock")}
               description={
                 <FoodsDescription
                   value={field.value}

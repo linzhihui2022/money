@@ -22,11 +22,11 @@ export function AddFoods({
   const [foodId, setFoodId] = useState(0);
   const [quantity, setQuantity] = useState(0);
   return (
-    <div className="grid gap-x-2 grid-cols-12">
-      <div className="col-span-6">
+    <div className="grid gap-2  md:grid-cols-2">
+      <div>
         <FoodCombobox foods={foods} value={foodId} setValue={setFoodId} />
       </div>
-      <div className="col-span-6 flex max-w-sm items-center space-x-2">
+      <div className="flex flex-1 items-center space-x-2">
         <Input
           value={quantity}
           onChange={(e) => setQuantity(+e.target.value || 0)}
