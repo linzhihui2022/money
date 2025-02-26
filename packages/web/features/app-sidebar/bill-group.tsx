@@ -4,7 +4,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Beef, Book, Home } from "lucide-react";
+import { Beef, Book, CalendarIcon, Home } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -36,6 +36,14 @@ export function BillMenuGroup() {
             <Link href="/admin/cookbook">
               <Book />
               <span>{t("Cookbook list")}</span>
+            </Link>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+        <SidebarMenuItem>
+          <SidebarMenuButton isActive={pathname === "/admin/task"} asChild>
+            <Link href="/admin/task">
+              <CalendarIcon />
+              <span>{t("Task list")}</span>
             </Link>
           </SidebarMenuButton>
         </SidebarMenuItem>

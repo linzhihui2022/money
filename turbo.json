@@ -2,9 +2,9 @@
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
   "tasks": {
-    "deploy": {
+    "dev": {
       "dependsOn": [
-        "^deploy"
+        "^dev"
       ]
     },
     "lint": {

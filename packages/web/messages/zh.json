@@ -31,7 +31,8 @@
     "Money": "钱啊💰",
     "Home": "首页",
     "Food list": "食材表",
-    "Cookbook list": "菜谱表"
+    "Cookbook list": "菜谱表",
+    "Task list": "任务表"
   },
   "cookbook": {
     "Add new cookbook": "添加新的菜谱",
@@ -72,5 +73,10 @@
       "SEAFOOD": "海鲜",
       "OTHER": "其他"
     }
+  },
+  "task": {
+    "Add new task": "添加新的任务",
+    "Date": "日期",
+    "Cookbook": "菜谱"
   }
 }

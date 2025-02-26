@@ -33,6 +33,7 @@ model Cookbook {
   items   CookbookItem[]
   /// [CookbookContentType]
   content Json           @default("{ \"foods\": [], \"tool\": [], \"steps\": [] }")
+  Task    Task[]
 }
 
 model CookbookItem {
@@ -63,9 +64,11 @@ model Task {
   id         Int         @id @default(autoincrement())
   created_at DateTime    @default(now()) @db.Timestamptz(6)
   updated_at DateTime    @default(now()) @updatedAt @db.Timestamptz(6)
-  TaskImage  TaskImage[]
-  date       DateTime?
+  taskImage  TaskImage[]
+  date       DateTime    @default(now())
   archive    Boolean     @default(false)
+  cookbook   Cookbook    @relation(fields: [cookbookId], references: [id], onDelete: Cascade)
+  cookbookId Int
 }
 
 model TaskImage {

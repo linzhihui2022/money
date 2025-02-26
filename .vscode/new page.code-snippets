@@ -19,8 +19,8 @@
     "scope": "typescriptreact",
     "prefix": "newpage",
     "body": [
-			"export default async function Page() {",
-			"return <></>",
+			"export default async function $1Page() {",
+			"  return <></>;",
 			"}"
 		]
 	}

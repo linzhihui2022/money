@@ -20,6 +20,7 @@ import {
   TableHeader,
   TableRow,
   TableHead,
+  TableCell,
 } from "@/components/ui/table";
 
 const formSchema = z.object({
@@ -95,15 +96,15 @@ export default function RestockPage({ foods }: { foods: Food[] }) {
                 if (!food) return <></>;
                 return (
                   <TableRow key={food.id}>
-                    <TableHead> {food.name} </TableHead>
-                    <TableHead>
+                    <TableCell> {food.name} </TableCell>
+                    <TableCell>
                       {pending ? (
                         <span>{`${food.stock} + ${item.quantity}`}</span>
                       ) : (
                         <span>{food.stock}</span>
                       )}
                       <span>{food.unit}</span>
-                    </TableHead>
+                    </TableCell>
                   </TableRow>
                 );
               })}
