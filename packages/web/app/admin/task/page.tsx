@@ -4,9 +4,9 @@ import {
   addDays,
   addMonths,
   endOfWeek,
+  isValid,
   startOfMonth,
   startOfWeek,
-  isValid,
 } from "date-fns";
 
 const initRange = (base: Date = new Date()) => {
@@ -28,14 +28,14 @@ export default async function Page({
   const range = initRange(date);
   const tasks = await getTasks(range);
   let index = range[0];
-  const weeks = [];
+  const days = [];
   while (index < range[1]) {
-    weeks.push(index);
-    index = addDays(index, 7);
+    days.push(index);
+    index = addDays(index, 1);
   }
   return (
     <div>
-      <TaskCalendar tasks={tasks} weeks={weeks} month={startOfMonth(date)} />
+      <TaskCalendar tasks={tasks} days={days} month={startOfMonth(date)} />
     </div>
   );
 }
