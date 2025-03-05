@@ -35,4 +35,5 @@ export const updateFoodsStock = async (
     }),
   );
   revalidateTag("foods");
+  revalidateTag("cookbooks");
 };

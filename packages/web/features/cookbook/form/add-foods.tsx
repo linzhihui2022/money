@@ -22,7 +22,7 @@ export function AddFoods({
   const [foodId, setFoodId] = useState(0);
   const [quantity, setQuantity] = useState(0);
   return (
-    <div className="grid gap-2 md:grid-cols-2">
+    <div className="space-y-2">
       <div>
         <FoodCombobox foods={foods} value={foodId} setValue={setFoodId} />
       </div>
@@ -71,7 +71,7 @@ export function FoodsDescription({
 }) {
   if (!value.length) return <></>;
   return (
-    <div className="-mx-2 -my-1">
+    <div className="-mx-2 -my-1 flex flex-wrap">
       {value.map(({ food, quantity }, index) => {
         const item = foods.find((i) => i.id === food);
         if (!item) return <></>;

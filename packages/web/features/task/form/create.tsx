@@ -4,6 +4,7 @@ import { Calendar } from "@/components/ui/calendar";
 import {
   Form,
   FormField,
+  FormTitle,
   InlineFormItem,
   SubmitButton,
 } from "@/components/ui/form";
@@ -67,6 +68,7 @@ export function CreateTaskForm({
   return (
     <Form {...form}>
       <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
+        <FormTitle>{t("Add new task")}</FormTitle>
         <FormField
           control={form.control}
           name="cookbookId"

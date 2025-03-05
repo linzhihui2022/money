@@ -16,7 +16,7 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@/components/ui/popover";
-import { CalendarIcon, Dot, Trash2Icon } from "lucide-react";
+import { CalendarIcon, Dot, Trash2Icon, LoaderIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useTranslations } from "next-intl";
 import { format } from "date-fns";
@@ -101,9 +101,9 @@ export function TaskAccordionItem({
       disabled={task.pending}
     >
       <AccordionTrigger>
-        <span>
+        <span className="pl-4 text-xs flex items-center gap-2">
           {format(task.date, "MM-dd", formatLocale) + " " + name}{" "}
-          {task.pending ? "Creating task" : ""}
+          {task.pending ? <LoaderIcon className="size-3 animate-spin" /> : ""}
         </span>
       </AccordionTrigger>
       <AccordionContent>

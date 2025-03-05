@@ -2,6 +2,7 @@
 import {
   Form,
   FormField,
+  FormTitle,
   InlineFormItem,
   SubmitButton,
 } from "@/components/ui/form";
@@ -9,6 +10,7 @@ import { AddFoods, FoodsDescription } from "@/features/cookbook/form/add-foods";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Food } from "@prisma-client";
 import { updateFoodsStock } from "actions/food";
+import { useTranslations } from "next-intl";
 import { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -47,9 +49,11 @@ export const RestockForm = ({
       form.reset();
     });
   }
+  const t = useTranslations("food");
   return (
     <Form {...form}>
       <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
+        <FormTitle>{t("Restock foods")}</FormTitle>
         <FormField
           control={form.control}
           name="foods"

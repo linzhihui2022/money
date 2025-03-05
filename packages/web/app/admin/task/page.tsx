@@ -32,17 +32,17 @@ export default async function Page({
   const foods = await getFoods();
   const cookbooks = await getCookbooksFilterStock();
   let index = range[0];
-  const days = [];
+  const weeks = [];
   while (index < range[1]) {
-    days.push(index);
-    index = addDays(index, 1);
+    weeks.push(index);
+    index = addDays(index, 7);
   }
   return (
     <div>
       <TaskPanel
         foods={foods}
         tasks={tasks}
-        days={days}
+        weeks={weeks}
         month={startOfMonth(date)}
         cookbooks={cookbooks}
       />

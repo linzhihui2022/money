@@ -5,6 +5,7 @@ import {
   format,
   isSameDay,
   isSameMonth,
+  isSameWeek,
   isToday,
   startOfMonth,
   subMonths,
@@ -14,54 +15,111 @@ import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
-import { type CookbookItem, type Task } from "./task-item";
-import { CreateTaskForm } from "../form/create";
+import { TaskAccordionItem, type Task } from "./task-item";
 import { useDateLocale } from "@/lib/use-date-locale";
-import { RestockForm } from "@/features/food/form/restock";
-import type { Food } from "@prisma-client";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useTranslations } from "next-intl";
-import type { ComponentProps } from "react";
-
-export const TaskCalendarDays = ({
-  days,
+import { useState } from "react";
+import { Accordion } from "@/components/ui/accordion";
+export const TaskCalendarWeek = ({
   tasks,
+  week,
+  activeWeek,
+  setActiveWeek,
   month,
-  setActiveTask,
-  activeTask,
+  onMoveTask,
+  onDeleteTask,
 }: {
-  days: Date[];
   tasks: Task[];
+  week: Date;
+  activeWeek?: Date;
+  setActiveWeek: (week: Date) => void;
   month: Date;
-  setActiveTask: (task: Task["id"]) => void;
-  activeTask: Task["id"];
+  onMoveTask: (taskId: number, date: Date) => void;
+  onDeleteTask: (taskId: number) => void;
 }) => {
+  const [activeTask, setActiveTask] = useState<Task["id"]>();
+  const isActiveWeek =
+    activeWeek && isSameWeek(week, activeWeek, { weekStartsOn: 1 });
   const formatLocale = useDateLocale();
+
   return (
-    <>
-      {days.map((day) => {
+    <div
+      key={format(week, "yyyy-I")}
+      className="grid grid-cols-7 gap-2 px-2 py-2 relative"
+    >
+      <button
+        className={cn("absolute inset-0 hover:border rounded", {
+          "border -z-10": isActiveWeek,
+        })}
+        onClick={() => {
+          setActiveWeek(week);
+          if (tasks.length > 0) {
+            setActiveTask(tasks[0].id);
+          }
+        }}
+      >
+        <span className="sr-only">active {format(week, "yyyy-I")} week</span>
+      </button>
+      {Array.from({ length: 7 }).map((_, i) => {
+        const day = addDays(week, i);
         const todayTask = tasks.filter(
           (task) => task.date && isSameDay(task.date, day),
         );
         return (
-          <Button
-            key={format(day, "yyyy-MM-dd")}
-            variant={
-              todayTask.find((i) => i.id === activeTask)
-                ? "default"
-                : isSameMonth(day, month)
-                  ? "secondary"
-                  : "outline"
-            }
-            onClick={() => setActiveTask(todayTask[0].id)}
-            disabled={todayTask.length === 0}
-            className={cn({ "font-bold": isToday(day) })}
-          >
-            {format(day, "d", formatLocale)}
-          </Button>
+          <div key={format(day, "yyyy-MM-dd")} className="w-full flex flex-col">
+            <Button
+              variant={
+                todayTask.find((i) => i.id === activeTask)
+                  ? "default"
+                  : isSameMonth(day, month)
+                    ? "secondary"
+                    : "outline"
+              }
+              onClick={() =>
+                todayTask[0].id === activeTask
+                  ? setActiveTask(undefined)
+                  : setActiveTask(todayTask[0].id)
+              }
+              disabled={todayTask.length === 0}
+              className={cn({ "font-bold": isToday(day) })}
+            >
+              {format(day, "d", formatLocale)}
+            </Button>
+            {todayTask.length > 0 ? (
+              <div className="flex flex-col gap-2 pt-2 text-xs">
+                {todayTask.map((task) => (
+                  <button
+                    onClick={() => setActiveTask(task.id)}
+                    className="line-clamp-1"
+                    key={task.id}
+                  >
+                    {task.cookbook.name}
+                  </button>
+                ))}
+              </div>
+            ) : null}
+          </div>
         );
       })}
-    </>
+      {isActiveWeek && tasks.length > 0 ? (
+        <div className="col-span-full">
+          <Accordion
+            type="single"
+            collapsible
+            value={`${activeTask}`}
+            onValueChange={(v) => setActiveTask(+v)}
+          >
+            {tasks.map((task) => (
+              <TaskAccordionItem
+                key={task.id}
+                task={task}
+                onMoveTask={onMoveTask}
+                onDeleteTask={onDeleteTask}
+              />
+            ))}
+          </Accordion>
+        </div>
+      ) : null}
+    </div>
   );
 };
 
@@ -88,57 +146,15 @@ export function TaskCalendarHead({ month }: { month: Date }) {
     </div>
   );
 }
-export function TaskCalendarWeek({ firstDay }: { firstDay: Date }) {
+export function TaskCalendarWeekdays({ firstDay }: { firstDay: Date }) {
   const formatLocale = useDateLocale();
   return (
-    <>
+    <div className="grid grid-cols-7 gap-2 px-2">
       {Array.from({ length: 7 }).map((_, i) => (
-        <div key={i} className="px-2 pt-4 pb-4 text-center text-xs ">
+        <div key={i} className="px-2 text-center text-xs ">
           {format(addDays(firstDay, i), "ccc", formatLocale)}
         </div>
       ))}
-    </>
-  );
-}
-export function Action({
-  cookbooks,
-  foods,
-  onOptimisticTask,
-  onOptimisticFood,
-}: {
-  cookbooks: CookbookItem[];
-  foods: Food[];
-  onOptimisticTask: (date: Date, cookbookId: number) => void;
-  onOptimisticFood: ComponentProps<typeof RestockForm>["beforeSubmit"];
-}) {
-  const t = useTranslations();
-  if (cookbooks.length === 0)
-    return (
-      <div className="border p-4 h-full">
-        <RestockForm foods={foods} beforeSubmit={onOptimisticFood} />
-      </div>
-    );
-  return (
-    <div className="border p-4 h-full">
-      <Tabs defaultValue="task">
-        <TabsList className="w-full flex">
-          <TabsTrigger className="flex-1" value="task">
-            {t("task.Add new task")}
-          </TabsTrigger>
-          <TabsTrigger className="flex-1" value="food">
-            {t("food.Restock foods")}
-          </TabsTrigger>
-        </TabsList>
-        <TabsContent className="py-3" value="task">
-          <CreateTaskForm
-            cookbooks={cookbooks}
-            onBeforeSubmit={onOptimisticTask}
-          />
-        </TabsContent>
-        <TabsContent className="py-3" value="food">
-          <RestockForm foods={foods} beforeSubmit={onOptimisticFood} />
-        </TabsContent>
-      </Tabs>
     </div>
   );
 }
