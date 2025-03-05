@@ -2,8 +2,7 @@
 import type { Task, CookbookItem } from "./task-item";
 import { Accordion } from "@radix-ui/react-accordion";
 import { moveTask, deleteTask } from "actions/task";
-import { isAfter } from "date-fns";
-import { useOptimistic, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import {
   TaskCalendarHead,
   TaskCalendarWeek,
