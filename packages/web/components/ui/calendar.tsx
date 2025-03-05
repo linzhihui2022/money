@@ -6,6 +6,8 @@ import { DayPicker } from "react-day-picker";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
+import { enGB, zhCN } from "date-fns/locale";
+import { useLocale } from "next-intl";
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
@@ -15,13 +17,16 @@ function Calendar({
   showOutsideDays = true,
   ...props
 }: CalendarProps) {
+  const locale = useLocale();
+  const formatLocale = { zh: zhCN, en: enGB }[locale] || zhCN;
   return (
     <DayPicker
+      locale={formatLocale}
       showOutsideDays={showOutsideDays}
       className={cn("p-3", className)}
       classNames={{
         months: "flex flex-row space-y-4 sm:space-x-4 sm:space-y-0",
-        month: "space-y-4",
+        month: "space-y-4 w-full",
         caption: "flex justify-center pt-1 relative items-center",
         caption_label: "text-sm font-medium",
         nav: "space-x-1 flex items-center",

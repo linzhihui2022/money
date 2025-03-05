@@ -13,14 +13,25 @@ export const getTasks = async (range?: [Date, Date]) => {
   return unstable_cache(
     async () =>
       prisma.task.findMany({
-        orderBy: { id: "desc" },
+        orderBy: { date: "asc" },
         where: range ? { date: { gte: range[0], lt: range[1] } } : {},
         select: {
           id: true,
           date: true,
           archive: true,
           taskImage: { select: { url: true } },
-          cookbook: { select: { content: true, name: true } },
+          cookbook: {
+            select: {
+              id: true,
+              name: true,
+              updated_at: true,
+              content: true,
+              items: {
+                orderBy: { id: "desc" },
+                select: { id: true, food: true, quantity: true },
+              },
+            },
+          },
         },
       }),
     keys,

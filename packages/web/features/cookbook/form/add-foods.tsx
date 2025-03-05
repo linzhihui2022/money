@@ -22,7 +22,7 @@ export function AddFoods({
   const [foodId, setFoodId] = useState(0);
   const [quantity, setQuantity] = useState(0);
   return (
-    <div className="grid gap-2  md:grid-cols-2">
+    <div className="grid gap-2 md:grid-cols-2">
       <div>
         <FoodCombobox foods={foods} value={foodId} setValue={setFoodId} />
       </div>

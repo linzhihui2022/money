@@ -14,11 +14,26 @@ export const getCookbooks = unstable_cache(
         content: true,
         items: {
           orderBy: { id: "desc" },
-          select: {
-            id: true,
-            food: true,
-            quantity: true,
-          },
+          select: { id: true, food: true, quantity: true },
+        },
+      },
+    }),
+  ["cookbooks"],
+  { tags: ["cookbooks"], revalidate: 60 * 5 },
+);
+export const getCookbooksFilterStock = unstable_cache(
+  async () =>
+    prisma.cookbook.findMany({
+      orderBy: { id: "desc" },
+      where: { items: { every: { food: { stock: { gt: 0 } } } } },
+      select: {
+        id: true,
+        name: true,
+        updated_at: true,
+        content: true,
+        items: {
+          orderBy: { id: "desc" },
+          select: { id: true, food: true, quantity: true },
         },
       },
     }),
@@ -45,8 +60,8 @@ export const getCookbook = unstable_cache(
         },
       },
     }),
-  ["getCookbook"],
-  { tags: ["cookbooks"], revalidate: 60 * 5 },
+  ["getCookbook", "foods"],
+  { tags: ["cookbooks", "foods"], revalidate: 60 * 5 },
 );
 
 export const getSomeCookbooks = unstable_cache(

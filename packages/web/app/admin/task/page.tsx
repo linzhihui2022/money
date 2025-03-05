@@ -1,4 +1,6 @@
-import { TaskCalendar } from "@/features/task/ui/task-calendar";
+import { TaskPanel } from "@/features/task/ui/task-panel";
+import { getCookbooksFilterStock } from "api/cookbook";
+import { getFoods } from "api/food";
 import { getTasks } from "api/task";
 import {
   addDays,
@@ -27,6 +29,8 @@ export default async function Page({
     : new Date();
   const range = initRange(date);
   const tasks = await getTasks(range);
+  const foods = await getFoods();
+  const cookbooks = await getCookbooksFilterStock();
   let index = range[0];
   const days = [];
   while (index < range[1]) {
@@ -35,7 +39,13 @@ export default async function Page({
   }
   return (
     <div>
-      <TaskCalendar tasks={tasks} days={days} month={startOfMonth(date)} />
+      <TaskPanel
+        foods={foods}
+        tasks={tasks}
+        days={days}
+        month={startOfMonth(date)}
+        cookbooks={cookbooks}
+      />
     </div>
   );
 }

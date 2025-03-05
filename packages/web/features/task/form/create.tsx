@@ -14,51 +14,59 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useDateLocale } from "@/lib/use-date-locale";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Food } from "@prisma-client";
 import { createTask } from "actions/task";
 import { getCookbooks } from "api/cookbook";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-const formSchema = z.object({
+export const formSchema = z.object({
   cookbookId: z.coerce.number(),
   date: z.date(),
 });
 
-type FormFields = z.infer<typeof formSchema>;
-export default function CreateTask({
-  foods,
+export type FormFields = z.infer<typeof formSchema>;
+
+export function CreateTaskForm({
   cookbooks,
+  onSuccess,
+  onError,
+  onBeforeSubmit,
 }: {
-  foods: Record<string, Food>;
   cookbooks: Awaited<ReturnType<typeof getCookbooks>>;
+  onSuccess?: () => void;
+  onError?: (error: Error) => void;
+  onBeforeSubmit?: (date: Date, cookbookId: number) => void;
 }) {
   const form = useForm<FormFields>({
     resolver: zodResolver(formSchema),
-    defaultValues: { cookbookId: 0, date: new Date() },
+    defaultValues: { date: new Date() },
   });
-  const [pending, startTransition] = useTransition();
-  const router = useRouter();
+  const formatLocale = useDateLocale();
+
+  const t = useTranslations("task");
+  const [, startTransition] = useTransition();
   async function onSubmit(data: FormFields) {
+    form.reset();
     startTransition(async () => {
-      await createTask(data.date, data.cookbookId);
-      router.push("/admin/task");
+      try {
+        onBeforeSubmit?.(data.date, data.cookbookId);
+        await createTask(data.date, data.cookbookId);
+        onSuccess?.();
+      } catch (e) {
+        onError?.(e as Error);
+      }
     });
   }
-  const t = useTranslations("task");
   return (
     <Form {...form}>
-      <form
-        className="space-y-3 py-3 max-w-lg mx-auto"
-        onSubmit={form.handleSubmit(onSubmit)}
-      >
+      <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
         <FormField
           control={form.control}
           name="cookbookId"
@@ -67,46 +75,28 @@ export default function CreateTask({
               <RadioGroup
                 onValueChange={(v) => field.onChange(+v)}
                 defaultValue={`${field.value}`}
-                className="space-y-2"
+                className="flex flex-wrap gap-2"
               >
-                {cookbooks.map((cookbook) => {
-                  const ok = cookbook.items.every(
-                    (item) => (foods[item.food.id]?.stock || 0) > item.quantity,
-                  );
-                  return (
-                    <div
-                      key={cookbook.id}
-                      className={cn("flex items-center space-x-2 group")}
+                {cookbooks.map((cookbook) => (
+                  <div
+                    key={cookbook.id}
+                    className={cn(
+                      "grid grid-cols-[auto,1fr] items-center gap-x-2 ",
+                    )}
+                  >
+                    <RadioGroupItem
+                      value={`${cookbook.id}`}
+                      id={`cookbook_${cookbook.id}`}
+                      className="peer"
+                    />
+                    <Label
+                      htmlFor={`cookbook_${cookbook.id}`}
+                      className="peer-disabled:line-through"
                     >
-                      <RadioGroupItem
-                        disabled={!ok}
-                        value={`${cookbook.id}`}
-                        className="peer"
-                        id={`cookbook_${cookbook.id}`}
-                      />
-                      <Label
-                        className="peer-has-[:disabled]:opacity-50 peer-has-[:disabled]:cursor-not-allowed"
-                        htmlFor={`cookbook_${cookbook.id}`}
-                      >
-                        {cookbook.name}
-                        {cookbook.items.map((item) => {
-                          return (
-                            <span
-                              key={item.id}
-                              className={cn("pl-2", {
-                                "line-through":
-                                  (foods[item.food.id]?.stock || 0) <=
-                                  item.quantity,
-                              })}
-                            >
-                              {`${item.food.name}${item.quantity}${item.food.unit}`}
-                            </span>
-                          );
-                        })}
-                      </Label>
-                    </div>
-                  );
-                })}
+                      {cookbook.name}
+                    </Label>
+                  </div>
+                ))}
               </RadioGroup>
             </InlineFormItem>
           )}
@@ -126,7 +116,7 @@ export default function CreateTask({
                     )}
                   >
                     {field.value ? (
-                      format(field.value, "PPP")
+                      format(field.value, "PPP", formatLocale)
                     ) : (
                       <span>Pick a date</span>
                     )}
@@ -146,7 +136,7 @@ export default function CreateTask({
             </InlineFormItem>
           )}
         />
-        <SubmitButton pending={pending} />
+        <SubmitButton position="full" />
       </form>
     </Form>
   );
