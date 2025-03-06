@@ -17,7 +17,14 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@/components/ui/popover";
-import { CalendarIcon, Dot, Trash2Icon, LoaderIcon } from "lucide-react";
+import {
+  CalendarIcon,
+  Dot,
+  Trash2Icon,
+  LoaderIcon,
+  PackageIcon,
+  PackageOpenIcon,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useTranslations } from "next-intl";
 import { format } from "date-fns";
@@ -74,7 +81,13 @@ function DateField({ task }: { task: Task }) {
 }
 
 export function TaskAccordionItem({ task }: { task: Task }) {
-  const { onDeleteTask, onUpload, onRemoveImage } = useTaskPanel();
+  const {
+    onDeleteTask,
+    onUpload,
+    onRemoveImage,
+    onArchiveTask,
+    onUnarchiveTask,
+  } = useTaskPanel();
   const t = useTranslations("cookbook");
   const { name, items, content } = task.cookbook;
   const formatLocale = useDateLocale();
@@ -98,12 +111,32 @@ export function TaskAccordionItem({ task }: { task: Task }) {
               <span>{name}</span>
               <p className="flex space-x-2 items-center">
                 <DateField task={task} />
+                {task.archive ? (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onUnarchiveTask(task.id)}
+                  >
+                    <PackageOpenIcon />
+                    <span className="sr-only">unarchive</span>
+                  </Button>
+                ) : (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onArchiveTask(task.id)}
+                  >
+                    <PackageIcon />
+                    <span className="sr-only">archive</span>
+                  </Button>
+                )}
                 <Button
                   variant="destructive"
                   size="icon"
                   onClick={() => onDeleteTask(task.id)}
                 >
-                  <Trash2Icon className="size-4" />
+                  <Trash2Icon />
+                  <span className="sr-only">delete</span>
                 </Button>
               </p>
             </CardTitle>

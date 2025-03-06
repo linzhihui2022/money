@@ -6,7 +6,13 @@ import type { getTasks } from "api/task";
 import { useOptimisticFood } from "./use-optimistic-food";
 import type { Food } from "@prisma-client";
 import { useOptimisticCookbook } from "./use-optimistic-cookbook";
-import { createTask, deleteTask, moveTask } from "actions/task";
+import {
+  archiveTask,
+  createTask,
+  deleteTask,
+  moveTask,
+  unarchiveTask,
+} from "actions/task";
 import { createTaskImage, deleteTaskImage } from "actions/taskImage";
 import { updateFoodsStock } from "actions/food";
 import { v4 } from "uuid";
@@ -20,6 +26,7 @@ export type Task = {
   cookbook: CookbookItem;
   pending?: boolean;
   taskImage: (TaskItem["taskImage"][number] & { uploading?: boolean })[];
+  archive: TaskItem["archive"];
 };
 
 export interface TaskPanelState {
@@ -33,6 +40,8 @@ export interface TaskPanelState {
   onUpload: (taskId: number, file: File) => void;
   onRestock: (foods: { quantity: number; food: number }[]) => void;
   onRemoveImage: (imageKey: string) => void;
+  onArchiveTask: (taskId: number) => void;
+  onUnarchiveTask: (taskId: number) => void;
   activeWeek: number;
   setActiveWeek: (week: number) => void;
 }
@@ -79,6 +88,7 @@ export const TaskPanelProvider = ({
         cookbook,
         pending: true,
         taskImage: [],
+        archive: false,
       };
       setFoodsMap({ type: "consume", items: cookbook?.items || [] });
       setTasks({ type: "add", task });
@@ -115,6 +125,18 @@ export const TaskPanelProvider = ({
       );
     });
   };
+  const onArchiveTask = (taskId: number) => {
+    startTransition(async () => {
+      setTasks({ type: "archive", taskId });
+      await archiveTask(taskId);
+    });
+  };
+  const onUnarchiveTask = (taskId: number) => {
+    startTransition(async () => {
+      setTasks({ type: "unarchive", taskId });
+      await unarchiveTask(taskId);
+    });
+  };
   const [activeWeek, setActiveWeek] = useState<number>(_activeWeek);
 
   return (
@@ -132,6 +154,8 @@ export const TaskPanelProvider = ({
         activeWeek,
         setActiveWeek,
         onRemoveImage,
+        onArchiveTask,
+        onUnarchiveTask,
       }}
     >
       {children}

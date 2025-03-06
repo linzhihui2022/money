@@ -297,7 +297,11 @@ const SidebarTrigger = React.forwardRef<
   React.ComponentRef<typeof Button>,
   React.ComponentProps<typeof Button>
 >(({ className, onClick, ...props }, ref) => {
-  const { toggleSidebar } = useSidebar();
+  const context = React.useContext(SidebarContext);
+  if (!context) {
+    return <></>;
+  }
+  const { toggleSidebar } = context;
   const t = useTranslations("sr-only");
   return (
     <Button

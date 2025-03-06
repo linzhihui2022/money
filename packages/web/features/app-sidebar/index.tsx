@@ -13,16 +13,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronUp, User2 } from "lucide-react";
-import React from "react";
 import Menu from "@/features/app-sidebar/menu";
 import { logout } from "actions/auth";
 import { getUser } from "api/auth";
 import { getTranslations } from "next-intl/server";
-import { LocaleToggle } from "@/components/locale-toggle";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export async function AppSidebar() {
   const user = await getUser();
   const username = user.data.user?.user_metadata?.name;
+  const avatarUrl = user.data.user?.user_metadata?.avatar_url;
   const t = await getTranslations();
   return (
     <Sidebar>
@@ -31,13 +31,18 @@ export async function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter>
-        <LocaleToggle />
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton>
-                  <User2 /> {username}
+                  <Avatar className="w-5 h-5">
+                    <AvatarImage src={avatarUrl} />
+                    <AvatarFallback>
+                      <User2 />
+                    </AvatarFallback>
+                  </Avatar>
+                  {username}
                   <ChevronUp className="ml-auto" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>

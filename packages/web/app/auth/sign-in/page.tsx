@@ -2,7 +2,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -13,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { LocaleToggle } from "@/components/locale-toggle";
 import { ModeToggle } from "@/components/theme-toggle";
 
-const errorMsg = async (code: string) => {
+const errorMsg = async (code?: string) => {
   const t = await getTranslations("auth");
   if (!code) return "";
   switch (code) {
@@ -26,9 +25,9 @@ const errorMsg = async (code: string) => {
   }
 };
 export default async function LoginPage(props: {
-  searchParams: Promise<Record<string, string>>;
+  searchParams: Promise<{ error_code?: string; next?: string }>;
 }) {
-  const { error_code } = await props.searchParams;
+  const { error_code, next } = await props.searchParams;
   const t = await getTranslations();
   const msg = await errorMsg(error_code);
   return (
@@ -41,7 +40,7 @@ export default async function LoginPage(props: {
         className="w-full max-w-sm"
         action={async (formData) => {
           "use server";
-          await singIn(formData);
+          await singIn(formData, next);
         }}
       >
         <Card>
@@ -53,8 +52,7 @@ export default async function LoginPage(props: {
               </CardDescription>
             ) : null}
           </CardHeader>
-          <CardContent></CardContent>
-          <CardFooter>
+          <CardContent>
             <Button className="w-full">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                 <path
@@ -64,7 +62,7 @@ export default async function LoginPage(props: {
               </svg>
               {t("auth.Sign in")}
             </Button>
-          </CardFooter>
+          </CardContent>
         </Card>
       </form>
     </div>

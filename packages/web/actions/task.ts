@@ -60,3 +60,13 @@ export const deleteTask = async (taskId: number) => {
   revalidateTag("tasks");
   revalidateTag("foods");
 };
+
+export const archiveTask = async (taskId: number) => {
+  await prisma.task.update({ where: { id: taskId }, data: { archive: true } });
+  revalidateTag("tasks");
+};
+
+export const unarchiveTask = async (taskId: number) => {
+  await prisma.task.update({ where: { id: taskId }, data: { archive: false } });
+  revalidateTag("tasks");
+};

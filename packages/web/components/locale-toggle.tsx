@@ -1,39 +1,27 @@
 "use client";
 import { useLocale } from "next-intl";
 import { locales } from "i18n/locales";
-import { Fragment, useTransition } from "react";
-import { Separator } from "./ui/separator";
+import { useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { setUserLocale } from "../i18n/cookies";
+import { LanguagesIcon } from "lucide-react";
 
 export const LocaleToggle = () => {
   const currentLocale = useLocale();
 
   const [, startTransition] = useTransition();
-  function onChange(value: (typeof locales)[number]) {
+  function toggleLang() {
     startTransition(() => {
-      setUserLocale(value);
+      const index = locales.indexOf(currentLocale as (typeof locales)[number]);
+      setUserLocale(
+        index === locales.length - 1 ? locales[0] : locales[index + 1],
+      );
     });
   }
 
   return (
-    <div className="flex p-2">
-      {locales.map((locale) => (
-        <Fragment key={locale}>
-          <Button
-            variant={currentLocale === locale ? "secondary" : "ghost"}
-            disabled={currentLocale === locale}
-            size="sm"
-            className="uppercase"
-            onClick={() => {
-              onChange(locale);
-            }}
-          >
-            {locale}
-          </Button>
-          <Separator orientation="vertical" className="mx-2 last:hidden" />
-        </Fragment>
-      ))}
-    </div>
+    <Button variant="ghost" size="icon" onClick={() => toggleLang()}>
+      <LanguagesIcon />
+    </Button>
   );
 };

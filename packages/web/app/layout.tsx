@@ -6,7 +6,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { ThemeProvider } from "@/components/theme-provider";
 import Head from "next/head";
 import { getUserLocale } from "../i18n/cookies";
-
+import { TooltipProvider } from "@radix-ui/react-tooltip";
 export async function generateMetadata() {
   const locale = await getLocale();
   const t = await getTranslations({ locale, namespace: "layout" });
@@ -38,12 +38,14 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <NextIntlClientProvider messages={messages}>
-            <PendingProvider>
-              {children}
-              <Toaster />
-            </PendingProvider>
-          </NextIntlClientProvider>
+          <TooltipProvider>
+            <NextIntlClientProvider messages={messages}>
+              <PendingProvider>
+                {children}
+                <Toaster />
+              </PendingProvider>
+            </NextIntlClientProvider>
+          </TooltipProvider>
         </ThemeProvider>
       </body>
     </html>

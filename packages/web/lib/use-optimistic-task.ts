@@ -7,7 +7,9 @@ export type TaskAction<T> =
   | { type: "move"; taskId: number; date: Date }
   | { type: "add"; task: T }
   | { type: "upload"; taskId: number; path: string; key: string }
-  | { type: "removeImage"; imageKey: string };
+  | { type: "removeImage"; imageKey: string }
+  | { type: "archive"; taskId: number }
+  | { type: "unarchive"; taskId: number };
 
 const sortByDate = <T extends { date: Date }>(tasks: T[]) =>
   tasks.sort((a, b) => (isAfter(a.date, b.date) ? 1 : -1));
@@ -53,6 +55,20 @@ export const useOptimisticTask = <
             taskImage: task.taskImage.filter(
               (image) => image.key !== action.imageKey,
             ),
+          })),
+        );
+      case "archive":
+        return sortByDate(
+          state.map((task) => ({
+            ...task,
+            ...(task.id === action.taskId && { archive: true }),
+          })),
+        );
+      case "unarchive":
+        return sortByDate(
+          state.map((task) => ({
+            ...task,
+            ...(task.id === action.taskId && { archive: false }),
           })),
         );
       default:

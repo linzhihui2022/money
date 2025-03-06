@@ -1,12 +1,14 @@
 import type { InputProps } from "@/components/ui/input";
-import { ImagePlusIcon } from "lucide-react";
 import { useRef, type ChangeEvent } from "react";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/lib/use-toast";
+import { ImagePlusIcon } from "lucide-react";
 export const UploadInput = ({
   name,
   onChange: _onChange,
   onUpload,
+  children,
+  className,
   ...props
 }: Omit<InputProps, "type" | "name"> & {
   name: string;
@@ -30,7 +32,7 @@ export const UploadInput = ({
   };
 
   return (
-    <div>
+    <div className={className}>
       <input
         id={name}
         type="file"
@@ -40,12 +42,13 @@ export const UploadInput = ({
         onChange={onChange}
         {...props}
       />
-      <Label
-        htmlFor={name}
-        className="cursor-pointer w-16 h-16 flex items-center justify-center rounded border border-dashed relative"
-      >
-        <ImagePlusIcon className="size-5 text-muted-foreground" />
-      </Label>
+      <Label htmlFor={name}>{children || <PlusUpload />}</Label>
     </div>
   );
 };
+
+export const PlusUpload = () => (
+  <span className="cursor-pointer w-16 h-16 flex items-center justify-center rounded border border-dashed relative">
+    <ImagePlusIcon className="size-5 text-muted-foreground" />
+  </span>
+);

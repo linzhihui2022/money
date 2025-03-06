@@ -1,12 +1,8 @@
-import { type NextRequest, NextResponse } from "next/server";
+import { type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase.middleware";
-
+import { middleware as authMiddleware } from "./lib/auth";
 export async function middleware(request: NextRequest) {
-  const url = new URL(request.url);
-  const origin = url.origin;
-  const response = NextResponse.next({ request });
-  response.headers.set("x-origin", origin);
-  return await updateSession(request, response);
+  return await updateSession(request, await authMiddleware(request));
 }
 
 export const config = {
