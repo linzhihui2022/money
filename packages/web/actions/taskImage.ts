@@ -3,7 +3,7 @@
 import { prisma } from "@sb-prisma";
 
 import { revalidateTag } from "next/cache";
-import { uploadFile } from "./storage";
+import { deleteFile, uploadFile } from "./storage";
 
 export const createTaskImage = async (
   taskId: number,
@@ -17,5 +17,6 @@ export const createTaskImage = async (
 
 export const deleteTaskImage = async (imageKey: string) => {
   await prisma.taskImage.delete({ where: { key: imageKey } });
+  await deleteFile(imageKey, "task");
   revalidateTag("tasks");
 };

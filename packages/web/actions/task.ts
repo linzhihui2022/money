@@ -2,6 +2,7 @@
 
 import { prisma } from "@sb-prisma";
 import { revalidateTag } from "next/cache";
+import { deleteFile } from "./storage";
 
 export const createTask = async (date: Date, cookbookId: number) => {
   const cookbookItems = await prisma.cookbookItem.findMany({
@@ -45,6 +46,7 @@ export const deleteTask = async (taskId: number) => {
       cookbook: {
         select: { items: { select: { quantity: true, food: true } } },
       },
+      taskImage: { select: { key: true } },
     },
   });
   if (!task) return;
@@ -57,6 +59,7 @@ export const deleteTask = async (taskId: number) => {
       }),
     ),
   ]);
+  await Promise.all(task.taskImage.map((i) => deleteFile(i.key, "task")));
   revalidateTag("tasks");
   revalidateTag("foods");
 };

@@ -21,9 +21,10 @@ export const uploadFile = async (file: File, key: string, folder: string) => {
   return { ...data, ...publicUrl };
 };
 
-export const deleteFile = async (path: string) => {
+export const deleteFile = async (key: string, folder: string) => {
   const supabase = await createClient();
-  const { error } = await supabase.storage.from(BUCKET_NAME).remove([path]);
+  const fileName = `${folder}/${key}`;
+  const { error } = await supabase.storage.from(BUCKET_NAME).remove([fileName]);
   if (error) {
     throw error;
   }
