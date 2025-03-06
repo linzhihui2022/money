@@ -15,27 +15,22 @@ import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
-import { TaskAccordionItem, type Task } from "./task-item";
+import { TaskAccordionItem } from "./task-item";
 import { useDateLocale } from "@/lib/use-date-locale";
 import { useState } from "react";
 import { Accordion } from "@/components/ui/accordion";
+import { useTaskPanel, type Task } from "@/lib/use-task-panel";
 export const TaskCalendarWeek = ({
-  tasks,
   week,
-  activeWeek,
-  setActiveWeek,
   month,
-  onMoveTask,
-  onDeleteTask,
 }: {
-  tasks: Task[];
-  week: Date;
-  activeWeek?: Date;
-  setActiveWeek: (week: Date) => void;
-  month: Date;
-  onMoveTask: (taskId: number, date: Date) => void;
-  onDeleteTask: (taskId: number) => void;
+  week: number;
+  month: number;
 }) => {
+  const { tasks: allTasks, activeWeek, setActiveWeek } = useTaskPanel();
+  const tasks = allTasks.filter((task) =>
+    isSameWeek(task.date, week, { weekStartsOn: 1 }),
+  );
   const [activeTask, setActiveTask] = useState<Task["id"]>();
   const isActiveWeek =
     activeWeek && isSameWeek(week, activeWeek, { weekStartsOn: 1 });
@@ -109,12 +104,7 @@ export const TaskCalendarWeek = ({
             onValueChange={(v) => setActiveTask(+v)}
           >
             {tasks.map((task) => (
-              <TaskAccordionItem
-                key={task.id}
-                task={task}
-                onMoveTask={onMoveTask}
-                onDeleteTask={onDeleteTask}
-              />
+              <TaskAccordionItem key={task.id} task={task} />
             ))}
           </Accordion>
         </div>
@@ -123,12 +113,12 @@ export const TaskCalendarWeek = ({
   );
 };
 
-export function TaskCalendarHead({ month }: { month: Date }) {
+export function TaskCalendarHead({ month }: { month: number }) {
   return (
     <div className="flex items-center justify-between mb-4">
       <Button variant="outline" asChild>
         <Link
-          href={`/admin/task?date=${format(subMonths(startOfMonth(month), 1), "yyyy-MM-dd")}`}
+          href={`/admin?date=${format(subMonths(startOfMonth(month), 1), "yyyy-MM-dd")}`}
         >
           <ChevronLeftIcon />
         </Link>
@@ -138,7 +128,7 @@ export function TaskCalendarHead({ month }: { month: Date }) {
       </div>
       <Button variant="outline" asChild>
         <Link
-          href={`/admin/task?date=${format(addMonths(startOfMonth(month), 1), "yyyy-MM-dd")}`}
+          href={`/admin?date=${format(addMonths(startOfMonth(month), 1), "yyyy-MM-dd")}`}
         >
           <ChevronRightIcon />
         </Link>
@@ -146,7 +136,7 @@ export function TaskCalendarHead({ month }: { month: Date }) {
     </div>
   );
 }
-export function TaskCalendarWeekdays({ firstDay }: { firstDay: Date }) {
+export function TaskCalendarWeekdays({ firstDay }: { firstDay: number }) {
   const formatLocale = useDateLocale();
   return (
     <div className="grid grid-cols-7 gap-2 px-2">

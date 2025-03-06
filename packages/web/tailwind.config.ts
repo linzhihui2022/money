@@ -118,7 +118,7 @@ export default {
     },
   },
   corePlugins: {
-    aspectRatio: false,
+    aspectRatio: true,
   },
   plugins: [
     // eslint-disable-next-line @typescript-eslint/no-require-imports

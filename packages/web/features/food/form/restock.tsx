@@ -2,16 +2,12 @@
 import {
   Form,
   FormField,
-  FormTitle,
   InlineFormItem,
   SubmitButton,
 } from "@/components/ui/form";
 import { AddFoods, FoodsDescription } from "@/features/cookbook/form/add-foods";
+import { useTaskPanel } from "@/lib/use-task-panel";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Food } from "@prisma-client";
-import { updateFoodsStock } from "actions/food";
-import { useTranslations } from "next-intl";
-import { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -22,38 +18,19 @@ const formSchema = z.object({
 });
 
 type FormFields = z.infer<typeof formSchema>;
-export const RestockForm = ({
-  foods,
-  beforeTransition,
-  beforeSubmit,
-}: {
-  foods: Food[];
-  beforeTransition?: (data: FormFields) => void;
-  beforeSubmit?: (data: FormFields) => void;
-}) => {
+export const RestockForm = () => {
+  const { onRestock, foods } = useTaskPanel();
   const form = useForm<FormFields>({
     resolver: zodResolver(formSchema),
     defaultValues: { foods: [] },
   });
-  const [pending, startTransition] = useTransition();
   async function onSubmit(data: FormFields) {
-    beforeTransition?.(data);
-    startTransition(async () => {
-      beforeSubmit?.(data);
-      updateFoodsStock(
-        data.foods.map(({ food, quantity }) => ({
-          id: food,
-          stockIncrement: quantity,
-        })),
-      );
-      form.reset();
-    });
+    onRestock(data.foods);
+    form.reset();
   }
-  const t = useTranslations("food");
   return (
     <Form {...form}>
       <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
-        <FormTitle>{t("Restock foods")}</FormTitle>
         <FormField
           control={form.control}
           name="foods"
@@ -75,7 +52,7 @@ export const RestockForm = ({
             </InlineFormItem>
           )}
         />
-        <SubmitButton pending={pending} position="full" />
+        <SubmitButton position="full" />
       </form>
     </Form>
   );

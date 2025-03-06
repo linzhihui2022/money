@@ -4,7 +4,6 @@ import { Calendar } from "@/components/ui/calendar";
 import {
   Form,
   FormField,
-  FormTitle,
   InlineFormItem,
   SubmitButton,
 } from "@/components/ui/form";
@@ -16,14 +15,12 @@ import {
 } from "@/components/ui/popover";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useDateLocale } from "@/lib/use-date-locale";
+import { useTaskPanel } from "@/lib/use-task-panel";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createTask } from "actions/task";
-import { getCookbooks } from "api/cookbook";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -34,41 +31,26 @@ export const formSchema = z.object({
 
 export type FormFields = z.infer<typeof formSchema>;
 
-export function CreateTaskForm({
-  cookbooks,
-  onSuccess,
-  onError,
-  onBeforeSubmit,
-}: {
-  cookbooks: Awaited<ReturnType<typeof getCookbooks>>;
-  onSuccess?: () => void;
-  onError?: (error: Error) => void;
-  onBeforeSubmit?: (date: Date, cookbookId: number) => void;
-}) {
+export function CreateTaskForm() {
   const form = useForm<FormFields>({
     resolver: zodResolver(formSchema),
     defaultValues: { date: new Date() },
   });
   const formatLocale = useDateLocale();
-
+  const { onAddTask, cookbooks, foodsMap } = useTaskPanel();
+  const availableCookbooks = cookbooks.filter((cookbook) =>
+    cookbook.items.every(
+      (item) => (foodsMap.get(item.food.id) || 0) >= item.quantity,
+    ),
+  );
   const t = useTranslations("task");
-  const [, startTransition] = useTransition();
   async function onSubmit(data: FormFields) {
     form.reset();
-    startTransition(async () => {
-      try {
-        onBeforeSubmit?.(data.date, data.cookbookId);
-        await createTask(data.date, data.cookbookId);
-        onSuccess?.();
-      } catch (e) {
-        onError?.(e as Error);
-      }
-    });
+    onAddTask(data.date, data.cookbookId);
   }
   return (
     <Form {...form}>
       <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
-        <FormTitle>{t("Add new task")}</FormTitle>
         <FormField
           control={form.control}
           name="cookbookId"
@@ -79,7 +61,7 @@ export function CreateTaskForm({
                 defaultValue={`${field.value}`}
                 className="flex flex-wrap gap-2"
               >
-                {cookbooks.map((cookbook) => (
+                {availableCookbooks.map((cookbook) => (
                   <div
                     key={cookbook.id}
                     className={cn(

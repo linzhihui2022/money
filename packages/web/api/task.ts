@@ -19,7 +19,7 @@ export const getTasks = async (range?: [Date, Date]) => {
           id: true,
           date: true,
           archive: true,
-          taskImage: { select: { url: true } },
+          taskImage: { select: { url: true, key: true } },
           cookbook: {
             select: {
               id: true,

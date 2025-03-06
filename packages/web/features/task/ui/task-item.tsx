@@ -4,6 +4,7 @@ import {
   CardTitle,
   CardDescription,
   CardContent,
+  CardFooter,
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import {
@@ -23,29 +24,20 @@ import { format } from "date-fns";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import type { getCookbooks } from "api/cookbook";
-import type { getTasks } from "api/task";
+
 import { useDateLocale } from "@/lib/use-date-locale";
+import { UploadInput } from "../form/upload-image";
+import Image from "next/image";
+import { useTaskPanel, type Task } from "@/lib/use-task-panel";
+import ImagePreview from "@/components/ui/image-preview";
+import DeleteDialog from "@/components/table/delete-dialog";
 
-export type CookbookItem = Awaited<ReturnType<typeof getCookbooks>>[number];
-export type TaskItem = Awaited<ReturnType<typeof getTasks>>[number];
-export type Task = {
-  id: TaskItem["id"];
-  date: TaskItem["date"];
-  cookbook: CookbookItem;
-  pending?: boolean;
-};
-
-function DateField({
-  task,
-  onMoveTask,
-}: {
-  task: Task;
-  onMoveTask: (taskId: number, date: Date) => void;
-}) {
+function DateField({ task }: { task: Task }) {
   const formatLocale = useDateLocale();
   const [date, setDate] = useState(task.date);
   const [open, setOpen] = useState(false);
+  const { onMoveTask } = useTaskPanel();
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -81,19 +73,12 @@ function DateField({
   );
 }
 
-export function TaskAccordionItem({
-  task,
-  onMoveTask,
-  onDeleteTask,
-}: {
-  task: Task;
-  onMoveTask: (taskId: number, date: Date) => void;
-  onDeleteTask: (taskId: number) => void;
-}) {
+export function TaskAccordionItem({ task }: { task: Task }) {
+  const { onDeleteTask, onUpload, onRemoveImage } = useTaskPanel();
   const t = useTranslations("cookbook");
   const { name, items, content } = task.cookbook;
   const formatLocale = useDateLocale();
-
+  const [previewIndex, setPreviewIndex] = useState(-1);
   return (
     <AccordionItem
       value={`${task.id}`}
@@ -112,7 +97,7 @@ export function TaskAccordionItem({
             <CardTitle className="flex items-center justify-between">
               <span>{name}</span>
               <p className="flex space-x-2 items-center">
-                <DateField task={task} onMoveTask={onMoveTask} />
+                <DateField task={task} />
                 <Button
                   variant="destructive"
                   size="icon"
@@ -149,6 +134,45 @@ export function TaskAccordionItem({
               </div>
             </div>
           </CardContent>
+          <CardFooter className="flex flex-wrap gap-2 items-start">
+            <ImagePreview
+              images={task.taskImage.map((image) => image.url)}
+              index={previewIndex}
+              onClose={() => setPreviewIndex(-1)}
+            />
+            {task.taskImage.map((image, index) => (
+              <div key={image.key}>
+                <div className="w-16 h-16 rounded-md overflow-hidden relative group">
+                  <Image
+                    src={image.url}
+                    alt={`${task.cookbook.name} ${image.key}`}
+                    fill
+                    className={cn("object-cover", {
+                      "animate-pulse": image.uploading,
+                    })}
+                  />
+                  <button
+                    onClick={() => setPreviewIndex(index)}
+                    className="absolute inset-0 z-10"
+                  >
+                    <span className="sr-only">Preview</span>
+                  </button>
+                </div>
+                <div className="flex justify-center">
+                  <DeleteDialog
+                    onDeleteAction={() => onRemoveImage(image.key)}
+                    name={task.cookbook.name + " 图片 " + image.key}
+                  />
+                </div>
+              </div>
+            ))}
+            {task.taskImage.length < 3 ? (
+              <UploadInput
+                name="taskImage"
+                onUpload={(file) => onUpload(task.id, file)}
+              />
+            ) : null}
+          </CardFooter>
         </Card>
       </AccordionContent>
     </AccordionItem>
