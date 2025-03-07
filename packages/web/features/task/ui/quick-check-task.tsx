@@ -11,7 +11,7 @@ import { archiveTask } from "actions/task"
 import { createTaskImage, deleteTaskImage } from "actions/taskImage"
 import type { getNextTask } from "api/task"
 import { format } from "date-fns"
-import { ArchiveIcon, Dot } from "lucide-react"
+import { ArchiveIcon, Camera, Dot } from "lucide-react"
 import { useTranslations } from "next-intl"
 import Image from "next/image"
 import { useOptimistic, useState, useTransition } from "react"
@@ -158,12 +158,16 @@ export function QuickCheckTask({ task: _task }: { task: Task }) {
                 {task.taskImage.length < 3 ? (
                     <UploadInput name="taskImage" onUpload={onUpload} className="w-full">
                         <Button asChild variant="secondary" className="w-full cursor-pointer">
-                            <span>{t("task.Upload photo")}</span>
+                            <div>
+                                <Camera />
+                                <span>{t("task.Upload photo")}</span>
+                            </div>
                         </Button>
                     </UploadInput>
                 ) : null}
                 <Button className="w-full" onClick={() => onArchive()}>
-                    {t("task.Finish")}
+                    <ArchiveIcon />
+                    <span>{t("task.Archive")}</span>
                 </Button>
             </CardFooter>
         </Card>
