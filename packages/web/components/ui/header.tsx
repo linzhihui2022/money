@@ -4,7 +4,7 @@ import { AuthLayout } from "@/features/auth"
 import { Beef, Book, CalendarHeart, Home } from "lucide-react"
 import { getTranslations } from "next-intl/server"
 import Link from "next/link"
-import { PropsWithChildren, Suspense } from "react"
+import { PropsWithChildren } from "react"
 
 import { LocaleToggle } from "../locale-toggle"
 import { Separator } from "./separator"
@@ -47,9 +47,7 @@ export async function Header({ children }: PropsWithChildren) {
                 <ModeToggle />
                 <LocaleToggle />
                 <Separator orientation="vertical" className="mx-1 h-6 last:hidden" />
-                <Suspense fallback={null}>
-                    <AuthLayout />
-                </Suspense>
+                <AuthLayout />
             </div>
         </header>
     )
