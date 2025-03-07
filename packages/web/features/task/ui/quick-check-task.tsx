@@ -31,7 +31,7 @@ type TaskAction =
     | { type: "archive" }
 
 export function QuickCheckTask({ task: _task }: { task: Task }) {
-    const t = useTranslations("cookbook")
+    const t = useTranslations()
     const [previewIndex, setPreviewIndex] = useState(-1)
     const [, startTransition] = useTransition()
     const [task, setTask] = useOptimistic<TaskItem, TaskAction>(_task, (state, action) => {
@@ -89,6 +89,7 @@ export function QuickCheckTask({ task: _task }: { task: Task }) {
                         <span>{format(task.date, "yyyy-MM-dd", locale)}</span>
                         <Button className="hidden lg:flex" size="icon" onClick={() => onArchive()}>
                             <ArchiveIcon />
+                            <span className="sr-only">{t("task.Archive")}</span>
                         </Button>
                     </div>
                 </CardTitle>
@@ -96,11 +97,11 @@ export function QuickCheckTask({ task: _task }: { task: Task }) {
             </CardHeader>
             <CardContent>
                 <div className="mt-2 space-y-2 text-xs">
-                    <Badge>{t("Food")}</Badge>
+                    <Badge>{t("cookbook.Food")}</Badge>
                     <div>{content.foods.join(", ")}</div>
-                    <Badge>{t("Tool")}</Badge>
+                    <Badge>{t("cookbook.Tool")}</Badge>
                     <div>{content.tool.join(", ")}</div>
-                    <Badge>{t("Steps")}</Badge>
+                    <Badge>{t("cookbook.Steps")}</Badge>
                     <div className="space-y-1">
                         {content.steps.map((step, index) => (
                             <div key={index} className="flex space-x-1">
@@ -129,18 +130,16 @@ export function QuickCheckTask({ task: _task }: { task: Task }) {
                                     src={image.url}
                                     alt={`${task.cookbook.name} ${image.key}`}
                                     fill
-                                    className={cn("object-cover", {
-                                        "animate-pulse": image.uploading,
-                                    })}
+                                    className={cn("object-cover", { "animate-pulse": image.uploading })}
                                 />
                                 <button onClick={() => setPreviewIndex(index)} className="absolute inset-0 z-10">
-                                    <span className="sr-only">Preview</span>
+                                    <span className="sr-only">{t("sr-only.Preview")}</span>
                                 </button>
                             </div>
                             <div className="flex justify-center">
                                 <DeleteDialog
                                     onDeleteAction={() => onRemoveImage(image.key)}
-                                    name={task.cookbook.name + " 图片 " + image.key}
+                                    name={t("task.Delete image", { cookbook: task.cookbook.name, key: image.key })}
                                 />
                             </div>
                         </div>
@@ -159,12 +158,12 @@ export function QuickCheckTask({ task: _task }: { task: Task }) {
                 {task.taskImage.length < 3 ? (
                     <UploadInput name="taskImage" onUpload={onUpload} className="w-full">
                         <Button asChild variant="secondary" className="w-full cursor-pointer">
-                            <span>上传照片</span>
+                            <span>{t("task.Upload photo")}</span>
                         </Button>
                     </UploadInput>
                 ) : null}
                 <Button className="w-full" onClick={() => onArchive()}>
-                    结束
+                    {t("task.Finish")}
                 </Button>
             </CardFooter>
         </Card>

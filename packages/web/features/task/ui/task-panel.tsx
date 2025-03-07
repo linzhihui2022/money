@@ -1,4 +1,4 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { RestockForm } from "@/features/food/form/restock"
 import { format } from "date-fns"
 import { getTranslations } from "next-intl/server"
@@ -10,22 +10,12 @@ export async function TaskPanel({ weeks, month }: { weeks: number[]; month: numb
     const t = await getTranslations()
     return (
         <div className="grid gap-4 @4xl:grid-cols-[36rem_auto]">
-            <div>
-                <Card>
-                    <CardHeader>
-                        <CardTitle>
-                            <TaskCalendarHead month={month} />
-                        </CardTitle>
-                        <CardDescription>
-                            <TaskCalendarWeekdays firstDay={weeks[0]} />
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-2">
-                        {weeks.map((week) => (
-                            <TaskCalendarWeek key={format(week, "yyyy-I")} week={week} month={month} />
-                        ))}
-                    </CardContent>
-                </Card>
+            <div className="flex flex-col gap-2">
+                <TaskCalendarHead month={month} />
+                <TaskCalendarWeekdays firstDay={weeks[0]} />
+                {weeks.map((week) => (
+                    <TaskCalendarWeek key={format(week, "yyyy-I")} week={week} month={month} />
+                ))}
             </div>
             <div className="sticky top-0 flex flex-col gap-4">
                 <div>

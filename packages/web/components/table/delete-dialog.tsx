@@ -35,6 +35,7 @@ export default function DeleteDialog({
                     size="icon"
                     className="hover:text-destructive">
                     <Trash2 />
+                    <span className="sr-only">{t("Delete")}</span>
                 </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>

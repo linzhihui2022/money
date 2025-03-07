@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Food } from "@prisma-client"
 import { Cross1Icon } from "@radix-ui/react-icons"
 import { Plus } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { useState } from "react"
 
 import { FoodCombobox } from "../form/add-food-combobox"
@@ -22,6 +23,7 @@ export function AddFoods({
 }) {
     const [foodId, setFoodId] = useState(0)
     const [quantity, setQuantity] = useState(0)
+    const t = useTranslations()
     return (
         <div className="space-y-2">
             <div>
@@ -49,6 +51,7 @@ export function AddFoods({
                         setValueAction([..._value].filter((i) => i.quantity > 0))
                         setFoodId(0)
                     }}>
+                    <span className="sr-only">{t("cookbook.Add food")}</span>
                     <Plus />
                 </Button>
             </div>
@@ -65,6 +68,7 @@ export function FoodsDescription({
     value: { quantity: number; food: number }[]
     setValueAction: (pre: { quantity: number; food: number }[]) => void
 }) {
+    const t = useTranslations("cookbook")
     if (!value.length) return <></>
     return (
         <div className="-mx-2 -my-1 flex flex-wrap">
@@ -93,6 +97,7 @@ export function FoodsDescription({
                                 setValueAction(_value)
                             }}>
                             <Cross1Icon />
+                            <span className="sr-only">{t("Remove food")}</span>
                         </Button>
                     </Badge>
                 )

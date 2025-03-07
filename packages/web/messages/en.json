@@ -12,7 +12,9 @@
     "Are you absolutely sure to remove {name}?": "Are you absolutely sure to remove {name}?",
     "This action cannot be undone<Dot> This will permanently delete and remove your data<Dot>": "This action cannot be undone. This will permanently delete and remove your data.",
     "Delete": "Delete",
-    "Cancel": "Cancel"
+    "Cancel": "Cancel",
+    "Edit": "Edit",
+    "Pick a date": "Pick a date"
   },
   "sr-only": {
     "Toggle Sidebar": "Toggle Sidebar",
@@ -20,7 +22,11 @@
     "Move up": "Move up",
     "Move down": "Move down",
     "Delete": "Delete",
-    "Toggle Language": "Toggle Language"
+    "Toggle Language": "Toggle Language",
+    "Preview": "Preview",
+    "Previous month": "Previous month",
+    "Next month": "Next month",
+    "Add step": "Add step"
   },
   "auth": {
     "Sign out": "Sign out",
@@ -52,6 +58,8 @@
     "Select food": "Select Food",
     "Search food": "Search Food",
     "Not found": "Not Found",
+    "Add food": "Add Food",
+    "Remove food": "Remove Food",
     "Edit <Cookbook>": "Edit Cookbook",
     "Edit <CookbookItems>": "Edit CookbookItems",
     "Please use {foods} to help me generate a cookbook for {cookbook}": "Please use {foods} to help me generate a cookbook for {cookbook}",
@@ -77,6 +85,14 @@
   "task": {
     "Add new task": "Add New Task",
     "Date": "Date",
-    "Cookbook": "Cookbook"
+    "Cookbook": "Cookbook",
+    "No task": "No Task",
+    "Change date": "Change date",
+    "Unarchive": "Unarchive",
+    "Archive": "Archive",
+    "Delete": "Delete",
+    "Delete image": "image {key} of {cookbook}",
+    "Finish": "Finish",
+    "Upload photo": "Upload photo"
   }
 }

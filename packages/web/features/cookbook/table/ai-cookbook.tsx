@@ -86,6 +86,7 @@ export default function AiCookbook({
                                     type="button"
                                     onClick={() => setEdit((v) => !v)}>
                                     <Bot />
+                                    <span className="sr-only">{t("sr-only.Preview")}</span>
                                 </Button>
                             </>
                         ) : (
@@ -112,6 +113,7 @@ export default function AiCookbook({
                                         type="button"
                                         onClick={() => setEdit((v) => !v)}>
                                         <Edit />
+                                        <span className="sr-only">{t("form.Edit")}</span>
                                     </Button>
                                 </div>
                             </>

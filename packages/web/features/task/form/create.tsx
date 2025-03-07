@@ -33,7 +33,7 @@ export function CreateTaskForm() {
     const availableCookbooks = cookbooks.filter((cookbook) =>
         cookbook.items.every((item) => (foodsMap.get(item.food.id) || 0) >= item.quantity)
     )
-    const t = useTranslations("task")
+    const t = useTranslations()
     async function onSubmit(data: FormFields) {
         form.reset()
         onAddTask(data.date, data.cookbookId)
@@ -45,7 +45,7 @@ export function CreateTaskForm() {
                     control={form.control}
                     name="cookbookId"
                     render={({ field }) => (
-                        <InlineFormItem label={t("Cookbook")}>
+                        <InlineFormItem label={t("task.Cookbook")}>
                             <RadioGroup
                                 onValueChange={(v) => field.onChange(+v)}
                                 defaultValue={`${field.value}`}
@@ -74,7 +74,7 @@ export function CreateTaskForm() {
                     control={form.control}
                     name="date"
                     render={({ field }) => (
-                        <InlineFormItem label={t("Date")}>
+                        <InlineFormItem label={t("task.Date")}>
                             <Popover>
                                 <PopoverTrigger asChild>
                                     <Button
@@ -86,7 +86,7 @@ export function CreateTaskForm() {
                                         {field.value ? (
                                             format(field.value, "PPP", formatLocale)
                                         ) : (
-                                            <span>Pick a date</span>
+                                            <span>{t("form.Pick a date")}</span>
                                         )}
                                         <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                                     </Button>

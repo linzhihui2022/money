@@ -48,9 +48,7 @@ export default function ImagePreview({
         <DialogPrimitive.Root
             open={index !== -1}
             onOpenChange={(v) => {
-                if (!v) {
-                    onClose()
-                }
+                if (!v) onClose()
             }}>
             <VisuallyHidden asChild>
                 <DialogPrimitive.Trigger />

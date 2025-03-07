@@ -12,7 +12,9 @@
     "Are you absolutely sure to remove {name}?": "你确定要删除 {name} 吗?",
     "This action cannot be undone<Dot> This will permanently delete and remove your data<Dot>": "此操作无法撤销。此操作将永久删除和删除您的数据。",
     "Delete": "删除",
-    "Cancel": "取消"
+    "Cancel": "取消",
+    "Pick a date": "选择日期",
+    "Edit": "编辑"
   },
   "sr-only": {
     "Toggle Sidebar": "切换侧边栏",
@@ -20,7 +22,13 @@
     "Move up": "上移",
     "Move down": "下移",
     "Delete": "删除",
-    "Toggle Language": "切换语言"
+    "Toggle Language": "切换语言",
+    "Preview": "预览",
+    "Previous month": "上个月",
+    "Next month": "下个月",
+    "Previous slide": "上一页",
+    "Next slide": "下一页",
+    "Add step": "添加步骤"
   },
   "auth": {
     "Sign out": "退出登录",
@@ -52,6 +60,8 @@
     "Select food": "挑选食材",
     "Search food": "搜索食材",
     "Not found": "没有找到",
+    "Add food": "添加食材",
+    "Remove food": "移除食材",
     "Edit <Cookbook>": "修改菜谱",
     "Edit <CookbookItems>": "修改菜谱食材",
     "Please use {foods} to help me generate a cookbook for {cookbook}": "请使用 {foods} 来帮我为 {cookbook} 生成菜谱",
@@ -77,6 +87,14 @@
   "task": {
     "Add new task": "添加新的任务",
     "Date": "日期",
-    "Cookbook": "菜谱"
+    "Cookbook": "菜谱",
+    "No task": "没有任务",
+    "Change date": "修改日期",
+    "Unarchive": "取消归档",
+    "Archive": "归档",
+    "Delete": "删除",
+    "Delete image": "{cookbook}的图片{key}",
+    "Finish": "结束",
+    "Upload photo": "上传照片"
   }
 }

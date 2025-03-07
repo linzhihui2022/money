@@ -22,7 +22,7 @@ function DateField({ task }: { task: Task }) {
     const [date, setDate] = useState(task.date)
     const [open, setOpen] = useState(false)
     const { onMoveTask } = useTaskPanel()
-
+    const t = useTranslations("task")
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
@@ -49,7 +49,7 @@ function DateField({ task }: { task: Task }) {
                             setOpen(false)
                             onMoveTask(task.id, date)
                         }}>
-                        Move
+                        {t("Change date")}
                     </Button>
                 </div>
             </PopoverContent>
@@ -59,7 +59,7 @@ function DateField({ task }: { task: Task }) {
 
 export function TaskAccordionItem({ task }: { task: Task }) {
     const { onDeleteTask, onUpload, onRemoveImage, onArchiveTask, onUnarchiveTask } = useTaskPanel()
-    const t = useTranslations("cookbook")
+    const t = useTranslations()
     const { name, items, content } = task.cookbook
     const formatLocale = useDateLocale()
     const [previewIndex, setPreviewIndex] = useState(-1)
@@ -67,7 +67,7 @@ export function TaskAccordionItem({ task }: { task: Task }) {
         <AccordionItem value={`${task.id}`} className="h-full" disabled={task.pending}>
             <AccordionTrigger>
                 <span className="flex items-center gap-2 pl-4 text-xs">
-                    {format(task.date, "MM-dd", formatLocale) + " " + name}{" "}
+                    {format(task.date, "MM-dd", formatLocale) + " " + name}
                     {task.pending ? <LoaderIcon className="size-3 animate-spin" /> : ""}
                 </span>
             </AccordionTrigger>
@@ -81,17 +81,17 @@ export function TaskAccordionItem({ task }: { task: Task }) {
                                 {task.archive ? (
                                     <Button variant="ghost" size="icon" onClick={() => onUnarchiveTask(task.id)}>
                                         <PackageOpenIcon />
-                                        <span className="sr-only">unarchive</span>
+                                        <span className="sr-only">{t("task.Unarchive")}</span>
                                     </Button>
                                 ) : (
                                     <Button variant="ghost" size="icon" onClick={() => onArchiveTask(task.id)}>
                                         <PackageIcon />
-                                        <span className="sr-only">archive</span>
+                                        <span className="sr-only">{t("task.Archive")}</span>
                                     </Button>
                                 )}
                                 <Button variant="destructive" size="icon" onClick={() => onDeleteTask(task.id)}>
                                     <Trash2Icon />
-                                    <span className="sr-only">delete</span>
+                                    <span className="sr-only">{t("task.Delete")}</span>
                                 </Button>
                             </p>
                         </CardTitle>
@@ -99,11 +99,11 @@ export function TaskAccordionItem({ task }: { task: Task }) {
                     </CardHeader>
                     <CardContent>
                         <div className="mt-2 space-y-2 text-xs">
-                            <Badge>{t("Food")}</Badge>
+                            <Badge>{t("cookbook.Food")}</Badge>
                             <div>{content.foods.join(", ")}</div>
-                            <Badge>{t("Tool")}</Badge>
+                            <Badge>{t("cookbook.Tool")}</Badge>
                             <div>{content.tool.join(", ")}</div>
-                            <Badge>{t("Steps")}</Badge>
+                            <Badge>{t("cookbook.Steps")}</Badge>
                             <div className="space-y-1">
                                 {content.steps.map((step, index) => (
                                     <div key={index} className="flex space-x-1">
@@ -138,13 +138,13 @@ export function TaskAccordionItem({ task }: { task: Task }) {
                                         })}
                                     />
                                     <button onClick={() => setPreviewIndex(index)} className="absolute inset-0 z-10">
-                                        <span className="sr-only">Preview</span>
+                                        <span className="sr-only">{t("sr-only.Preview")}</span>
                                     </button>
                                 </div>
                                 <div className="flex justify-center">
                                     <DeleteDialog
                                         onDeleteAction={() => onRemoveImage(image.key)}
-                                        name={task.cookbook.name + " 图片 " + image.key}
+                                        name={t("task.Delete image", { cookbook: task.cookbook.name, key: image.key })}
                                     />
                                 </div>
                             </div>

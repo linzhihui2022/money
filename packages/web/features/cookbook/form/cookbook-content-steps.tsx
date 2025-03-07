@@ -75,6 +75,7 @@ const ButtonGroup = ({
                     setValueAction([..._steps, { content: "", phase: step.phase, key: v4() }, ...tail])
                 }}>
                 <ListPlusIcon />
+                <span className="sr-only">{t("Add step")}</span>
             </Button>
         </div>
     )
@@ -102,6 +103,7 @@ export const CookbookContentSteps = ({
     value: CookbookContent["steps"]
     setValueAction: (v: CookbookContent["steps"]) => void
 }) => {
+    const t = useTranslations("sr-only")
     const [init, setInit] = useState<CookbookContent["steps"][number]>({
         phase: CookbookStepPhase.PREPARE,
         content: "",
@@ -125,6 +127,7 @@ export const CookbookContentSteps = ({
                 <div className="col-span-12">
                     <Button className="w-full" type="button" variant="secondary" onClick={() => setValueAction([init])}>
                         <PlusIcon />
+                        <span className="sr-only">{t("Add step")}</span>
                     </Button>
                 </div>
             </div>
@@ -180,6 +183,7 @@ export const CookbookContentSteps = ({
                         ])
                     }}>
                     <PlusIcon />
+                    <span className="sr-only">{t("Add step")}</span>
                 </Button>
             </div>
         </div>

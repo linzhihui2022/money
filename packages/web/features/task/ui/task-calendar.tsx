@@ -17,6 +17,7 @@ import {
     subMonths,
 } from "date-fns"
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react"
+import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { useState } from "react"
 
@@ -98,11 +99,13 @@ export const TaskCalendarWeek = ({ week, month }: { week: number; month: number 
 }
 
 export function TaskCalendarHead({ month }: { month: number }) {
+    const t = useTranslations("sr-only")
     return (
         <div className="mb-4 flex items-center justify-between">
             <Button variant="outline" asChild>
                 <Link href={`/admin?date=${format(subMonths(startOfMonth(month), 1), "yyyy-MM-dd")}`}>
                     <ChevronLeftIcon />
+                    <span className="sr-only">{t("Previous month")}</span>
                 </Link>
             </Button>
             <div className="flex items-center gap-4">
@@ -111,6 +114,7 @@ export function TaskCalendarHead({ month }: { month: number }) {
             <Button variant="outline" asChild>
                 <Link href={`/admin?date=${format(addMonths(startOfMonth(month), 1), "yyyy-MM-dd")}`}>
                     <ChevronRightIcon />
+                    <span className="sr-only">{t("Next month")}</span>
                 </Link>
             </Button>
         </div>
