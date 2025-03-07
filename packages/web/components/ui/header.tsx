@@ -1,18 +1,16 @@
 import { ModeToggle } from "@/components/theme-toggle"
 import { Button } from "@/components/ui/button"
 import { AuthLayout } from "@/features/auth"
-import { getUser } from "api/auth"
 import { Beef, Book, CalendarHeart, Home } from "lucide-react"
 import { getTranslations } from "next-intl/server"
 import Link from "next/link"
-import { PropsWithChildren } from "react"
+import { PropsWithChildren, Suspense } from "react"
 
 import { LocaleToggle } from "../locale-toggle"
 import { Separator } from "./separator"
 
 export async function Header({ children }: PropsWithChildren) {
     const t = await getTranslations("sidebar")
-    const user = await getUser()
     return (
         <header className="sticky top-0 z-10 -mx-3 flex shrink-0 items-center justify-between overflow-hidden border-b bg-background px-3 py-3">
             <div className="flex flex-1 items-center">
@@ -47,7 +45,9 @@ export async function Header({ children }: PropsWithChildren) {
                 <ModeToggle />
                 <LocaleToggle />
                 <Separator orientation="vertical" className="mx-1 h-6 last:hidden" />
-                {user.data.user ? <AuthLayout /> : null}
+                <Suspense fallback={null}>
+                    <AuthLayout />
+                </Suspense>
             </div>
         </header>
     )

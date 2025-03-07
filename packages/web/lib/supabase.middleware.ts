@@ -28,6 +28,13 @@ export async function updateSession(
         }
     )
 
-    await supabase.auth.getUser()
+    const user = await supabase.auth.getUser()
+    if (user.error) {
+        const pathname = request.nextUrl.pathname
+        const paths = pathname.split("/").filter(Boolean)
+        if (paths[0] === "admin" && !["/admin/sign-in", "/admin/auth/callback"].includes(pathname)) {
+            return NextResponse.redirect(new URL("/admin/sign-in?next=" + encodeURIComponent(pathname), request.url))
+        }
+    }
     return supabaseResponse
 }
