@@ -21,7 +21,7 @@ export const checkAuth = async () => {
     const res = await getUser()
     if (!res.data.user) {
         const pathname = await headersStore("pathname").get("/admin")
-        redirect(`/auth/sign-in?next=${encodeURIComponent(pathname)}`)
+        redirect(`/admin/sign-in?next=${encodeURIComponent(pathname)}`)
     }
     return res.data.user
 }

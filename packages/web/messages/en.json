@@ -19,7 +19,8 @@
     "Toggle Theme": "Toggle Theme",
     "Move up": "Move up",
     "Move down": "Move down",
-    "Delete": "Delete"
+    "Delete": "Delete",
+    "Toggle Language": "Toggle Language"
   },
   "auth": {
     "Sign out": "Sign out",
@@ -30,6 +31,7 @@
   "sidebar": {
     "Money": "Money 💰",
     "Home": "Home",
+    "Tasks": "Tasks",
     "Food list": "Food List",
     "Cookbook list": "Cookbook List"
   },

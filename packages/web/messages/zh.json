@@ -19,7 +19,8 @@
     "Toggle Theme": "切换主题",
     "Move up": "上移",
     "Move down": "下移",
-    "Delete": "删除"
+    "Delete": "删除",
+    "Toggle Language": "切换语言"
   },
   "auth": {
     "Sign out": "退出登录",
@@ -30,6 +31,7 @@
   "sidebar": {
     "Money": "钱啊💰",
     "Home": "首页",
+    "Tasks": "任务",
     "Food list": "食材表",
     "Cookbook list": "菜谱表"
   },

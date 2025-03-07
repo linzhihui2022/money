@@ -1,8 +1,5 @@
-import { typedBoolean } from "@/lib/utils"
 import { createServerClient } from "@supabase/ssr"
 import { type NextRequest, NextResponse } from "next/server"
-
-import { locales } from "../i18n/locales"
 
 export async function updateSession(
     request: NextRequest,
@@ -31,19 +28,6 @@ export async function updateSession(
         }
     )
 
-    const {
-        data: { user },
-    } = await supabase.auth.getUser()
-    if (user) return supabaseResponse
-    const pathname = request.nextUrl.pathname.split("/").filter(typedBoolean)
-    if (locales.includes(pathname.at(0) as (typeof locales)[number])) {
-        pathname.shift()
-    }
-    if (pathname.at(0) !== "admin") {
-        return supabaseResponse
-    }
-
-    const url = request.nextUrl.clone()
-    url.pathname = "/auth/sign-in"
-    return NextResponse.redirect(url)
+    await supabase.auth.getUser()
+    return supabaseResponse
 }

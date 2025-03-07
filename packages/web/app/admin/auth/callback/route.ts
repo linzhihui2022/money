@@ -27,6 +27,6 @@ export async function GET(request: Request) {
         }
     }
     // return the user to an error page with instructions
-    const url = new URL(`${origin}/auth/sign-in?${searchParams}`)
+    const url = new URL(`${origin}/admin/sign-in?${searchParams}`)
     return NextResponse.redirect(url)
 }

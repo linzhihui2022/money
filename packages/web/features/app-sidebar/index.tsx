@@ -9,7 +9,7 @@ import {
     SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import Menu from "@/features/app-sidebar/menu"
-import { logout } from "actions/auth"
+import { signOut } from "actions/auth"
 import { getUser } from "api/auth"
 import { ChevronUp, User2 } from "lucide-react"
 import { getTranslations } from "next-intl/server"
@@ -43,7 +43,7 @@ export async function AppSidebar() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent side="top" className="w-[--radix-popper-anchor-width]">
                                 <DropdownMenuItem>
-                                    <form className="w-full" action={logout}>
+                                    <form className="w-full" action={signOut}>
                                         <button className="w-full">{t("auth.Sign out")}</button>
                                     </form>
                                 </DropdownMenuItem>

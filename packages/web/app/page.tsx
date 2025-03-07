@@ -8,8 +8,6 @@ import { Dot } from "lucide-react"
 import { getTranslations } from "next-intl/server"
 import Image from "next/image"
 
-import "./globals.css"
-
 export default async function Page() {
     const cookbooks = await getSomeCookbooks(5)
     const t = await getTranslations("cookbook")

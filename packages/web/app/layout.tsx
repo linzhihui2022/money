@@ -8,6 +8,7 @@ import Head from "next/head"
 import { ReactNode } from "react"
 
 import { getUserLocale } from "../i18n/cookies"
+import "./globals.css"
 
 export async function generateMetadata() {
     const locale = await getLocale()

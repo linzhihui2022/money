@@ -1,7 +1,7 @@
 "use client"
 
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
-import { Beef, Book, Home } from "lucide-react"
+import { Beef, Book, CalendarHeart } from "lucide-react"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -16,8 +16,8 @@ export function BillMenuGroup() {
                 <SidebarMenuItem>
                     <SidebarMenuButton isActive={pathname === "/admin"} asChild>
                         <Link href="/admin">
-                            <Home />
-                            <span>{t("Home")}</span>
+                            <CalendarHeart />
+                            <span>{t("Tasks")}</span>
                         </Link>
                     </SidebarMenuButton>
                 </SidebarMenuItem>

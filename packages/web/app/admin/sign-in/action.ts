@@ -11,7 +11,7 @@ export async function singIn(formData: FormData, next = "/admin") {
     const origin = await getOrigin()
     const { data, error } = await supabase.auth.signInWithOAuth({
         provider,
-        options: { redirectTo: `${origin}/auth/callback` },
+        options: { redirectTo: `${origin}/admin/auth/callback` },
     })
     if (error) {
         throw new Error(error.message)
