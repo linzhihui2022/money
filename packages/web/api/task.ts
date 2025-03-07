@@ -49,3 +49,17 @@ export const getNextTask = async () => {
         { tags: ["tasks"], revalidate: 60 * 5 }
     )()
 }
+
+export const getArchiveTasks = async (take = 5) => {
+    return unstable_cache(
+        async () =>
+            prisma.task.findMany({
+                take,
+                orderBy: { date: "desc" },
+                where: { archive: true },
+                select: taskSelect,
+            }),
+        ["tasks", "archive"],
+        { tags: ["tasks", "archive"], revalidate: 60 * 5 }
+    )()
+}
