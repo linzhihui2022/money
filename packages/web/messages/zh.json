@@ -31,12 +31,10 @@
     "Money": "钱啊💰",
     "Home": "首页",
     "Food list": "食材表",
-    "Cookbook list": "菜谱表",
-    "Task list": "任务表"
+    "Cookbook list": "菜谱表"
   },
   "cookbook": {
     "Add new cookbook": "添加新的菜谱",
-    "Update cookbook {cookbook}": "更新菜谱《{cookbook}》",
     "Name": "菜谱",
     "Items": "主食材",
     "Food": "食材",

@@ -57,10 +57,12 @@
   },
   "food": {
     "Add new food": "Add New Food",
+    "Restock foods": "Restock Foods",
     "Name": "Name",
     "Unit": "Unit",
     "Type": "Type",
     "Food": "Food",
+    "Stock": "库存",
     "Edit <Food>": "Edit Food",
     "FoodType": {
       "MEET": "Meat",
@@ -69,5 +71,10 @@
       "SEAFOOD": "Seafood",
       "OTHER": "Other"
     }
+  },
+  "task": {
+    "Add new task": "Add New Task",
+    "Date": "Date",
+    "Cookbook": "Cookbook"
   }
 }
