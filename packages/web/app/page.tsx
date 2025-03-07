@@ -1,22 +1,30 @@
 import { LocaleToggle } from "@/components/locale-toggle"
 import { ModeToggle } from "@/components/theme-toggle"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import { getSomeCookbooks } from "api/cookbook"
-import { Dot } from "lucide-react"
+import { Dot, LogIn } from "lucide-react"
 import { getTranslations } from "next-intl/server"
 import Image from "next/image"
+import Link from "next/link"
 
 export default async function Page() {
     const cookbooks = await getSomeCookbooks(5)
-    const t = await getTranslations("cookbook")
+    const t = await getTranslations()
 
     return (
         <div className="fixed inset-0 flex flex-col items-center md:flex-row">
             <div className="absolute right-3 top-3 flex items-center gap-2 md:left-12 md:right-auto md:top-10">
                 <LocaleToggle />
                 <ModeToggle />
+                <Button variant="ghost" asChild size="icon">
+                    <Link href="/admin/sign-in">
+                        <LogIn />
+                        <span className="sr-only">{t("auth.Sign in")}</span>
+                    </Link>
+                </Button>
             </div>
             <div
                 className={cn(
@@ -32,11 +40,11 @@ export default async function Page() {
                             </CardHeader>
                             <CardContent>
                                 <div className="space-y-2 text-xs">
-                                    <Badge>{t("Food")}</Badge>
+                                    <Badge>{t("cookbook.Food")}</Badge>
                                     <div>{content.foods.join(", ")}</div>
-                                    <Badge>{t("Tool")}</Badge>
+                                    <Badge>{t("cookbook.Tool")}</Badge>
                                     <div>{content.tool.join(", ")}</div>
-                                    <Badge>{t("Steps")}</Badge>
+                                    <Badge>{t("cookbook.Steps")}</Badge>
                                     <div className="space-y-1">
                                         {content.steps.map((step, index) => (
                                             <div key={index} className="flex space-x-1">

@@ -27,6 +27,7 @@ export const checkAuth = async () => {
 }
 
 export const getOrigin = async () => await headersStore("origin").get("")
+export const getPathname = async () => await headersStore("pathname").get("/")
 
 export const middleware = async (request: NextRequest, response: NextResponse = NextResponse.next({ request })) => {
     const url = new URL(request.url)

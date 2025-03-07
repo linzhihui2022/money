@@ -1,6 +1,8 @@
 import { Button } from "@/components/ui/button"
 import { singIn } from "actions/auth"
+import { getUser } from "api/auth"
 import { getTranslations } from "next-intl/server"
+import { redirect } from "next/navigation"
 
 const errorMsg = async (code?: string) => {
     const t = await getTranslations("auth")
@@ -15,7 +17,11 @@ const errorMsg = async (code?: string) => {
     }
 }
 export default async function LoginPage(props: { searchParams: Promise<{ error_code?: string; next?: string }> }) {
+    const user = await getUser()
     const { error_code, next } = await props.searchParams
+    if (user.data.user) {
+        redirect("/admin")
+    }
     const t = await getTranslations()
     const msg = await errorMsg(error_code)
     return (

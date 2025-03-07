@@ -95,6 +95,7 @@
     "Delete": "删除",
     "Delete image": "{cookbook}的图片{key}",
     "Finish": "结束",
-    "Upload photo": "上传照片"
+    "Upload photo": "上传照片",
+    "Quick handle": "快速处理"
   }
 }

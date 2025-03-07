@@ -11,7 +11,7 @@ export default async function CookbookList() {
     const foods = await getFoods()
 
     return (
-        <ul className="grid gap-4 @2xl:grid-cols-2 @5xl:grid-cols-3 @8xl:grid-cols-4">
+        <ul className="grid gap-4 @4xl:grid-cols-2 @5xl:grid-cols-3 @8xl:grid-cols-4">
             {cookbooks.map((cookbook) => (
                 <li key={cookbook.id}>
                     <Card className="relative h-full transition-transform hover:-translate-y-1 hover:shadow-xl">

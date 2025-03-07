@@ -93,6 +93,7 @@
     "Delete": "Delete",
     "Delete image": "image {key} of {cookbook}",
     "Finish": "Finish",
-    "Upload photo": "Upload photo"
+    "Upload photo": "Upload photo",
+    "Quick handle": "Quick handle"
   }
 }

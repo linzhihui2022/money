@@ -87,7 +87,7 @@ export function QuickCheckTask({ task: _task }: { task: Task }) {
                     <span>{name}</span>
                     <div className="flex items-center space-x-4">
                         <span>{format(task.date, "yyyy-MM-dd", locale)}</span>
-                        <Button className="hidden lg:flex" size="icon" onClick={() => onArchive()}>
+                        <Button className="hidden @4xl:flex" size="icon" onClick={() => onArchive()}>
                             <ArchiveIcon />
                             <span className="sr-only">{t("task.Archive")}</span>
                         </Button>
@@ -148,13 +148,13 @@ export function QuickCheckTask({ task: _task }: { task: Task }) {
                         <UploadInput
                             name="taskImage"
                             onUpload={onUpload}
-                            className="hidden lg:block"
+                            className="hidden @4xl:block"
                             disabled={task.taskImage.length >= 3}
                         />
                     ) : null}
                 </div>
             </CardContent>
-            <CardFooter className="flex flex-col gap-4 lg:hidden">
+            <CardFooter className="flex flex-col gap-4 @4xl:hidden">
                 {task.taskImage.length < 3 ? (
                     <UploadInput name="taskImage" onUpload={onUpload} className="w-full">
                         <Button asChild variant="secondary" className="w-full cursor-pointer">
