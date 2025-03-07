@@ -1,3 +1,3 @@
 export default async function Page() {
-  return <div className="relative flex w-full flex-col min-h-dvh"></div>;
+    return <div className="relative flex min-h-dvh w-full flex-col"></div>
 }

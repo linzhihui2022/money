@@ -1,1 +1,1 @@
-export const cookbookPrompt = process.env.COOKBOOK_PROMPT || "";
+export const cookbookPrompt = process.env.COOKBOOK_PROMPT || ""

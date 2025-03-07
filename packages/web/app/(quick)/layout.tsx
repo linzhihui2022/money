@@ -1,22 +1,19 @@
-import "../globals.css";
-import { Auth } from "@/features/auth";
-import { Header } from "@/components/ui/header";
-import { Footer } from "@/components/ui/footer";
+import { Footer } from "@/components/ui/footer"
+import { Header } from "@/components/ui/header"
+import { Auth } from "@/features/auth"
 
-export default function QuickLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <Auth>
-      <main className="w-full flex flex-row">
-        <div className="flex flex-col min-h-dvh no-scrollbar space-y-3 px-3 @container w-full max-w-screen-sm mx-auto">
-          <Header />
-          <div className="flex-1">{children}</div>
-          <Footer />
-        </div>
-      </main>
-    </Auth>
-  );
+import "../globals.css"
+
+export default function QuickLayout({ children }: { children: React.ReactNode }) {
+    return (
+        <Auth>
+            <main className="flex w-full flex-row">
+                <div className="no-scrollbar mx-auto flex min-h-dvh w-full max-w-screen-sm flex-col space-y-3 px-3 @container">
+                    <Header />
+                    <div className="flex-1">{children}</div>
+                    <Footer />
+                </div>
+            </main>
+        </Auth>
+    )
 }
